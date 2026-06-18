@@ -166,20 +166,23 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const msg = update.message ?? update.edited_message;
           if (!msg) return Response.json({ ok: true });
           const chatId = msg.chat.id;
+          const msgId: number = msg.message_id;
 
           // Photo → scan
           if (msg.photo && Array.isArray(msg.photo) && msg.photo.length) {
             const best = msg.photo[msg.photo.length - 1];
+            await tgTyping(chatId, "typing");
             try {
               const text = await scanQrFromTelegramFile(best.file_id);
-              if (!text) await tgSendMessage(chatId, T.scanError);
+              if (!text) await tgSendMessage(chatId, T.scanError, msgId);
               else
                 await tgSendMessage(
                   chatId,
                   `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                  msgId,
                 );
             } catch {
-              await tgSendMessage(chatId, T.scanFail);
+              await tgSendMessage(chatId, T.scanFail, msgId);
             }
             return Response.json({ ok: true });
           }
@@ -192,24 +195,27 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             (/^image\//.test(doc.mime_type ?? "") ||
               /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(docName));
           if (isImageDoc) {
+            await tgTyping(chatId, "typing");
             try {
               const text = await scanQrFromTelegramFile(doc.file_id);
-              if (!text) await tgSendMessage(chatId, T.scanError);
+              if (!text) await tgSendMessage(chatId, T.scanError, msgId);
               else
                 await tgSendMessage(
                   chatId,
                   `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                  msgId,
                 );
             } catch {
-              await tgSendMessage(chatId, T.scanFail);
+              await tgSendMessage(chatId, T.scanFail, msgId);
             }
             return Response.json({ ok: true });
           }
 
           const text: string = (msg.text ?? "").trim();
           if (text) {
+            await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
-            await tgSendPhotoUrl(chatId, url, T.generated);
+            await tgSendPhotoUrl(chatId, url, T.generated, msgId);
           }
         } catch (err) {
           console.error("telegram webhook error", err);
