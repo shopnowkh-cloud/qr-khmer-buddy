@@ -55,6 +55,14 @@ async function tgTyping(chat_id: number, action: "typing" | "upload_photo" = "ty
 }
 
 const T = {
+  welcome:
+    "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ QR Code Bot</b>\n\n" +
+    "<b>🤖 មុខងាររបស់បូត៖</b>\n\n" +
+    "1️⃣ <b>បង្កើត QR Code</b>\n" +
+    "• សរសេរអក្សរ ឬតំណណាមួយ → បូតនឹងបង្កើត QR Code ឲ្យអ្នក\n\n" +
+    "2️⃣ <b>ស្កេន QR Code</b>\n" +
+    "• ផ្ញើរូបថត ឬឯកសារ (JPG/PNG/WEBP) → បូតនឹងអាន QR Code ហើយបង្ហាញលទ្ធផល\n\n" +
+    "<i>💡 គ្រាន់តែផ្ញើអក្សរឬរូបភាព ហើយបូតនឹងដោះស្រាយដោយស្វ័យប្រវត្តិ!</i>",
   generated: "✅ នេះគឺ QR Code របស់អ្នក",
   scanError: "❌ មិនអាចអាន QR Code ពីរូបនេះទេ។ សូមផ្ញើរូបច្បាស់ៗម្តងទៀត។",
   scanFail: "❌ មានបញ្ហាក្នុងការស្កេន។ សូមព្យាយាមម្តងទៀត។",
@@ -212,6 +220,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
           const text: string = (msg.text ?? "").trim();
+          if (text === "/start") {
+            await tgSendMessage(chatId, T.welcome, msgId);
+            return Response.json({ ok: true });
+          }
           if (text) {
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
