@@ -164,15 +164,25 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // Document image → scan
-          if (msg.document && /^image\//.test(msg.document.mime_type ?? "")) {
-            const text = await scanQrFromTelegramFile(msg.document.file_id);
-            if (!text) await tgSendMessage(chatId, T.scanError);
-            else
-              await tgSendMessage(
-                chatId,
-                `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
-              );
+          // Document image → scan (jpg/png/webp/heic etc by mime or extension)
+          const doc = msg.document;
+          const docName: string = doc?.file_name ?? "";
+          const isImageDoc =
+            !!doc &&
+            (/^image\//.test(doc.mime_type ?? "") ||
+              /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(docName));
+          if (isImageDoc) {
+            try {
+              const text = await scanQrFromTelegramFile(doc.file_id);
+              if (!text) await tgSendMessage(chatId, T.scanError);
+              else
+                await tgSendMessage(
+                  chatId,
+                  `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                );
+            } catch {
+              await tgSendMessage(chatId, T.scanFail);
+            }
             return Response.json({ ok: true });
           }
 
