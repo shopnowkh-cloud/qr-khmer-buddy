@@ -26,12 +26,32 @@ async function tg(method: string, body: unknown) {
   return res.json();
 }
 
-async function tgSendPhotoUrl(chat_id: number, photoUrl: string, caption?: string) {
-  return tg("sendPhoto", { chat_id, photo: photoUrl, caption, parse_mode: "HTML" });
+async function tgSendPhotoUrl(
+  chat_id: number,
+  photoUrl: string,
+  caption?: string,
+  reply_to?: number,
+) {
+  return tg("sendPhoto", {
+    chat_id,
+    photo: photoUrl,
+    caption,
+    parse_mode: "HTML",
+    ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+  });
 }
 
-async function tgSendMessage(chat_id: number, text: string) {
-  return tg("sendMessage", { chat_id, text, parse_mode: "HTML" });
+async function tgSendMessage(chat_id: number, text: string, reply_to?: number) {
+  return tg("sendMessage", {
+    chat_id,
+    text,
+    parse_mode: "HTML",
+    ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+  });
+}
+
+async function tgTyping(chat_id: number, action: "typing" | "upload_photo" = "typing") {
+  return tg("sendChatAction", { chat_id, action });
 }
 
 const T = {
