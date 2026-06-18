@@ -54,6 +54,46 @@ function buildQrUrl(text: string) {
   return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
 }
 
+async function scanWithQrserver(bytes: ArrayBuffer): Promise<string | null> {
+  const form = new FormData();
+  form.append("file", new Blob([bytes]), "qr.png");
+  const res = await fetch("https://api.qrserver.com/v1/read-qr-code/?MAX_SIZE_HEIGHT=1500", {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as Array<{
+    symbol: Array<{ data: string | null; error: string | null }>;
+  }>;
+  const sym = data?.[0]?.symbol?.[0];
+  if (!sym || sym.error || !sym.data) return null;
+  return sym.data;
+}
+
+async function scanWithZxing(bytes: ArrayBuffer): Promise<string | null> {
+  try {
+    const { readBarcodesFromImageFile } = await import("@sec-ant/zxing-wasm/reader");
+    const blob = new Blob([bytes]);
+    // Try multiple binarizers to handle blur/low-light
+    const tryOpts = [
+      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "LocalAverage" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "GlobalHistogram" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "FixedThreshold" as const },
+    ];
+    for (const opts of tryOpts) {
+      const results = await readBarcodesFromImageFile(blob, {
+        formats: ["QRCode", "MicroQRCode"],
+        ...opts,
+      });
+      const r = results?.[0];
+      if (r?.text) return r.text;
+    }
+  } catch (e) {
+    console.error("zxing scan error", e);
+  }
+  return null;
+}
+
 async function scanQrFromTelegramFile(fileId: string): Promise<string | null> {
   const fileInfo = (await tg("getFile", { file_id: fileId })) as {
     ok: boolean;
@@ -70,19 +110,10 @@ async function scanQrFromTelegramFile(fileId: string): Promise<string | null> {
   if (!dl.ok) return null;
   const bytes = await dl.arrayBuffer();
 
-  const form = new FormData();
-  form.append("file", new Blob([bytes]), "qr.jpg");
-  const res = await fetch("https://api.qrserver.com/v1/read-qr-code/", {
-    method: "POST",
-    body: form,
-  });
-  if (!res.ok) return null;
-  const data = (await res.json()) as Array<{
-    symbol: Array<{ data: string | null; error: string | null }>;
-  }>;
-  const sym = data?.[0]?.symbol?.[0];
-  if (!sym || sym.error || !sym.data) return null;
-  return sym.data;
+  // Try local zxing-wasm first (robust for blur / low-light), then qrserver fallback
+  const local = await scanWithZxing(bytes);
+  if (local) return local;
+  return await scanWithQrserver(bytes);
 }
 
 function escapeHtml(s: string) {
@@ -133,15 +164,25 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // Document image → scan
-          if (msg.document && /^image\//.test(msg.document.mime_type ?? "")) {
-            const text = await scanQrFromTelegramFile(msg.document.file_id);
-            if (!text) await tgSendMessage(chatId, T.scanError);
-            else
-              await tgSendMessage(
-                chatId,
-                `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
-              );
+          // Document image → scan (jpg/png/webp/heic etc by mime or extension)
+          const doc = msg.document;
+          const docName: string = doc?.file_name ?? "";
+          const isImageDoc =
+            !!doc &&
+            (/^image\//.test(doc.mime_type ?? "") ||
+              /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(docName));
+          if (isImageDoc) {
+            try {
+              const text = await scanQrFromTelegramFile(doc.file_id);
+              if (!text) await tgSendMessage(chatId, T.scanError);
+              else
+                await tgSendMessage(
+                  chatId,
+                  `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                );
+            } catch {
+              await tgSendMessage(chatId, T.scanFail);
+            }
             return Response.json({ ok: true });
           }
 
