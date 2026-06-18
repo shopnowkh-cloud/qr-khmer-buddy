@@ -126,13 +126,10 @@ function buildKeyboard(o: Opts) {
   };
 }
 
-function optsSummary(o: Opts) {
-  const sz = SIZES.find((x) => x.id === o.size)?.label ?? o.size;
-  const cl = COLORS.find((x) => x.id === o.color)?.label ?? o.color;
-  const ft = FORMATS.find((x) => x.id === o.format)?.label ?? o.format;
-  const ec = ECCS.find((x) => x.id === o.ecc)?.label ?? o.ecc;
-  return `🎨 <b>ជម្រើស QR Code</b>\n\n• ទំហំ: ${sz}\n• ពណ៌: ${cl}\n• ទម្រង់: ${ft}\n• កម្រិត: ${ec}\n\nកែជម្រើសខាងក្រោម ឬចុច <b>បន្ត</b>`;
+function optsSummary(_o: Opts) {
+  return `👇`;
 }
+
 
 function buildQrUrl(text: string, o: Opts) {
   const params = new URLSearchParams({
