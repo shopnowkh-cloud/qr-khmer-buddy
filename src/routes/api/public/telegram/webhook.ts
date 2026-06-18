@@ -171,6 +171,47 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
         }
 
         try {
+          // Inline mode: @bot <query> → return a QR Code result
+          if (update.inline_query) {
+            const iq = update.inline_query;
+            const q: string = (iq.query ?? "").trim();
+            if (!q) {
+              await tg("answerInlineQuery", {
+                inline_query_id: iq.id,
+                results: [],
+                cache_time: 1,
+                is_personal: true,
+                button: {
+                  text: "សរសេរអក្សរណាមួយដើម្បីបង្កើត QR Code",
+                  start_parameter: "start",
+                },
+              });
+              return Response.json({ ok: true });
+            }
+            const qrUrl = buildQrUrl(q);
+            const preview = q.length > 60 ? q.slice(0, 60) + "…" : q;
+            await tg("answerInlineQuery", {
+              inline_query_id: iq.id,
+              cache_time: 0,
+              is_personal: true,
+              results: [
+                {
+                  type: "photo",
+                  id: "qr_" + Date.now().toString(36),
+                  photo_url: qrUrl,
+                  thumbnail_url: qrUrl,
+                  photo_width: 400,
+                  photo_height: 400,
+                  title: "QR Code",
+                  description: preview,
+                  caption: `✅ <b>QR Code</b>\n<code>${escapeHtml(q)}</code>`,
+                  parse_mode: "HTML",
+                },
+              ],
+            });
+            return Response.json({ ok: true });
+          }
+
           const msg = update.message ?? update.edited_message;
           if (!msg) return Response.json({ ok: true });
           const chatId = msg.chat.id;
