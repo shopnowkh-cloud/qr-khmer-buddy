@@ -220,6 +220,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
           const text: string = (msg.text ?? "").trim();
+          if (text === "/start") {
+            await tgSendMessage(chatId, T.welcome, msgId);
+            return Response.json({ ok: true });
+          }
           if (text) {
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
