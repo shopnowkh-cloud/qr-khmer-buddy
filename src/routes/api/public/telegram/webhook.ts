@@ -52,8 +52,25 @@ async function tgSendMessage(chat_id: number, text: string, reply_to?: number) {
   });
 }
 
+async function tgSetReaction(chat_id: number, message_id: number, emoji: string) {
+  return tg("setMessageReaction", {
+    chat_id,
+    message_id,
+    reaction: [{ type: "emoji", emoji }],
+    is_big: true,
+  });
+}
+
 async function tgTyping(chat_id: number, action: "typing" | "upload_photo" = "typing") {
   return tg("sendChatAction", { chat_id, action });
+}
+
+const WELCOME_REACTIONS = [
+  "👍", "❤️", "🔥", "🥳", "👏", "😎", "🤩", "🎉", "✨", "🚀",
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 const T = {
@@ -264,7 +281,14 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           const text: string = (msg.text ?? "").trim();
           if (text === "/start") {
-            await tgSendMessage(chatId, T.welcome, msgId);
+            await tgTyping(chatId, "typing");
+            const welcomeRes = (await tgSendMessage(chatId, T.welcome, msgId)) as {
+              ok: boolean;
+              result?: { message_id: number };
+            };
+            if (welcomeRes.ok && welcomeRes.result?.message_id) {
+              await tgSetReaction(chatId, welcomeRes.result.message_id, pickRandom(WELCOME_REACTIONS));
+            }
             return Response.json({ ok: true });
           }
           if (text) {
