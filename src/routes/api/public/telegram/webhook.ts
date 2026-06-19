@@ -281,7 +281,14 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           const text: string = (msg.text ?? "").trim();
           if (text === "/start") {
-            await tgSendMessage(chatId, T.welcome, msgId);
+            await tgTyping(chatId, "typing");
+            const welcomeRes = (await tgSendMessage(chatId, T.welcome, msgId)) as {
+              ok: boolean;
+              result?: { message_id: number };
+            };
+            if (welcomeRes.ok && welcomeRes.result?.message_id) {
+              await tgSetReaction(chatId, welcomeRes.result.message_id, pickRandom(WELCOME_REACTIONS));
+            }
             return Response.json({ ok: true });
           }
           if (text) {
