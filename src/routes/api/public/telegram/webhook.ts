@@ -270,7 +270,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text) {
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
-            await tgSendPhotoUrl(chatId, url, T.generated, msgId);
+            const shareMarkup = {
+              inline_keyboard: [
+                [
+                  {
+                    text: "📤 ផ្ញើទៅជជែកផ្សេង",
+                    switch_inline_query: text,
+                  },
+                ],
+              ],
+            };
+            await tgSendPhotoUrl(chatId, url, T.generated, msgId, shareMarkup);
           }
         } catch (err) {
           console.error("telegram webhook error", err);
