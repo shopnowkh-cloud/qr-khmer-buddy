@@ -52,6 +52,15 @@ async function tgSendMessage(chat_id: number, text: string, reply_to?: number) {
   });
 }
 
+async function tgSetReaction(chat_id: number, message_id: number, emoji: string) {
+  return tg("setMessageReaction", {
+    chat_id,
+    message_id,
+    reaction: [{ type: "emoji", emoji }],
+    is_big: true,
+  });
+}
+
 async function tgTyping(chat_id: number, action: "typing" | "upload_photo" = "typing") {
   return tg("sendChatAction", { chat_id, action });
 }
