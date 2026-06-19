@@ -31,6 +31,7 @@ async function tgSendPhotoUrl(
   photoUrl: string,
   caption?: string,
   reply_to?: number,
+  reply_markup?: unknown,
 ) {
   return tg("sendPhoto", {
     chat_id,
@@ -38,6 +39,7 @@ async function tgSendPhotoUrl(
     caption,
     parse_mode: "HTML",
     ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+    ...(reply_markup ? { reply_markup } : {}),
   });
 }
 
