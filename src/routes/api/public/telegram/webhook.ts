@@ -56,6 +56,14 @@ async function tgTyping(chat_id: number, action: "typing" | "upload_photo" = "ty
   return tg("sendChatAction", { chat_id, action });
 }
 
+const WELCOME_REACTIONS = [
+  "👍", "❤️", "🔥", "🥳", "👏", "😎", "🤩", "🎉", "✨", "🚀",
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 const T = {
   welcome:
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ QR Code Bot</b>\n\n" +
