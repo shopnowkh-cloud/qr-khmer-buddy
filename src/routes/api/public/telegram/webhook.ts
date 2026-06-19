@@ -253,7 +253,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               else
                 await tgSendMessage(
                   chatId,
-                  `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                  `<code>${escapeHtml(text)}</code>`,
                   msgId,
                 );
             } catch {
