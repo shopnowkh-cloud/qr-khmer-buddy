@@ -65,7 +65,7 @@ const T = {
     "2️⃣ <b>ស្កេន QR Code</b>\n" +
     "• ផ្ញើរូបថត ឬឯកសារ (JPG/PNG/WEBP) → បូតនឹងអាន QR Code ហើយបង្ហាញលទ្ធផល\n\n" +
     "<i>💡 គ្រាន់តែផ្ញើអក្សរឬរូបភាព ហើយបូតនឹងដោះស្រាយដោយស្វ័យប្រវត្តិ!</i>",
-  generated: "✅ នេះគឺ QR Code របស់អ្នក",
+  generated: "",
   scanError: "❌ មិនអាចអាន QR Code ពីរូបនេះទេ។ សូមផ្ញើរូបច្បាស់ៗម្តងទៀត។",
   scanFail: "❌ មានបញ្ហាក្នុងការស្កេន។ សូមព្យាយាមម្តងទៀត។",
 };
@@ -206,7 +206,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
                   photo_height: 400,
                   title: "QR Code",
                   description: preview,
-                  caption: `✅ <b>QR Code</b>\n<code>${escapeHtml(q)}</code>`,
+                  caption: `<code>${escapeHtml(q)}</code>`,
                   parse_mode: "HTML",
                 },
               ],
@@ -229,7 +229,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               else
                 await tgSendMessage(
                   chatId,
-                  `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                  `<code>${escapeHtml(text)}</code>`,
                   msgId,
                 );
             } catch {
@@ -253,7 +253,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               else
                 await tgSendMessage(
                   chatId,
-                  `✅ <b>លទ្ធផល QR Code</b>:\n\n<code>${escapeHtml(text)}</code>`,
+                  `<code>${escapeHtml(text)}</code>`,
                   msgId,
                 );
             } catch {
