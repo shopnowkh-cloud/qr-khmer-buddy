@@ -206,7 +206,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
                   photo_height: 400,
                   title: "QR Code",
                   description: preview,
-                  caption: `✅ <b>QR Code</b>\n<code>${escapeHtml(q)}</code>`,
+                  caption: `<code>${escapeHtml(q)}</code>`,
                   parse_mode: "HTML",
                 },
               ],
