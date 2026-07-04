@@ -757,11 +757,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.cancel) {
             session.buffer = [];
-            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf"].includes(session.mode);
+            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext"].includes(session.mode);
             session.mode = wasPdf ? "pdfmenu" : "qr";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
             return Response.json({ ok: true });
           }
+
           if (text === BTN.qr) {
             session.mode = "qr";
             session.buffer = [];
