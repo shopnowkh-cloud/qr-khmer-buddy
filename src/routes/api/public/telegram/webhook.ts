@@ -1330,7 +1330,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               if (!mp3) {
                 await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, mainKeyboard);
               } else {
-                await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🔊 TTS", msgId, mainKeyboard);
+                await tgSendAudioBytes(chatId, mp3, "speech.wav", "🔊 VoxCPM2", msgId, mainKeyboard);
               }
               return Response.json({ ok: true });
             }
