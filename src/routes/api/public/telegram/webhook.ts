@@ -406,6 +406,15 @@ type Mode =
   | "compresspdf"
   | "pdftext"
   | "tts"
+  | "tts_menu"
+  | "tts_basic"
+  | "tts_design_instr"
+  | "tts_design_text"
+  | "tts_clone_audio"
+  | "tts_clone_transcript"
+  | "tts_clone_text"
+  | "tts_ultra_audio"
+  | "tts_ultra_text"
   | "ocr"
   | "translate"
   | "currency"
@@ -416,6 +425,10 @@ interface Session {
   mode: Mode;
   buffer: Uint8Array[];
   lastImage?: { bytes: Uint8Array; mime: string };
+  ttsDesignInstr?: string;
+  ttsRefBytes?: Uint8Array;
+  ttsRefMime?: string;
+  ttsRefTranscript?: string;
 }
 const sessions = new Map<number, Session>();
 
