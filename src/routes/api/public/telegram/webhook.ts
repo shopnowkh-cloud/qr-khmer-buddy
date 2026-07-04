@@ -208,10 +208,9 @@ const BTN = {
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr }, { text: BTN.removebg }],
-    [{ text: BTN.pdf }, { text: BTN.imgconv }],
+    [{ text: BTN.pdf }],
     [{ text: BTN.tts }, { text: BTN.ocr }],
     [{ text: BTN.translate }, { text: BTN.currency }],
-    [{ text: BTN.shorturl }, { text: BTN.help }],
   ],
   resize_keyboard: true,
   is_persistent: true,
