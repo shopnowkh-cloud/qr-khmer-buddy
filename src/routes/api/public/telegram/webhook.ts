@@ -540,12 +540,14 @@ async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | nu
     // inner threshold -> fully transparent, outer -> feather edge to opaque.
     const INNER = 60;   // <= this distance = background
     const OUTER = 110;  // >= this distance = subject
+    let cleared = 0;
     for (let i = 0; i < rgba.length; i += 4) {
       const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
       const dr = r - KEY_R, dg = g - KEY_G, db = b - KEY_B;
       const dist = Math.sqrt(dr * dr + dg * dg + db * db);
       if (dist <= INNER) {
         rgba[i + 3] = 0;
+        cleared++;
       } else if (dist < OUTER) {
         const t = (dist - INNER) / (OUTER - INNER); // 0..1
         rgba[i + 3] = Math.round(255 * t);
@@ -554,6 +556,14 @@ async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | nu
         rgba[i]     = Math.max(0, Math.min(255, r - Math.round(spill * 40)));
         rgba[i + 2] = Math.max(0, Math.min(255, b - Math.round(spill * 40)));
       }
+    }
+    // Verify the matte actually existed: if <2% of pixels became transparent,
+    // the AI returned the image WITHOUT a magenta background — treat as failure
+    // so the caller's fallbacks run instead of returning the image with bg intact.
+    const total = rgba.length / 4;
+    if (total === 0 || cleared / total < 0.02) {
+      console.error("chroma-key: no magenta matte detected", cleared, "/", total);
+      return null;
     }
     const out = UPNG.encode([rgba.buffer], w, h, 0);
     return new Uint8Array(out);
