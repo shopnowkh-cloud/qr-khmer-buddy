@@ -1250,6 +1250,35 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const isPdfDoc =
             !!doc && (docMime === "application/pdf" || /\.pdf$/i.test(docName));
 
+          // TTS cloning: receive reference audio (voice / audio / audio-document)
+          const voice = msg.voice as { file_id: string; mime_type?: string } | undefined;
+          const audio = msg.audio as { file_id: string; mime_type?: string } | undefined;
+          const isAudioDoc =
+            !!doc &&
+            (/^audio\//.test(docMime) || /\.(mp3|wav|ogg|m4a|aac|flac|opus)$/i.test(docName));
+          const audioMsg = voice ?? audio ?? (isAudioDoc ? { file_id: doc.file_id, mime_type: docMime } : null);
+          if (
+            audioMsg &&
+            (session.mode === "tts_clone_audio" || session.mode === "tts_ultra_audio")
+          ) {
+            const f = await downloadTgFile(audioMsg.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ ទាញយកសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.ttsRefBytes = new Uint8Array(f.bytes);
+            session.ttsRefMime = audioMsg.mime_type || (voice ? "audio/ogg" : "audio/mpeg");
+            if (session.mode === "tts_clone_audio") {
+              session.mode = "tts_clone_transcript";
+              await tgSendMessage(chatId, T.ttsCloneAskTranscript, msgId, ttsKeyboard);
+            } else {
+              session.mode = "tts_ultra_text";
+              await tgSendMessage(chatId, T.ttsUltraAskText, msgId, ttsKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
+
           // Remove BG
           if (session.mode === "removebg" && (photo || isImageDoc)) {
             const fileId = photo ? photo.file_id : doc.file_id;
