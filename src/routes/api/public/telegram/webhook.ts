@@ -43,12 +43,13 @@ async function tgSendPhotoUrl(
   });
 }
 
-async function tgSendMessage(chat_id: number, text: string, reply_to?: number) {
+async function tgSendMessage(chat_id: number, text: string, reply_to?: number, message_effect_id?: string) {
   return tg("sendMessage", {
     chat_id,
     text,
     parse_mode: "HTML",
     ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+    ...(message_effect_id ? { message_effect_id } : {}),
   });
 }
 
@@ -67,6 +68,16 @@ async function tgTyping(chat_id: number, action: "typing" | "upload_photo" = "ty
 
 const WELCOME_REACTIONS = [
   "👍", "❤️", "🔥", "🥳", "👏", "😎", "🤩", "🎉", "✨", "🚀",
+];
+
+// Telegram message effect IDs (premium animated effects on messages)
+// 🔥 5104841245755180586, 👍 5107584321108051014, ❤️ 5159385139981059251,
+// 🎉 5046509860389126442, 💩 5046589136895476101, 👎 5104858069142078462
+const MESSAGE_EFFECTS = [
+  "5104841245755180586", // 🔥
+  "5107584321108051014", // 👍
+  "5159385139981059251", // ❤️
+  "5046509860389126442", // 🎉
 ];
 
 function pickRandom<T>(arr: T[]): T {
@@ -282,12 +293,14 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const text: string = (msg.text ?? "").trim();
           if (text === "/start") {
             await tgTyping(chatId, "typing");
-            const welcomeRes = (await tgSendMessage(chatId, T.welcome, msgId)) as {
+            const effectId = pickRandom(MESSAGE_EFFECTS);
+            const welcomeRes = (await tgSendMessage(chatId, T.welcome, msgId, effectId)) as {
               ok: boolean;
-              result?: { message_id: number };
+              description?: string;
             };
-            if (welcomeRes.ok && welcomeRes.result?.message_id) {
-              await tgSetReaction(chatId, welcomeRes.result.message_id, pickRandom(WELCOME_REACTIONS));
+            // Fallback: message effects only work in private chats; retry without effect if rejected
+            if (!welcomeRes.ok) {
+              await tgSendMessage(chatId, T.welcome, msgId);
             }
             return Response.json({ ok: true });
           }
