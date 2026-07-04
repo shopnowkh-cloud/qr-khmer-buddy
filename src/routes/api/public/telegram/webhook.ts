@@ -448,17 +448,17 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
     const comma = url.indexOf(",");
     const base = comma >= 0 ? url.slice(comma + 1) : url;
     const raw = Buffer.from(base, "base64");
-    return chromaKeyToTransparent(raw);
+    return await chromaKeyToTransparent(raw);
   } catch (e) {
     console.error("removebg error", e);
     return null;
   }
 }
 
-function chromaKeyToTransparent(pngBytes: Buffer): Uint8Array | null {
+async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | null> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const UPNG = require("upng-js");
+    const UPNG = (await import("upng-js")).default as typeof import("upng-js");
+
     const img = UPNG.decode(pngBytes);
     const rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
     const w = img.width, h = img.height;
