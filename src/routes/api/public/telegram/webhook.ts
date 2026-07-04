@@ -404,6 +404,12 @@ async function shortenUrl(url: string): Promise<string | null> {
 }
 
 // ========== Feature: Remove BG via AI Gateway ==========
+// Strategy: ask Gemini to place the subject on a pure magenta (#FF00FF) matte,
+// then chroma-key that matte out to real alpha in a post-process pass.
+// Gemini image models don't reliably emit transparent PNGs, so we synthesize
+// the alpha channel ourselves.
+const KEY_R = 255, KEY_G = 0, KEY_B = 255;
+
 async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8Array | null> {
   try {
     const b64 = Buffer.from(bytes).toString("base64");
@@ -414,23 +420,21 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3.1-flash-image",
+        model: "google/gemini-2.5-flash-image",
         messages: [
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Segment the main subject and output a PNG image where every background pixel has alpha = 0 (fully transparent). The output must contain ONLY the subject on transparency. Do not paint, draw, or add any background — no solid color, no gradient, no pattern, no texture, no squares, no grid. Preserve clean anti-aliased edges around hair and fine details.",
+                text: "Segment the main subject from this photo. Output an image at the SAME resolution where the subject is kept EXACTLY as-is (same colors, same details, same edges) and the ENTIRE background is replaced with a single flat pure magenta color rgb(255, 0, 255) — #FF00FF. Do not add any other color, gradient, texture, checkerboard, shadow, or pattern in the background. Every non-subject pixel must be exactly rgb(255,0,255). Keep clean anti-aliased edges around hair and fine details.",
               },
-
               { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
             ],
           },
         ],
         modalities: ["image", "text"],
       }),
-
     });
     if (!res.ok) {
       console.error("removebg gateway error", res.status, await res.text());
@@ -443,12 +447,49 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
     if (!url) return null;
     const comma = url.indexOf(",");
     const base = comma >= 0 ? url.slice(comma + 1) : url;
-    return new Uint8Array(Buffer.from(base, "base64"));
+    const raw = Buffer.from(base, "base64");
+    return chromaKeyToTransparent(raw);
   } catch (e) {
     console.error("removebg error", e);
     return null;
   }
 }
+
+function chromaKeyToTransparent(pngBytes: Buffer): Uint8Array | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const UPNG = require("upng-js");
+    const img = UPNG.decode(pngBytes);
+    const rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
+    const w = img.width, h = img.height;
+
+    // Chroma-key: distance from magenta in RGB space.
+    // inner threshold -> fully transparent, outer -> feather edge to opaque.
+    const INNER = 60;   // <= this distance = background
+    const OUTER = 110;  // >= this distance = subject
+    for (let i = 0; i < rgba.length; i += 4) {
+      const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
+      const dr = r - KEY_R, dg = g - KEY_G, db = b - KEY_B;
+      const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+      if (dist <= INNER) {
+        rgba[i + 3] = 0;
+      } else if (dist < OUTER) {
+        const t = (dist - INNER) / (OUTER - INNER); // 0..1
+        rgba[i + 3] = Math.round(255 * t);
+        // De-spill: subtract magenta cast on semi-transparent edges
+        const spill = 1 - t;
+        rgba[i]     = Math.max(0, Math.min(255, r - Math.round(spill * 40)));
+        rgba[i + 2] = Math.max(0, Math.min(255, b - Math.round(spill * 40)));
+      }
+    }
+    const out = UPNG.encode([rgba.buffer], w, h, 0);
+    return new Uint8Array(out);
+  } catch (e) {
+    console.error("chroma-key error", e);
+    return null;
+  }
+}
+
 
 // ========== Feature: PDF ==========
 // pdf-lib is imported dynamically inside handlers to avoid Cloudflare Workers
