@@ -1,5 +1,5 @@
 // upng-js does `import pako from "pako"` but pako v3 ESM has no default export.
-// Re-export the namespace as default so upng-js's default import works.
-// @ts-expect-error - deep import into pako, no type declarations
-import * as pako from "pako/dist/pako.mjs";
+// Absolute path bypasses the vite alias on "pako" so we don't recurse into ourselves.
+// @ts-expect-error - deep path import, no types
+import * as pako from "/dev-server/node_modules/pako/dist/pako.mjs";
 export default pako;
