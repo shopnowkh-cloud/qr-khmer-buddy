@@ -669,34 +669,73 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
   return await src.save({ useObjectStreams: true, addDefaultPage: false });
 }
 
-// ========== Feature: TTS via Lovable AI ==========
-async function synthesizeSpeech(text: string): Promise<Uint8Array | null> {
-  try {
-    // Basic language detection: any Khmer codepoint → Khmer voice hint
-    const isKhmer = /[\u1780-\u17FF]/.test(text);
-    const voice = isKhmer ? "shimmer" : "alloy";
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-4o-mini-tts",
-        input: text.slice(0, 4000),
-        voice,
-        response_format: "mp3",
-      }),
-    });
-    if (!res.ok) {
-      console.error("tts error", res.status, await res.text());
-      return null;
+// ========== Feature: TTS via VoxCPM2 (HuggingFace Space) ==========
+// Calls openbmb/VoxCPM-Demo Gradio API directly. Free public Space — no key.
+// Rate-limited by HF; may take 10-60s and can 503 when Space is sleeping.
+const VOXCPM_SPACE = "https://openbmb-voxcpm-demo.hf.space";
+
+async function voxcpmGenerateOnce(textInput: string): Promise<string> {
+  const payload = {
+    data: [textInput, "", null, false, "", 2.0, false, false],
+  };
+  const initResp = await fetch(`${VOXCPM_SPACE}/gradio_api/call/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(30000),
+  });
+  if (!initResp.ok) throw new Error(`VoxCPM init failed: ${initResp.status}`);
+  const { event_id } = (await initResp.json()) as { event_id?: string };
+  if (!event_id) throw new Error("No event_id from VoxCPM");
+
+  const sseResp = await fetch(`${VOXCPM_SPACE}/gradio_api/call/generate/${event_id}`, {
+    signal: AbortSignal.timeout(150000),
+  });
+  if (!sseResp.ok) throw new Error(`VoxCPM SSE failed: ${sseResp.status}`);
+
+  const text = await sseResp.text();
+  let eventType: string | null = null;
+  let dataStr: string | null = null;
+  for (const line of text.split("\n")) {
+    if (line.startsWith("event: ")) eventType = line.slice(7).trim();
+    else if (line.startsWith("data: ")) dataStr = line.slice(6).trim();
+    else if (line === "") {
+      if (eventType === "complete" && dataStr) {
+        const parsed = JSON.parse(dataStr);
+        const url = parsed?.[0]?.url;
+        if (url) return url as string;
+      } else if (eventType === "error") {
+        throw new Error(`VoxCPM error: ${dataStr ?? "space error"}`);
+      }
+      eventType = null;
+      dataStr = null;
     }
-    return new Uint8Array(await res.arrayBuffer());
-  } catch (e) {
-    console.error("tts exception", e);
-    return null;
   }
+  throw new Error("No audio URL from VoxCPM");
+}
+
+async function synthesizeSpeech(text: string): Promise<Uint8Array | null> {
+  const input = text.slice(0, 1000);
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      if (attempt > 1) {
+        try {
+          await fetch(`${VOXCPM_SPACE}/`, { signal: AbortSignal.timeout(10000) });
+        } catch {}
+        await new Promise((r) => setTimeout(r, 3000));
+      }
+      const audioUrl = await voxcpmGenerateOnce(input);
+      const audioResp = await fetch(audioUrl, { signal: AbortSignal.timeout(60000) });
+      if (!audioResp.ok) throw new Error(`Audio fetch failed: ${audioResp.status}`);
+      return new Uint8Array(await audioResp.arrayBuffer());
+    } catch (e) {
+      lastErr = e;
+      console.error(`voxcpm attempt ${attempt} failed`, e);
+    }
+  }
+  console.error("voxcpm all attempts failed", lastErr);
+  return null;
 }
 
 // ========== Feature: Gemini chat helper ==========
