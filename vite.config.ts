@@ -8,8 +8,13 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    ssr: {
+      // Bundle pdf-lib and tslib into the Worker to fix
+      // "Cannot destructure property '__extends' of '__toESM(...).default'"
+      noExternal: ["pdf-lib", "tslib", "@pdf-lib/standard-fonts", "@pdf-lib/upng"],
+    },
   },
 });
