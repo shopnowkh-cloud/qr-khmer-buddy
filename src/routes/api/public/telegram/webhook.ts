@@ -110,6 +110,40 @@ async function tgSendDocumentBytes(
   return res.json();
 }
 
+async function tgSendAudioBytes(
+  chat_id: number,
+  bytes: Uint8Array,
+  filename: string,
+  caption?: string,
+  reply_to?: number,
+  reply_markup?: unknown,
+) {
+  const form = new FormData();
+  form.append("chat_id", String(chat_id));
+  if (caption) {
+    form.append("caption", caption);
+    form.append("parse_mode", "HTML");
+  }
+  if (reply_to) {
+    form.append(
+      "reply_parameters",
+      JSON.stringify({ message_id: reply_to, allow_sending_without_reply: true }),
+    );
+  }
+  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("audio", new Blob([bytes as unknown as BlobPart], { type: "audio/mpeg" }), filename);
+  const res = await fetch(`${GATEWAY_URL}/sendAudio`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
+    },
+    body: form,
+  });
+  return res.json();
+}
+
+
 async function tgSendMessage(
   chat_id: number,
   text: string,
