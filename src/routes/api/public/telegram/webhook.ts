@@ -1000,8 +1000,71 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // PDF text extraction
+          if (session.mode === "pdftext") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            await tgTyping(chatId, "typing");
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            const extracted = await extractPdfText(new Uint8Array(f.bytes));
+            if (!extracted) {
+              await tgSendMessage(chatId, "❌ អានអក្សរមិនបានសម្រេច", msgId, pdfKeyboard);
+            } else if (extracted.length < 3500) {
+              await tgSendMessage(chatId, `📝\n<code>${escapeHtml(extracted)}</code>`, msgId, pdfKeyboard);
+            } else {
+              const bytes = new TextEncoder().encode(extracted);
+              await tgSendDocumentBytes(chatId, bytes, "extracted.txt", "📝 អានអក្សរពី PDF", msgId, pdfKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
+          // OCR
+          if (session.mode === "ocr" && (photo || isImageDoc)) {
+            const fileId = photo ? photo.file_id : doc.file_id;
+            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
+            await tgTyping(chatId, "typing");
+            const f = await downloadTgFile(fileId);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
+              return Response.json({ ok: true });
+            }
+            const b64 = Buffer.from(f.bytes).toString("base64");
+            const out = await geminiText(
+              "Extract ALL text visible in this image. Preserve original language (Khmer or English) and line breaks. Return only the raw text, no commentary.",
+              { b64, mime },
+            );
+            if (!out) {
+              await tgSendMessage(chatId, "❌ OCR មិនបានសម្រេច", msgId, mainKeyboard);
+            } else {
+              await tgSendMessage(chatId, `🔍\n<code>${escapeHtml(out.slice(0, 3800))}</code>`, msgId, mainKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
+          // Image format conversion: receive image → ask target
+          if (session.mode === "imgconv" && (photo || isImageDoc)) {
+            const fileId = photo ? photo.file_id : doc.file_id;
+            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
+            const f = await downloadTgFile(fileId);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.lastImage = { bytes: new Uint8Array(f.bytes), mime };
+            session.mode = "imgconv_pick";
+            await tgSendMessage(chatId, "🎨 ជ្រើសរើស format គោលដៅ៖", msgId, imgFmtKeyboard);
+            return Response.json({ ok: true });
+          }
+
           // ===== Default QR mode =====
           // Photo → scan
+
           if (photo) {
             await tgTyping(chatId, "typing");
             try {
