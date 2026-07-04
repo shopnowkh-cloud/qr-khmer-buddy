@@ -199,6 +199,10 @@ const BTN = {
   fmtPng: "→ PNG",
   fmtJpg: "→ JPG",
   fmtWebp: "→ WEBP",
+  ttsBasic: "🎙 ធម្មតា",
+  ttsDesign: "🎨 រចនាសំឡេង",
+  ttsClone: "👥 ក្លូនសំឡេង",
+  ttsUltra: "✨ ក្លូនពេញលេញ",
 };
 
 const mainKeyboard = {
