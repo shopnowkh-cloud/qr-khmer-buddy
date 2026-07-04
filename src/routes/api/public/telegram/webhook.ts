@@ -563,6 +563,31 @@ async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | nu
   }
 }
 
+// Fallback 1: aggressively key out any light background, regardless of heuristic.
+async function forceWhiteToTransparent(
+  bytes: ArrayBuffer,
+  mime: string,
+): Promise<Uint8Array | null> {
+  const decoded = await decodeToRgba(bytes, mime);
+  if (!decoded) return null;
+  return await whiteToTransparent(decoded.rgba, decoded.w, decoded.h);
+}
+
+// Fallback 2: re-encode original as PNG (keeps alpha if source had it; otherwise
+// user still gets a lossless PNG copy of their image instead of an error).
+async function reencodeAsPng(bytes: ArrayBuffer, mime: string): Promise<Uint8Array | null> {
+  try {
+    const decoded = await decodeToRgba(bytes, mime);
+    if (!decoded) return null;
+    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
+    return new Uint8Array(UPNG.encode([decoded.rgba.buffer], decoded.w, decoded.h, 0));
+  } catch (e) {
+    console.error("reencodeAsPng error", e);
+    return null;
+  }
+}
+
+
 
 // ========== Feature: PDF ==========
 // pdf-lib is imported dynamically inside handlers to avoid Cloudflare Workers
@@ -1040,12 +1065,24 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
               return Response.json({ ok: true });
             }
-            const out = await removeBackground(f.bytes, mime);
+            // Primary: AI + smart local removal
+            let out = await removeBackground(f.bytes, mime);
+            let caption = "✅ លុប background រួច";
+            // Fallback 1: force local white-to-transparent (works for any image on light bg)
+            if (!out) {
+              out = await forceWhiteToTransparent(f.bytes, mime);
+              if (out) caption = "⚠️ AI បរាជ័យ — បានប្រើវិធីលុបផ្ទៃសលោកាល";
+            }
+            // Fallback 2: return original re-encoded as PNG with alpha channel preserved
+            if (!out) {
+              out = await reencodeAsPng(f.bytes, mime);
+              if (out) caption = "⚠️ លុប background មិនបានសម្រេច — បានរក្សាទុករូបដើមជា PNG";
+            }
             if (!out) {
               await tgSendMessage(chatId, "❌ លុប background មិនបានសម្រេច", msgId, mainKeyboard);
               return Response.json({ ok: true });
             }
-            await tgSendDocumentBytes(chatId, out, "no-bg.png", "✅ លុប background រួច", msgId, mainKeyboard);
+            await tgSendDocumentBytes(chatId, out, "no-bg.png", caption, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
 
