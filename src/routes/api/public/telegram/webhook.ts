@@ -496,6 +496,174 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
   return await src.save({ useObjectStreams: true, addDefaultPage: false });
 }
 
+// ========== Feature: TTS via Lovable AI ==========
+async function synthesizeSpeech(text: string): Promise<Uint8Array | null> {
+  try {
+    // Basic language detection: any Khmer codepoint → Khmer voice hint
+    const isKhmer = /[\u1780-\u17FF]/.test(text);
+    const voice = isKhmer ? "shimmer" : "alloy";
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini-tts",
+        input: text.slice(0, 4000),
+        voice,
+        response_format: "mp3",
+      }),
+    });
+    if (!res.ok) {
+      console.error("tts error", res.status, await res.text());
+      return null;
+    }
+    return new Uint8Array(await res.arrayBuffer());
+  } catch (e) {
+    console.error("tts exception", e);
+    return null;
+  }
+}
+
+// ========== Feature: Gemini chat helper ==========
+async function geminiText(prompt: string, opts?: { image?: { b64: string; mime: string } }): Promise<string | null> {
+  try {
+    const content: unknown[] = [{ type: "text", text: prompt }];
+    if (opts?.image) {
+      content.push({
+        type: "image_url",
+        image_url: { url: `data:${opts.image.mime};base64,${opts.image.b64}` },
+      });
+    }
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content }],
+      }),
+    });
+    if (!res.ok) {
+      console.error("gemini error", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    return data?.choices?.[0]?.message?.content?.trim() ?? null;
+  } catch (e) {
+    console.error("gemini exception", e);
+    return null;
+  }
+}
+
+// ========== Feature: PDF text extraction ==========
+async function extractPdfText(bytes: Uint8Array): Promise<string | null> {
+  try {
+    const b64 = Buffer.from(bytes).toString("base64");
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Extract all text from this PDF. Preserve original language (Khmer or English) and paragraph structure. Return only the extracted text, no commentary." },
+              { type: "file", file: { filename: "doc.pdf", file_data: `data:application/pdf;base64,${b64}` } },
+            ],
+          },
+        ],
+      }),
+    });
+    if (!res.ok) {
+      console.error("pdftext error", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    return data?.choices?.[0]?.message?.content?.trim() ?? null;
+  } catch (e) {
+    console.error("pdftext exception", e);
+    return null;
+  }
+}
+
+// ========== Feature: Image format conversion via Gemini image edit ==========
+async function convertImageFormat(bytes: ArrayBuffer, mime: string, target: "png" | "jpg" | "webp"): Promise<Uint8Array | null> {
+  try {
+    const b64 = Buffer.from(bytes).toString("base64");
+    const targetMime = target === "jpg" ? "JPEG" : target.toUpperCase();
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: `Return the exact same image, unchanged, encoded as ${targetMime}.` },
+              { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
+            ],
+          },
+        ],
+        modalities: ["image", "text"],
+      }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { images?: Array<{ image_url?: { url?: string } }> } }>;
+    };
+    const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!url) return null;
+    const comma = url.indexOf(",");
+    const base = comma >= 0 ? url.slice(comma + 1) : url;
+    return new Uint8Array(Buffer.from(base, "base64"));
+  } catch (e) {
+    console.error("imgconv error", e);
+    return null;
+  }
+}
+
+// ========== Feature: Currency USD⇄KHR ==========
+async function convertCurrency(text: string): Promise<string | null> {
+  const m = text.match(/^\s*([\d,.]+)\s*(usd|khr|\$|៛)\s*$/i);
+  if (!m) return null;
+  const amount = parseFloat(m[1].replace(/,/g, ""));
+  if (!isFinite(amount)) return null;
+  const unit = m[2].toLowerCase();
+  const from = unit === "usd" || unit === "$" ? "USD" : "KHR";
+  try {
+    const res = await fetch(`https://open.er-api.com/v6/latest/${from}`);
+    if (!res.ok) return null;
+    const d = (await res.json()) as { rates?: Record<string, number> };
+    if (from === "USD") {
+      const r = d.rates?.KHR;
+      if (!r) return null;
+      return `💵 <b>${amount} USD</b> ≈ <b>${(amount * r).toLocaleString("en-US", { maximumFractionDigits: 0 })} ៛ KHR</b>\n<i>Rate: 1 USD = ${r.toFixed(2)} KHR</i>`;
+    } else {
+      const r = d.rates?.USD;
+      if (!r) return null;
+      return `💵 <b>${amount.toLocaleString("en-US")} ៛ KHR</b> ≈ <b>$${(amount * r).toFixed(2)} USD</b>\n<i>Rate: 1 KHR = ${r.toFixed(6)} USD</i>`;
+    }
+  } catch {
+    return null;
+  }
+}
+
 
 // ========== Main handler ==========
 export const Route = createFileRoute("/api/public/telegram/webhook")({
