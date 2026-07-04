@@ -243,6 +243,16 @@ const imgFmtKeyboard = {
   is_persistent: true,
 };
 
+const ttsKeyboard = {
+  keyboard: [
+    [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
+    [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
+    [{ text: BTN.back }],
+  ],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 // ========== Text ==========
 const T = {
   welcome:
