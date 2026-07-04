@@ -856,11 +856,11 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
             const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
             await tgTyping(chatId, "upload_photo");
-            const out = await convertImageFormat(
-              session.lastImage.bytes.buffer.slice(session.lastImage.bytes.byteOffset, session.lastImage.bytes.byteOffset + session.lastImage.bytes.byteLength),
-              session.lastImage.mime,
-              target,
-            );
+            const li = session.lastImage;
+            const ab = new ArrayBuffer(li.bytes.byteLength);
+            new Uint8Array(ab).set(li.bytes);
+            const out = await convertImageFormat(ab, li.mime, target);
+
             if (!out) {
               await tgSendMessage(chatId, "❌ ប្តូរ format មិនបានសម្រេច", msgId, mainKeyboard);
             } else {
