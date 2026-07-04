@@ -70,6 +70,16 @@ const WELCOME_REACTIONS = [
   "👍", "❤️", "🔥", "🥳", "👏", "😎", "🤩", "🎉", "✨", "🚀",
 ];
 
+// Telegram message effect IDs (premium animated effects on messages)
+// 🔥 5104841245755180586, 👍 5107584321108051014, ❤️ 5159385139981059251,
+// 🎉 5046509860389126442, 💩 5046589136895476101, 👎 5104858069142078462
+const MESSAGE_EFFECTS = [
+  "5104841245755180586", // 🔥
+  "5107584321108051014", // 👍
+  "5159385139981059251", // ❤️
+  "5046509860389126442", // 🎉
+];
+
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
