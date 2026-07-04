@@ -30,7 +30,7 @@ export default defineConfig({
     },
 
     ssr: {
-      noExternal: ["pdf-lib", "tslib", "upng-js", "pako"],
+      noExternal: ["pdf-lib", "tslib", "upng-js", "pako", "jpeg-js"],
     },
   },
 
