@@ -1037,7 +1037,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             const b64 = Buffer.from(f.bytes).toString("base64");
             const out = await geminiText(
               "Extract ALL text visible in this image. Preserve original language (Khmer or English) and line breaks. Return only the raw text, no commentary.",
-              { b64, mime },
+              { image: { b64, mime } },
             );
             if (!out) {
               await tgSendMessage(chatId, "❌ OCR មិនបានសម្រេច", msgId, mainKeyboard);
