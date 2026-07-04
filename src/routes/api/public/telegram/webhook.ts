@@ -421,8 +421,9 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
             content: [
               {
                 type: "text",
-                text: "Extract ONLY the main subject from this image and output a PNG with a FULLY TRANSPARENT background (alpha channel = 0 for all background pixels). Do NOT replace the background with white, black, or any solid color. Do NOT add any checkerboard pattern. Preserve subject edges cleanly with soft alpha anti-aliasing. Output MUST be a PNG image with real transparency.",
+                text: "Segment the main subject and output a PNG image where every background pixel has alpha = 0 (fully transparent). The output must contain ONLY the subject on transparency. Do not paint, draw, or add any background — no solid color, no gradient, no pattern, no texture, no squares, no grid. Preserve clean anti-aliased edges around hair and fine details.",
               },
+
               { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
             ],
           },
