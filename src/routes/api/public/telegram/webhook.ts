@@ -493,14 +493,14 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
+        model: "google/gemini-3.1-flash-image",
         messages: [
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Segment the main subject from this photo. Output an image at the SAME resolution where the subject is kept EXACTLY as-is (same colors, same details, same edges) and the ENTIRE background is replaced with a single flat pure magenta color rgb(255, 0, 255) — #FF00FF. Do not add any other color, gradient, texture, checkerboard, shadow, or pattern in the background. Every non-subject pixel must be exactly rgb(255,0,255). Keep clean anti-aliased edges around hair and fine details.",
+                text: "Return the SAME image at the SAME resolution as a PNG with a fully TRANSPARENT background: keep the main subject exactly as-is (identical colors, details, and anti-aliased edges), and replace every non-subject pixel with a single flat pure magenta rgb(255,0,255) — #FF00FF. No gradient, texture, checkerboard, shadow, or watermark. Every non-subject pixel must be exactly rgb(255,0,255) OR fully transparent alpha=0.",
               },
               { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
             ],
@@ -521,12 +521,34 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
     const comma = url.indexOf(",");
     const base = comma >= 0 ? url.slice(comma + 1) : url;
     const raw = Buffer.from(base, "base64");
+    // Try: if model already returned real transparency, keep it; else chroma-key magenta.
+    const passthrough = await keepIfAlreadyTransparent(raw);
+    if (passthrough) return passthrough;
     return await chromaKeyToTransparent(raw);
   } catch (e) {
     console.error("removebg error", e);
     return null;
   }
 }
+
+// If the model already produced a PNG with real transparency (>2% alpha=0), keep it.
+async function keepIfAlreadyTransparent(pngBytes: Buffer): Promise<Uint8Array | null> {
+  try {
+    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
+    const img = UPNG.decode(pngBytes);
+    const rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
+    let transparent = 0;
+    const total = rgba.length / 4;
+    for (let i = 3; i < rgba.length; i += 4) if (rgba[i] < 10) transparent++;
+    if (total > 0 && transparent / total >= 0.02) {
+      return new Uint8Array(UPNG.encode([rgba.buffer], img.width, img.height, 0));
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 
 async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | null> {
   try {
