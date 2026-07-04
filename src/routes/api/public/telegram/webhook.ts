@@ -816,6 +816,61 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             );
             return Response.json({ ok: true });
           }
+          if (text === BTN.pdftext) {
+            session.mode = "pdftext";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.pdfTextMode, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.tts) {
+            session.mode = "tts";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.ttsMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.ocr) {
+            session.mode = "ocr";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.ocrMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.translate) {
+            session.mode = "translate";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.translateMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.currency) {
+            session.mode = "currency";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.currencyMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.imgconv) {
+            session.mode = "imgconv";
+            session.buffer = [];
+            session.lastImage = undefined;
+            await tgSendMessage(chatId, T.imgconvMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
+            const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
+            await tgTyping(chatId, "upload_photo");
+            const out = await convertImageFormat(
+              session.lastImage.bytes.buffer.slice(session.lastImage.bytes.byteOffset, session.lastImage.bytes.byteOffset + session.lastImage.bytes.byteLength),
+              session.lastImage.mime,
+              target,
+            );
+            if (!out) {
+              await tgSendMessage(chatId, "❌ ប្តូរ format មិនបានសម្រេច", msgId, mainKeyboard);
+            } else {
+              await tgSendDocumentBytes(chatId, out, `converted.${target}`, `✅ ប្តូរទៅ ${target.toUpperCase()}`, msgId, mainKeyboard);
+            }
+            session.mode = "imgconv";
+            session.lastImage = undefined;
+            return Response.json({ ok: true });
+          }
+
           if (text === BTN.done) {
             if (session.mode === "img2pdf") {
               if (!session.buffer.length) {
