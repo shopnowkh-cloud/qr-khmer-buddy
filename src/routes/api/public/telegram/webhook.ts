@@ -43,12 +43,13 @@ async function tgSendPhotoUrl(
   });
 }
 
-async function tgSendMessage(chat_id: number, text: string, reply_to?: number) {
+async function tgSendMessage(chat_id: number, text: string, reply_to?: number, message_effect_id?: string) {
   return tg("sendMessage", {
     chat_id,
     text,
     parse_mode: "HTML",
     ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+    ...(message_effect_id ? { message_effect_id } : {}),
   });
 }
 
