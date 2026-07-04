@@ -1128,9 +1128,39 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
           if (text === BTN.tts) {
-            session.mode = "tts";
+            session.mode = "tts_menu";
             session.buffer = [];
-            await tgSendMessage(chatId, T.ttsMode, msgId, mainKeyboard);
+            session.ttsDesignInstr = undefined;
+            session.ttsRefBytes = undefined;
+            session.ttsRefMime = undefined;
+            session.ttsRefTranscript = undefined;
+            await tgSendMessage(chatId, T.ttsMode, msgId, ttsKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.ttsBasic) {
+            session.mode = "tts_basic";
+            await tgSendMessage(chatId, T.ttsBasicMode, msgId, ttsKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.ttsDesign) {
+            session.mode = "tts_design_instr";
+            session.ttsDesignInstr = undefined;
+            await tgSendMessage(chatId, T.ttsDesignAskInstr, msgId, ttsKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.ttsClone) {
+            session.mode = "tts_clone_audio";
+            session.ttsRefBytes = undefined;
+            session.ttsRefMime = undefined;
+            session.ttsRefTranscript = undefined;
+            await tgSendMessage(chatId, T.ttsCloneAskAudio, msgId, ttsKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.ttsUltra) {
+            session.mode = "tts_ultra_audio";
+            session.ttsRefBytes = undefined;
+            session.ttsRefMime = undefined;
+            await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId, ttsKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.ocr) {
