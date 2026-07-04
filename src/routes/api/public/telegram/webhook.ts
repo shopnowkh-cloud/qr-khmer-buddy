@@ -364,11 +364,19 @@ type Mode =
   | "img2pdf"
   | "pdf2img"
   | "mergepdf"
-  | "compresspdf";
+  | "compresspdf"
+  | "pdftext"
+  | "tts"
+  | "ocr"
+  | "translate"
+  | "currency"
+  | "imgconv"
+  | "imgconv_pick";
 
 interface Session {
   mode: Mode;
   buffer: Uint8Array[];
+  lastImage?: { bytes: Uint8Array; mime: string };
 }
 const sessions = new Map<number, Session>();
 
@@ -380,6 +388,7 @@ function getSession(chatId: number): Session {
   }
   return s;
 }
+
 
 // ========== Feature: Short URL ==========
 async function shortenUrl(url: string): Promise<string | null> {
