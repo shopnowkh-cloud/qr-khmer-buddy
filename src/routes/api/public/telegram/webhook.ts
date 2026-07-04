@@ -378,11 +378,17 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
 }
 
 // ========== Feature: PDF ==========
+// pdf-lib is imported dynamically inside handlers to avoid Cloudflare Workers
+// ESM/tslib interop crash ("Cannot destructure property '__extends'...")
+async function loadPdfLib() {
+  return await import("pdf-lib");
+}
+
 async function imagesToPdf(images: Uint8Array[]): Promise<Uint8Array> {
+  const { PDFDocument } = await loadPdfLib();
   const pdf = await PDFDocument.create();
   for (const bytes of images) {
     let img;
-    // try png then jpg
     try {
       img = await pdf.embedPng(bytes);
     } catch {
@@ -399,6 +405,7 @@ async function imagesToPdf(images: Uint8Array[]): Promise<Uint8Array> {
 }
 
 async function mergePdfs(pdfs: Uint8Array[]): Promise<Uint8Array> {
+  const { PDFDocument } = await loadPdfLib();
   const out = await PDFDocument.create();
   for (const bytes of pdfs) {
     try {
@@ -413,9 +420,11 @@ async function mergePdfs(pdfs: Uint8Array[]): Promise<Uint8Array> {
 }
 
 async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
+  const { PDFDocument } = await loadPdfLib();
   const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
   return await src.save({ useObjectStreams: true, addDefaultPage: false });
 }
+
 
 // ========== Main handler ==========
 export const Route = createFileRoute("/api/public/telegram/webhook")({
