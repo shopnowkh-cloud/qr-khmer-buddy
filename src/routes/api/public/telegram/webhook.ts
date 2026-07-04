@@ -293,12 +293,14 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           const text: string = (msg.text ?? "").trim();
           if (text === "/start") {
             await tgTyping(chatId, "typing");
-            const welcomeRes = (await tgSendMessage(chatId, T.welcome, msgId)) as {
+            const effectId = pickRandom(MESSAGE_EFFECTS);
+            const welcomeRes = (await tgSendMessage(chatId, T.welcome, msgId, effectId)) as {
               ok: boolean;
-              result?: { message_id: number };
+              description?: string;
             };
-            if (welcomeRes.ok && welcomeRes.result?.message_id) {
-              await tgSetReaction(chatId, welcomeRes.result.message_id, pickRandom(WELCOME_REACTIONS));
+            // Fallback: message effects only work in private chats; retry without effect if rejected
+            if (!welcomeRes.ok) {
+              await tgSendMessage(chatId, T.welcome, msgId);
             }
             return Response.json({ ok: true });
           }
