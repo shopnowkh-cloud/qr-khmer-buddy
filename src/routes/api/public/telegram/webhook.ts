@@ -275,7 +275,32 @@ const T = {
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
   pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
   pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
-  ttsMode: "🔊 <b>Text to Speech</b>\n\nសរសេរអក្សរ (ខ្មែរ ឬ អង់គ្លេស) → បម្លែងទៅ MP3",
+  ttsMode:
+    "🔊 <b>VoxCPM2 — Text to Speech</b>\n\n" +
+    "ជ្រើសរើសរបៀប៖\n" +
+    "🎙 <b>ធម្មតា</b> — សំឡេងស្តង់ដារ\n" +
+    "🎨 <b>រចនាសំឡេង</b> — ណែនាំសំឡេង (ឧ. speak slowly and warmly)\n" +
+    "👥 <b>ក្លូនសំឡេង</b> — ផ្ញើសំឡេងគំរូ + អក្សរបកស្រាយ\n" +
+    "✨ <b>ក្លូនពេញលេញ</b> — ផ្ញើសំឡេងគំរូតែម្នាក់ឯង",
+  ttsBasicMode: "🎙 <b>ធម្មតា</b>\n\nសរសេរអក្សរដើម្បីបម្លែងជាសំឡេង",
+  ttsDesignAskInstr:
+    "🎨 <b>រចនាសំឡេង — ជំហាន 1/2</b>\n\n" +
+    "សរសេរការណែនាំសំឡេង (English ល្អបំផុត)។\n" +
+    "ឧទាហរណ៍៖\n" +
+    "• <code>speak slowly and warmly</code>\n" +
+    "• <code>angry male voice</code>\n" +
+    "• <code>excited young female</code>",
+  ttsDesignAskText: "🎨 <b>ជំហាន 2/2</b>\n\nសរសេរអក្សរដើម្បីបម្លែងជាសំឡេង",
+  ttsCloneAskAudio:
+    "👥 <b>ក្លូនសំឡេង — ជំហាន 1/3</b>\n\n" +
+    "ផ្ញើ voice message ឬឯកសារសំឡេង (MP3/WAV/OGG) 5–15 វិនាទី ជាគំរូ",
+  ttsCloneAskTranscript:
+    "👥 <b>ជំហាន 2/3</b>\n\nសរសេរអក្សរដែលនៅក្នុងសំឡេងគំរូនោះ (transcript ត្រឹមត្រូវ)",
+  ttsCloneAskText: "👥 <b>ជំហាន 3/3</b>\n\nសរសេរអក្សរដែលអ្នកចង់ឲ្យសំឡេងនិយាយ",
+  ttsUltraAskAudio:
+    "✨ <b>ក្លូនពេញលេញ — ជំហាន 1/2</b>\n\n" +
+    "ផ្ញើ voice message ឬឯកសារសំឡេង (5–15 វិនាទី) ជាគំរូ",
+  ttsUltraAskText: "✨ <b>ជំហាន 2/2</b>\n\nសរសេរអក្សរដែលអ្នកចង់ឲ្យសំឡេងនិយាយ",
   ocrMode: "🔍 <b>OCR</b>\n\nផ្ញើរូបភាព → អានអក្សរចេញពីរូប",
   translateMode: "🌐 <b>បកប្រែ</b>\n\nសរសេរអក្សរ → បកប្រែស្វ័យប្រវត្តិ ខ្មែរ ⇄ អង់គ្លេស",
   currencyMode:
