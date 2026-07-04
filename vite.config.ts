@@ -16,12 +16,15 @@ export default defineConfig({
         // Fix pdf-lib on Cloudflare Workers: force ESM build of tslib so
         // __extends/__assign etc are exported properly.
         { find: "tslib", replacement: "tslib/tslib.es6.js" },
-        // upng-js does `import pako from "pako"` but pako v3 ESM has no
-        // default export. Redirect the bare specifier only to a shim that
-        // re-exports the namespace as default.
+        // upng-js CJS does `require("pako")` and calls `pako.inflate`
+        // directly. pako v3's ESM build (`pako.mjs`) has no default export,
+        // so the CJS→ESM interop returns `{ default: undefined, inflate, ... }`
+        // and `pako.inflate` ends up undefined on the required value.
+        // Pin the bare specifier to the CJS build so `exports.inflate` is
+        // directly available.
         {
           find: /^pako$/,
-          replacement: new URL("./src/lib/pako-shim.ts", import.meta.url).pathname,
+          replacement: new URL("./node_modules/pako/dist/pako.cjs.js", import.meta.url).pathname,
         },
       ],
     },
