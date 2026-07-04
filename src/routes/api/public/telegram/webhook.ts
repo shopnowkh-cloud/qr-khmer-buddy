@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHash, timingSafeEqual } from "crypto";
-import { PDFDocument } from "pdf-lib";
+
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 
