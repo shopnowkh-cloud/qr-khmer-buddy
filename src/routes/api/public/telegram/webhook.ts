@@ -1055,9 +1055,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
           if (text === BTN.back) {
+            const wasTts = session.mode.startsWith("tts");
             session.mode = "qr";
             session.buffer = [];
-            await tgSendMessage(chatId, T.qrMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, wasTts ? T.welcome : T.qrMode, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.cancel) {
