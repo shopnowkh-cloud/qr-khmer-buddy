@@ -12,14 +12,23 @@ export default defineConfig({
   },
   vite: {
     resolve: {
-      alias: {
+      alias: [
         // Fix pdf-lib on Cloudflare Workers: force ESM build of tslib so
         // __extends/__assign etc are exported properly.
-        tslib: "tslib/tslib.es6.js",
-      },
+        { find: "tslib", replacement: "tslib/tslib.es6.js" },
+        // upng-js does `import pako from "pako"` but pako v3 ESM has no
+        // default export. Redirect the bare specifier only to a shim that
+        // re-exports the namespace as default.
+        {
+          find: /^pako$/,
+          replacement: new URL("./src/lib/pako-shim.ts", import.meta.url).pathname,
+        },
+      ],
     },
+
     ssr: {
-      noExternal: ["pdf-lib", "tslib"],
+      noExternal: ["pdf-lib", "tslib", "upng-js", "pako"],
     },
   },
+
 });
