@@ -11,10 +11,15 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    resolve: {
+      alias: {
+        // Fix pdf-lib on Cloudflare Workers: force ESM build of tslib so
+        // __extends/__assign etc are exported properly.
+        tslib: "tslib/tslib.es6.js",
+      },
+    },
     ssr: {
-      // Bundle pdf-lib and tslib into the Worker to fix
-      // "Cannot destructure property '__extends' of '__toESM(...).default'"
-      noExternal: ["pdf-lib", "tslib", "@pdf-lib/standard-fonts", "@pdf-lib/upng"],
+      noExternal: ["pdf-lib", "tslib"],
     },
   },
 });
