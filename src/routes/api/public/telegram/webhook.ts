@@ -258,7 +258,7 @@ const T = {
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ Multi-Tool Bot</b>\n\n" +
     "<b>🤖 មុខងារ៖</b>\n" +
     "📱 QR Code | 🖼️ Remove BG\n" +
-    "📄 PDF Tools | 🎨 Image Format\n" +
+    "📄 PDF | 🎨 Image Format\n" +
     "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
     "🌐 បកប្រែ | 💱 USD⇄KHR | 🔗 Short URL\n\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
