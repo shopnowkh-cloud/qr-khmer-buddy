@@ -403,15 +403,88 @@ async function shortenUrl(url: string): Promise<string | null> {
   }
 }
 
-// ========== Feature: Remove BG via AI Gateway ==========
-// Strategy: ask Gemini to place the subject on a pure magenta (#FF00FF) matte,
-// then chroma-key that matte out to real alpha in a post-process pass.
-// Gemini image models don't reliably emit transparent PNGs, so we synthesize
-// the alpha channel ourselves.
+// ========== Feature: Remove BG ==========
+// Two paths:
+// 1. Graphic images (QR codes, logos, documents on white): decode locally and
+//    key out the white background pixel-exactly — no AI, so the QR stays scannable.
+// 2. Photos: ask Gemini to place the subject on a pure magenta (#FF00FF) matte,
+//    then chroma-key that matte out to real alpha.
 const KEY_R = 255, KEY_G = 0, KEY_B = 255;
+
+async function decodeToRgba(
+  bytes: ArrayBuffer,
+  mime: string
+): Promise<{ rgba: Uint8Array; w: number; h: number } | null> {
+  try {
+    const buf = Buffer.from(bytes);
+    if (mime.includes("png") || (buf[0] === 0x89 && buf[1] === 0x50)) {
+      const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
+      const img = UPNG.decode(buf);
+      return { rgba: new Uint8Array(UPNG.toRGBA8(img)[0]), w: img.width, h: img.height };
+    }
+    const jpeg = (await import("jpeg-js")) as unknown as {
+      decode: (b: Buffer, o: { useTArray: true }) => { data: Uint8Array; width: number; height: number };
+    };
+    const d = jpeg.decode(buf, { useTArray: true });
+    return { rgba: new Uint8Array(d.data), w: d.width, h: d.height };
+  } catch (e) {
+    console.error("decodeToRgba error", e);
+    return null;
+  }
+}
+
+// Heuristic: QR / logo / document = mostly near-white + near-black/low-saturation,
+// with a large white area touching the borders.
+function isGraphicOnWhite(rgba: Uint8Array): boolean {
+  let white = 0, dark = 0, colorful = 0, n = 0;
+  for (let i = 0; i < rgba.length; i += 16) {
+    const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    if (min > 215) white++;
+    else if (max < 90) dark++;
+    else if (max - min > 60) colorful++;
+    n++;
+  }
+  return n > 0 && white / n > 0.25 && (white + dark) / n > 0.7 && colorful / n < 0.1;
+}
+
+// Make near-white pixels transparent (with feather); keeps dark QR modules intact.
+async function whiteToTransparent(
+  rgba: Uint8Array,
+  w: number,
+  h: number
+): Promise<Uint8Array | null> {
+  try {
+    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
+    const out = new Uint8Array(rgba); // copy
+    const INNER = 232; // min channel >= this => fully transparent
+    const OUTER = 200; // min channel <= this => fully opaque
+    for (let i = 0; i < out.length; i += 4) {
+      const min = Math.min(out[i], out[i + 1], out[i + 2]);
+      if (min >= INNER) {
+        out[i + 3] = 0;
+      } else if (min > OUTER) {
+        const t = (INNER - min) / (INNER - OUTER); // 0..1 toward opaque
+        out[i + 3] = Math.round(255 * t);
+      }
+    }
+    return new Uint8Array(UPNG.encode([out.buffer], w, h, 0));
+  } catch (e) {
+    console.error("whiteToTransparent error", e);
+    return null;
+  }
+}
 
 async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8Array | null> {
   try {
+    // Path 1: local, lossless removal for QR codes / graphics on white
+    const decoded = await decodeToRgba(bytes, mime);
+    if (decoded && isGraphicOnWhite(decoded.rgba)) {
+      const local = await whiteToTransparent(decoded.rgba, decoded.w, decoded.h);
+      if (local) return local;
+    }
+
+    // Path 2: AI matte for photos
     const b64 = Buffer.from(bytes).toString("base64");
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
