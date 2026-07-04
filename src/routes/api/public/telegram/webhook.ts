@@ -457,7 +457,7 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
 
 async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | null> {
   try {
-    const UPNG = (await import("upng-js")).default as typeof import("upng-js");
+    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
 
     const img = UPNG.decode(pngBytes);
     const rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
