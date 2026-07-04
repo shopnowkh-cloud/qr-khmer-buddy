@@ -8,8 +8,18 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    resolve: {
+      alias: {
+        // Fix pdf-lib on Cloudflare Workers: force ESM build of tslib so
+        // __extends/__assign etc are exported properly.
+        tslib: "tslib/tslib.es6.js",
+      },
+    },
+    ssr: {
+      noExternal: ["pdf-lib", "tslib"],
+    },
   },
 });
