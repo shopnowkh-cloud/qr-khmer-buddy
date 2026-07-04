@@ -274,6 +274,35 @@ const T = {
   wrongType: "⚠️ ប្រភេទឯកសារមិនត្រឹមត្រូវ",
 };
 
+function buildQrUrl(text: string) {
+  const params = new URLSearchParams({
+    data: text,
+    size: "400x400",
+    color: "000000",
+    bgcolor: "ffffff",
+    format: "png",
+    ecc: "M",
+    margin: "2",
+    qzone: "2",
+  });
+  return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
+}
+
+async function scanWithQrserver(bytes: ArrayBuffer): Promise<string | null> {
+  const form = new FormData();
+  form.append("file", new Blob([bytes]), "qr.png");
+  const res = await fetch("https://api.qrserver.com/v1/read-qr-code/?MAX_SIZE_HEIGHT=1500", {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as Array<{
+    symbol: Array<{ data: string | null; error: string | null }>;
+  }>;
+  const sym = data?.[0]?.symbol?.[0];
+  if (!sym || sym.error || !sym.data) return null;
+  return sym.data;
+}
 
 async function scanWithZxing(bytes: ArrayBuffer): Promise<string | null> {
   try {
