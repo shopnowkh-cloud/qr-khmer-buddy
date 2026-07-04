@@ -110,6 +110,40 @@ async function tgSendDocumentBytes(
   return res.json();
 }
 
+async function tgSendAudioBytes(
+  chat_id: number,
+  bytes: Uint8Array,
+  filename: string,
+  caption?: string,
+  reply_to?: number,
+  reply_markup?: unknown,
+) {
+  const form = new FormData();
+  form.append("chat_id", String(chat_id));
+  if (caption) {
+    form.append("caption", caption);
+    form.append("parse_mode", "HTML");
+  }
+  if (reply_to) {
+    form.append(
+      "reply_parameters",
+      JSON.stringify({ message_id: reply_to, allow_sending_without_reply: true }),
+    );
+  }
+  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("audio", new Blob([bytes as unknown as BlobPart], { type: "audio/mpeg" }), filename);
+  const res = await fetch(`${GATEWAY_URL}/sendAudio`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
+    },
+    body: form,
+  });
+  return res.json();
+}
+
+
 async function tgSendMessage(
   chat_id: number,
   text: string,
@@ -148,21 +182,32 @@ const BTN = {
   removebg: "🖼️ Remove BG",
   pdf: "📄 PDF Tools",
   shorturl: "🔗 Short URL",
+  tts: "🔊 សំឡេង (TTS)",
+  ocr: "🔍 OCR",
+  translate: "🌐 បកប្រែ",
+  currency: "💱 USD⇄KHR",
+  imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
   img2pdf: "🖼️→📄 រូបភាព→PDF",
   pdf2img: "📄→🖼️ PDF→រូបភាព",
   mergepdf: "➕ បញ្ចូល PDF",
   compresspdf: "📉 បង្រួម PDF",
+  pdftext: "📝 អាន text ពី PDF",
   back: "⬅️ ត្រឡប់",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
+  fmtPng: "→ PNG",
+  fmtJpg: "→ JPG",
+  fmtWebp: "→ WEBP",
 };
 
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr }, { text: BTN.removebg }],
-    [{ text: BTN.pdf }, { text: BTN.shorturl }],
-    [{ text: BTN.help }],
+    [{ text: BTN.pdf }, { text: BTN.imgconv }],
+    [{ text: BTN.tts }, { text: BTN.ocr }],
+    [{ text: BTN.translate }, { text: BTN.currency }],
+    [{ text: BTN.shorturl }, { text: BTN.help }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -172,6 +217,7 @@ const pdfKeyboard = {
   keyboard: [
     [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
+    [{ text: BTN.pdftext }],
     [{ text: BTN.back }],
   ],
   resize_keyboard: true,
@@ -184,15 +230,24 @@ const collectKeyboard = {
   is_persistent: true,
 };
 
+const imgFmtKeyboard = {
+  keyboard: [
+    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
+    [{ text: BTN.back }],
+  ],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 // ========== Text ==========
 const T = {
   welcome:
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ Multi-Tool Bot</b>\n\n" +
     "<b>🤖 មុខងារ៖</b>\n" +
-    "📱 <b>QR Code</b> — បង្កើត/ស្កេន QR\n" +
-    "🖼️ <b>Remove BG</b> — លុប background\n" +
-    "📄 <b>PDF Tools</b> — រូបភាព↔PDF, បញ្ចូល, បង្រួម\n" +
-    "🔗 <b>Short URL</b> — បង្រួមតំណ\n\n" +
+    "📱 QR Code | 🖼️ Remove BG\n" +
+    "📄 PDF Tools | 🎨 Image Format\n" +
+    "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
+    "🌐 បកប្រែ | 💱 USD⇄KHR | 🔗 Short URL\n\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
   qrMode:
     "📱 <b>QR Code Mode</b>\n\n" +
@@ -205,6 +260,13 @@ const T = {
   mergeMode: "➕ <b>បញ្ចូល PDF</b>\n\nផ្ញើ PDF ចាប់ពី 2 ឯកសារឡើងទៅ រួចចុច <b>✅ បញ្ចប់</b>",
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
   pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
+  pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
+  ttsMode: "🔊 <b>Text to Speech</b>\n\nសរសេរអក្សរ (ខ្មែរ ឬ អង់គ្លេស) → បម្លែងទៅ MP3",
+  ocrMode: "🔍 <b>OCR</b>\n\nផ្ញើរូបភាព → អានអក្សរចេញពីរូប",
+  translateMode: "🌐 <b>បកប្រែ</b>\n\nសរសេរអក្សរ → បកប្រែស្វ័យប្រវត្តិ ខ្មែរ ⇄ អង់គ្លេស",
+  currencyMode:
+    "💱 <b>USD ⇄ KHR</b>\n\nឧទាហរណ៍៖ <code>10 usd</code> ឬ <code>50000 khr</code>",
+  imgconvMode: "🎨 <b>ប្តូរ Format រូបភាព</b>\n\nផ្ញើរូបភាព រួចជ្រើសរើស format",
   scanError: "❌ មិនអាចអាន QR Code ពីរូបនេះទេ",
   scanFail: "❌ មានបញ្ហាក្នុងការស្កេន",
   cancelled: "❌ បានបោះបង់",
@@ -302,11 +364,19 @@ type Mode =
   | "img2pdf"
   | "pdf2img"
   | "mergepdf"
-  | "compresspdf";
+  | "compresspdf"
+  | "pdftext"
+  | "tts"
+  | "ocr"
+  | "translate"
+  | "currency"
+  | "imgconv"
+  | "imgconv_pick";
 
 interface Session {
   mode: Mode;
   buffer: Uint8Array[];
+  lastImage?: { bytes: Uint8Array; mime: string };
 }
 const sessions = new Map<number, Session>();
 
@@ -318,6 +388,7 @@ function getSession(chatId: number): Session {
   }
   return s;
 }
+
 
 // ========== Feature: Short URL ==========
 async function shortenUrl(url: string): Promise<string | null> {
@@ -425,6 +496,174 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
   return await src.save({ useObjectStreams: true, addDefaultPage: false });
 }
 
+// ========== Feature: TTS via Lovable AI ==========
+async function synthesizeSpeech(text: string): Promise<Uint8Array | null> {
+  try {
+    // Basic language detection: any Khmer codepoint → Khmer voice hint
+    const isKhmer = /[\u1780-\u17FF]/.test(text);
+    const voice = isKhmer ? "shimmer" : "alloy";
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini-tts",
+        input: text.slice(0, 4000),
+        voice,
+        response_format: "mp3",
+      }),
+    });
+    if (!res.ok) {
+      console.error("tts error", res.status, await res.text());
+      return null;
+    }
+    return new Uint8Array(await res.arrayBuffer());
+  } catch (e) {
+    console.error("tts exception", e);
+    return null;
+  }
+}
+
+// ========== Feature: Gemini chat helper ==========
+async function geminiText(prompt: string, opts?: { image?: { b64: string; mime: string } }): Promise<string | null> {
+  try {
+    const content: unknown[] = [{ type: "text", text: prompt }];
+    if (opts?.image) {
+      content.push({
+        type: "image_url",
+        image_url: { url: `data:${opts.image.mime};base64,${opts.image.b64}` },
+      });
+    }
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content }],
+      }),
+    });
+    if (!res.ok) {
+      console.error("gemini error", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    return data?.choices?.[0]?.message?.content?.trim() ?? null;
+  } catch (e) {
+    console.error("gemini exception", e);
+    return null;
+  }
+}
+
+// ========== Feature: PDF text extraction ==========
+async function extractPdfText(bytes: Uint8Array): Promise<string | null> {
+  try {
+    const b64 = Buffer.from(bytes).toString("base64");
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: "Extract all text from this PDF. Preserve original language (Khmer or English) and paragraph structure. Return only the extracted text, no commentary." },
+              { type: "file", file: { filename: "doc.pdf", file_data: `data:application/pdf;base64,${b64}` } },
+            ],
+          },
+        ],
+      }),
+    });
+    if (!res.ok) {
+      console.error("pdftext error", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    return data?.choices?.[0]?.message?.content?.trim() ?? null;
+  } catch (e) {
+    console.error("pdftext exception", e);
+    return null;
+  }
+}
+
+// ========== Feature: Image format conversion via Gemini image edit ==========
+async function convertImageFormat(bytes: ArrayBuffer, mime: string, target: "png" | "jpg" | "webp"): Promise<Uint8Array | null> {
+  try {
+    const b64 = Buffer.from(bytes).toString("base64");
+    const targetMime = target === "jpg" ? "JPEG" : target.toUpperCase();
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: `Return the exact same image, unchanged, encoded as ${targetMime}.` },
+              { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
+            ],
+          },
+        ],
+        modalities: ["image", "text"],
+      }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { images?: Array<{ image_url?: { url?: string } }> } }>;
+    };
+    const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!url) return null;
+    const comma = url.indexOf(",");
+    const base = comma >= 0 ? url.slice(comma + 1) : url;
+    return new Uint8Array(Buffer.from(base, "base64"));
+  } catch (e) {
+    console.error("imgconv error", e);
+    return null;
+  }
+}
+
+// ========== Feature: Currency USD⇄KHR ==========
+async function convertCurrency(text: string): Promise<string | null> {
+  const m = text.match(/^\s*([\d,.]+)\s*(usd|khr|\$|៛)\s*$/i);
+  if (!m) return null;
+  const amount = parseFloat(m[1].replace(/,/g, ""));
+  if (!isFinite(amount)) return null;
+  const unit = m[2].toLowerCase();
+  const from = unit === "usd" || unit === "$" ? "USD" : "KHR";
+  try {
+    const res = await fetch(`https://open.er-api.com/v6/latest/${from}`);
+    if (!res.ok) return null;
+    const d = (await res.json()) as { rates?: Record<string, number> };
+    if (from === "USD") {
+      const r = d.rates?.KHR;
+      if (!r) return null;
+      return `💵 <b>${amount} USD</b> ≈ <b>${(amount * r).toLocaleString("en-US", { maximumFractionDigits: 0 })} ៛ KHR</b>\n<i>Rate: 1 USD = ${r.toFixed(2)} KHR</i>`;
+    } else {
+      const r = d.rates?.USD;
+      if (!r) return null;
+      return `💵 <b>${amount.toLocaleString("en-US")} ៛ KHR</b> ≈ <b>$${(amount * r).toFixed(2)} USD</b>\n<i>Rate: 1 KHR = ${r.toFixed(6)} USD</i>`;
+    }
+  } catch {
+    return null;
+  }
+}
+
 
 // ========== Main handler ==========
 export const Route = createFileRoute("/api/public/telegram/webhook")({
@@ -518,11 +757,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.cancel) {
             session.buffer = [];
-            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf"].includes(session.mode);
+            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext"].includes(session.mode);
             session.mode = wasPdf ? "pdfmenu" : "qr";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
             return Response.json({ ok: true });
           }
+
           if (text === BTN.qr) {
             session.mode = "qr";
             session.buffer = [];
@@ -576,6 +816,61 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             );
             return Response.json({ ok: true });
           }
+          if (text === BTN.pdftext) {
+            session.mode = "pdftext";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.pdfTextMode, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.tts) {
+            session.mode = "tts";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.ttsMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.ocr) {
+            session.mode = "ocr";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.ocrMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.translate) {
+            session.mode = "translate";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.translateMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.currency) {
+            session.mode = "currency";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.currencyMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.imgconv) {
+            session.mode = "imgconv";
+            session.buffer = [];
+            session.lastImage = undefined;
+            await tgSendMessage(chatId, T.imgconvMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+          if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
+            const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
+            await tgTyping(chatId, "upload_photo");
+            const li = session.lastImage;
+            const ab = new ArrayBuffer(li.bytes.byteLength);
+            new Uint8Array(ab).set(li.bytes);
+            const out = await convertImageFormat(ab, li.mime, target);
+
+            if (!out) {
+              await tgSendMessage(chatId, "❌ ប្តូរ format មិនបានសម្រេច", msgId, mainKeyboard);
+            } else {
+              await tgSendDocumentBytes(chatId, out, `converted.${target}`, `✅ ប្តូរទៅ ${target.toUpperCase()}`, msgId, mainKeyboard);
+            }
+            session.mode = "imgconv";
+            session.lastImage = undefined;
+            return Response.json({ ok: true });
+          }
+
           if (text === BTN.done) {
             if (session.mode === "img2pdf") {
               if (!session.buffer.length) {
@@ -705,8 +1000,71 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // PDF text extraction
+          if (session.mode === "pdftext") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            await tgTyping(chatId, "typing");
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            const extracted = await extractPdfText(new Uint8Array(f.bytes));
+            if (!extracted) {
+              await tgSendMessage(chatId, "❌ អានអក្សរមិនបានសម្រេច", msgId, pdfKeyboard);
+            } else if (extracted.length < 3500) {
+              await tgSendMessage(chatId, `📝\n<code>${escapeHtml(extracted)}</code>`, msgId, pdfKeyboard);
+            } else {
+              const bytes = new TextEncoder().encode(extracted);
+              await tgSendDocumentBytes(chatId, bytes, "extracted.txt", "📝 អានអក្សរពី PDF", msgId, pdfKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
+          // OCR
+          if (session.mode === "ocr" && (photo || isImageDoc)) {
+            const fileId = photo ? photo.file_id : doc.file_id;
+            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
+            await tgTyping(chatId, "typing");
+            const f = await downloadTgFile(fileId);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
+              return Response.json({ ok: true });
+            }
+            const b64 = Buffer.from(f.bytes).toString("base64");
+            const out = await geminiText(
+              "Extract ALL text visible in this image. Preserve original language (Khmer or English) and line breaks. Return only the raw text, no commentary.",
+              { image: { b64, mime } },
+            );
+            if (!out) {
+              await tgSendMessage(chatId, "❌ OCR មិនបានសម្រេច", msgId, mainKeyboard);
+            } else {
+              await tgSendMessage(chatId, `🔍\n<code>${escapeHtml(out.slice(0, 3800))}</code>`, msgId, mainKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
+          // Image format conversion: receive image → ask target
+          if (session.mode === "imgconv" && (photo || isImageDoc)) {
+            const fileId = photo ? photo.file_id : doc.file_id;
+            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
+            const f = await downloadTgFile(fileId);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.lastImage = { bytes: new Uint8Array(f.bytes), mime };
+            session.mode = "imgconv_pick";
+            await tgSendMessage(chatId, "🎨 ជ្រើសរើស format គោលដៅ៖", msgId, imgFmtKeyboard);
+            return Response.json({ ok: true });
+          }
+
           // ===== Default QR mode =====
           // Photo → scan
+
           if (photo) {
             await tgTyping(chatId, "typing");
             try {
@@ -742,6 +1100,41 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               }
               return Response.json({ ok: true });
             }
+            if (session.mode === "tts") {
+              await tgTyping(chatId, "upload_document");
+              const mp3 = await synthesizeSpeech(text);
+              if (!mp3) {
+                await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, mainKeyboard);
+              } else {
+                await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🔊 TTS", msgId, mainKeyboard);
+              }
+              return Response.json({ ok: true });
+            }
+            if (session.mode === "translate") {
+              await tgTyping(chatId, "typing");
+              const isKhmer = /[\u1780-\u17FF]/.test(text);
+              const prompt = isKhmer
+                ? `Translate this Khmer text to natural English. Return ONLY the translation, no notes:\n\n${text}`
+                : `Translate this text to natural Khmer. Return ONLY the Khmer translation, no notes:\n\n${text}`;
+              const out = await geminiText(prompt);
+              if (!out) {
+                await tgSendMessage(chatId, "❌ បកប្រែមិនបានសម្រេច", msgId, mainKeyboard);
+              } else {
+                await tgSendMessage(chatId, `🌐 ${escapeHtml(out)}`, msgId, mainKeyboard);
+              }
+              return Response.json({ ok: true });
+            }
+            if (session.mode === "currency") {
+              await tgTyping(chatId, "typing");
+              const out = await convertCurrency(text);
+              if (!out) {
+                await tgSendMessage(chatId, "⚠️ ទម្រង់មិនត្រឹមត្រូវ។ ឧទាហរណ៍៖ <code>10 usd</code>", msgId, mainKeyboard);
+              } else {
+                await tgSendMessage(chatId, out, msgId, mainKeyboard);
+              }
+              return Response.json({ ok: true });
+            }
+
             // Default: QR
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
