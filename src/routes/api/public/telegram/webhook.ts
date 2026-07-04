@@ -1100,6 +1100,41 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               }
               return Response.json({ ok: true });
             }
+            if (session.mode === "tts") {
+              await tgTyping(chatId, "upload_document");
+              const mp3 = await synthesizeSpeech(text);
+              if (!mp3) {
+                await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, mainKeyboard);
+              } else {
+                await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🔊 TTS", msgId, mainKeyboard);
+              }
+              return Response.json({ ok: true });
+            }
+            if (session.mode === "translate") {
+              await tgTyping(chatId, "typing");
+              const isKhmer = /[\u1780-\u17FF]/.test(text);
+              const prompt = isKhmer
+                ? `Translate this Khmer text to natural English. Return ONLY the translation, no notes:\n\n${text}`
+                : `Translate this text to natural Khmer. Return ONLY the Khmer translation, no notes:\n\n${text}`;
+              const out = await geminiText(prompt);
+              if (!out) {
+                await tgSendMessage(chatId, "❌ បកប្រែមិនបានសម្រេច", msgId, mainKeyboard);
+              } else {
+                await tgSendMessage(chatId, `🌐 ${escapeHtml(out)}`, msgId, mainKeyboard);
+              }
+              return Response.json({ ok: true });
+            }
+            if (session.mode === "currency") {
+              await tgTyping(chatId, "typing");
+              const out = await convertCurrency(text);
+              if (!out) {
+                await tgSendMessage(chatId, "⚠️ ទម្រង់មិនត្រឹមត្រូវ។ ឧទាហរណ៍៖ <code>10 usd</code>", msgId, mainKeyboard);
+              } else {
+                await tgSendMessage(chatId, out, msgId, mainKeyboard);
+              }
+              return Response.json({ ok: true });
+            }
+
             // Default: QR
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
