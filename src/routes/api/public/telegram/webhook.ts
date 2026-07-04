@@ -414,14 +414,14 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
+        model: "google/gemini-3.1-flash-image",
         messages: [
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Remove the background from this image completely. Keep only the main subject with a fully transparent background. Return the edited image as PNG with transparency.",
+                text: "Extract ONLY the main subject from this image and output a PNG with a FULLY TRANSPARENT background (alpha channel = 0 for all background pixels). Do NOT replace the background with white, black, or any solid color. Do NOT add any checkerboard pattern. Preserve subject edges cleanly with soft alpha anti-aliasing. Output MUST be a PNG image with real transparency.",
               },
               { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
             ],
@@ -429,6 +429,7 @@ async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8
         ],
         modalities: ["image", "text"],
       }),
+
     });
     if (!res.ok) {
       console.error("removebg gateway error", res.status, await res.text());
