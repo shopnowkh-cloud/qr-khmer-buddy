@@ -726,9 +726,42 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
 // Rate-limited by HF; may take 10-60s and can 503 when Space is sleeping.
 const VOXCPM_SPACE = "https://openbmb-voxcpm-demo.hf.space";
 
-async function voxcpmGenerateOnce(textInput: string): Promise<string> {
+interface VoxOpts {
+  controlInstruction?: string;
+  refBytes?: Uint8Array;
+  refMime?: string;
+  refTranscript?: string;
+}
+
+async function voxcpmUploadRef(bytes: Uint8Array, mime: string): Promise<string | null> {
+  const ext = mime.includes("wav") ? "wav" : mime.includes("mpeg") || mime.includes("mp3") ? "mp3" : "ogg";
+  const form = new FormData();
+  form.append("files", new Blob([bytes as unknown as BlobPart], { type: mime }), `ref.${ext}`);
+  const up = await fetch(`${VOXCPM_SPACE}/gradio_api/upload`, {
+    method: "POST",
+    body: form,
+    signal: AbortSignal.timeout(45000),
+  });
+  if (!up.ok) return null;
+  const arr = (await up.json()) as string[];
+  return Array.isArray(arr) && arr[0] ? arr[0] : null;
+}
+
+async function voxcpmGenerateOnce(textInput: string, opts: VoxOpts, uploadedPath: string | null): Promise<string> {
+  const usePromptText = !!(uploadedPath && opts.refTranscript);
   const payload = {
-    data: [textInput, "", null, false, "", 2.0, false, false],
+    data: [
+      textInput,
+      usePromptText ? "" : (opts.controlInstruction ?? ""),
+      uploadedPath
+        ? { path: uploadedPath, meta: { _type: "gradio.FileData" }, orig_name: "reference.ogg" }
+        : null,
+      usePromptText,
+      usePromptText ? opts.refTranscript ?? "" : "",
+      2.0,
+      false,
+      false,
+    ],
   };
   const initResp = await fetch(`${VOXCPM_SPACE}/gradio_api/call/generate`, {
     method: "POST",
@@ -766,8 +799,16 @@ async function voxcpmGenerateOnce(textInput: string): Promise<string> {
   throw new Error("No audio URL from VoxCPM");
 }
 
-async function synthesizeSpeech(text: string): Promise<Uint8Array | null> {
+async function synthesizeSpeech(text: string, opts: VoxOpts = {}): Promise<Uint8Array | null> {
   const input = text.slice(0, 1000);
+  let uploadedPath: string | null = null;
+  if (opts.refBytes && opts.refMime) {
+    try {
+      uploadedPath = await voxcpmUploadRef(opts.refBytes, opts.refMime);
+    } catch (e) {
+      console.error("voxcpm upload failed", e);
+    }
+  }
   let lastErr: unknown;
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
@@ -777,7 +818,7 @@ async function synthesizeSpeech(text: string): Promise<Uint8Array | null> {
         } catch {}
         await new Promise((r) => setTimeout(r, 3000));
       }
-      const audioUrl = await voxcpmGenerateOnce(input);
+      const audioUrl = await voxcpmGenerateOnce(input, opts, uploadedPath);
       const audioResp = await fetch(audioUrl, { signal: AbortSignal.timeout(60000) });
       if (!audioResp.ok) throw new Error(`Audio fetch failed: ${audioResp.status}`);
       return new Uint8Array(await audioResp.arrayBuffer());
