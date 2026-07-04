@@ -16,9 +16,8 @@ export default defineConfig({
         // Fix pdf-lib on Cloudflare Workers: force ESM build of tslib so
         // __extends/__assign etc are exported properly.
         tslib: "tslib/tslib.es6.js",
-        // upng-js does `import pako from "pako"` but pako.mjs has no default
-        // export. Point pako to its CJS build which does.
-        pako: "pako/dist/pako.cjs.js",
+        pako: new URL("./src/lib/pako-shim.ts", import.meta.url).pathname,
+
       },
     },
     ssr: {
