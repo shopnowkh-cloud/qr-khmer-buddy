@@ -182,21 +182,32 @@ const BTN = {
   removebg: "🖼️ Remove BG",
   pdf: "📄 PDF Tools",
   shorturl: "🔗 Short URL",
+  tts: "🔊 សំឡេង (TTS)",
+  ocr: "🔍 OCR",
+  translate: "🌐 បកប្រែ",
+  currency: "💱 USD⇄KHR",
+  imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
   img2pdf: "🖼️→📄 រូបភាព→PDF",
   pdf2img: "📄→🖼️ PDF→រូបភាព",
   mergepdf: "➕ បញ្ចូល PDF",
   compresspdf: "📉 បង្រួម PDF",
+  pdftext: "📝 អាន text ពី PDF",
   back: "⬅️ ត្រឡប់",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
+  fmtPng: "→ PNG",
+  fmtJpg: "→ JPG",
+  fmtWebp: "→ WEBP",
 };
 
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr }, { text: BTN.removebg }],
-    [{ text: BTN.pdf }, { text: BTN.shorturl }],
-    [{ text: BTN.help }],
+    [{ text: BTN.pdf }, { text: BTN.imgconv }],
+    [{ text: BTN.tts }, { text: BTN.ocr }],
+    [{ text: BTN.translate }, { text: BTN.currency }],
+    [{ text: BTN.shorturl }, { text: BTN.help }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -206,6 +217,7 @@ const pdfKeyboard = {
   keyboard: [
     [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
+    [{ text: BTN.pdftext }],
     [{ text: BTN.back }],
   ],
   resize_keyboard: true,
@@ -218,15 +230,24 @@ const collectKeyboard = {
   is_persistent: true,
 };
 
+const imgFmtKeyboard = {
+  keyboard: [
+    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
+    [{ text: BTN.back }],
+  ],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 // ========== Text ==========
 const T = {
   welcome:
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ Multi-Tool Bot</b>\n\n" +
     "<b>🤖 មុខងារ៖</b>\n" +
-    "📱 <b>QR Code</b> — បង្កើត/ស្កេន QR\n" +
-    "🖼️ <b>Remove BG</b> — លុប background\n" +
-    "📄 <b>PDF Tools</b> — រូបភាព↔PDF, បញ្ចូល, បង្រួម\n" +
-    "🔗 <b>Short URL</b> — បង្រួមតំណ\n\n" +
+    "📱 QR Code | 🖼️ Remove BG\n" +
+    "📄 PDF Tools | 🎨 Image Format\n" +
+    "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
+    "🌐 បកប្រែ | 💱 USD⇄KHR | 🔗 Short URL\n\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
   qrMode:
     "📱 <b>QR Code Mode</b>\n\n" +
@@ -239,6 +260,13 @@ const T = {
   mergeMode: "➕ <b>បញ្ចូល PDF</b>\n\nផ្ញើ PDF ចាប់ពី 2 ឯកសារឡើងទៅ រួចចុច <b>✅ បញ្ចប់</b>",
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
   pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
+  pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
+  ttsMode: "🔊 <b>Text to Speech</b>\n\nសរសេរអក្សរ (ខ្មែរ ឬ អង់គ្លេស) → បម្លែងទៅ MP3",
+  ocrMode: "🔍 <b>OCR</b>\n\nផ្ញើរូបភាព → អានអក្សរចេញពីរូប",
+  translateMode: "🌐 <b>បកប្រែ</b>\n\nសរសេរអក្សរ → បកប្រែស្វ័យប្រវត្តិ ខ្មែរ ⇄ អង់គ្លេស",
+  currencyMode:
+    "💱 <b>USD ⇄ KHR</b>\n\nឧទាហរណ៍៖ <code>10 usd</code> ឬ <code>50000 khr</code>",
+  imgconvMode: "🎨 <b>ប្តូរ Format រូបភាព</b>\n\nផ្ញើរូបភាព រួចជ្រើសរើស format",
   scanError: "❌ មិនអាចអាន QR Code ពីរូបនេះទេ",
   scanFail: "❌ មានបញ្ហាក្នុងការស្កេន",
   cancelled: "❌ បានបោះបង់",
@@ -246,35 +274,6 @@ const T = {
   wrongType: "⚠️ ប្រភេទឯកសារមិនត្រឹមត្រូវ",
 };
 
-function buildQrUrl(text: string) {
-  const params = new URLSearchParams({
-    data: text,
-    size: "400x400",
-    color: "000000",
-    bgcolor: "ffffff",
-    format: "png",
-    ecc: "M",
-    margin: "2",
-    qzone: "2",
-  });
-  return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
-}
-
-async function scanWithQrserver(bytes: ArrayBuffer): Promise<string | null> {
-  const form = new FormData();
-  form.append("file", new Blob([bytes]), "qr.png");
-  const res = await fetch("https://api.qrserver.com/v1/read-qr-code/?MAX_SIZE_HEIGHT=1500", {
-    method: "POST",
-    body: form,
-  });
-  if (!res.ok) return null;
-  const data = (await res.json()) as Array<{
-    symbol: Array<{ data: string | null; error: string | null }>;
-  }>;
-  const sym = data?.[0]?.symbol?.[0];
-  if (!sym || sym.error || !sym.data) return null;
-  return sym.data;
-}
 
 async function scanWithZxing(bytes: ArrayBuffer): Promise<string | null> {
   try {
