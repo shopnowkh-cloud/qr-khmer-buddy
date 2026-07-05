@@ -1227,7 +1227,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.shorturl) {
             session.mode = "shorturl";
             session.buffer = [];
-            await tgSendMessage(chatId, T.shorturlMode, msgId);
+            await tgSendMessage(chatId, T.shorturlMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdf) {
