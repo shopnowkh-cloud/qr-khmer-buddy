@@ -63,12 +63,8 @@ async function tgSendPhotoBytes(
   }
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("photo", new Blob([bytes as unknown as BlobPart]), filename);
-  const res = await fetch(`${GATEWAY_URL}/sendPhoto`, {
+  const res = await fetch(`${TG_API()}/sendPhoto`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
     body: form,
   });
   return res.json();
