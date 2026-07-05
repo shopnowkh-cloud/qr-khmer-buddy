@@ -132,7 +132,7 @@ async function tgSendMessage(
   });
 }
 
-async function tgTyping(chat_id: number, action: "typing" | "upload_photo" | "upload_document" = "typing") {
+async function tgTyping(chat_id: number, action: "typing" | "upload_photo" | "upload_document" | "record_voice" | "upload_voice" = "typing") {
   return tg("sendChatAction", { chat_id, action });
 }
 
@@ -769,6 +769,34 @@ async function voxcpmGenerateOnce(textInput: string, opts: VoxOpts, uploadedPath
     }
   }
   throw new Error("No audio URL from VoxCPM");
+}
+
+async function synthesizeSpeechOpus(text: string, instructions?: string): Promise<Uint8Array | null> {
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini-tts",
+        input: text.slice(0, 4000),
+        voice: "alloy",
+        response_format: "opus",
+        ...(instructions ? { instructions: instructions.slice(0, 500) } : {}),
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
+    if (!res.ok) {
+      console.error("gateway tts failed", res.status, await res.text().catch(() => ""));
+      return null;
+    }
+    return new Uint8Array(await res.arrayBuffer());
+  } catch (e) {
+    console.error("gateway tts error", e);
+    return null;
+  }
 }
 
 async function synthesizeSpeech(text: string, opts: VoxOpts = {}): Promise<Uint8Array | null> {
@@ -1512,10 +1540,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_basic") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text);
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🎙 ធម្មតា", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_design_instr") {
@@ -1525,10 +1553,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_design_text") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text, { controlInstruction: session.ttsDesignInstr });
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🎨 រចនាសំឡេង", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text, session.ttsDesignInstr);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_clone_transcript") {
@@ -1538,24 +1566,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_clone_text") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text, {
-                refBytes: session.ttsRefBytes,
-                refMime: session.ttsRefMime,
-                refTranscript: session.ttsRefTranscript,
-              });
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "👥 ក្លូនសំឡេង", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_ultra_text") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text, {
-                refBytes: session.ttsRefBytes,
-                refMime: session.ttsRefMime,
-              });
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "✨ ក្លូនពេញលេញ", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_menu" || session.mode === "tts_clone_audio" || session.mode === "tts_ultra_audio") {
