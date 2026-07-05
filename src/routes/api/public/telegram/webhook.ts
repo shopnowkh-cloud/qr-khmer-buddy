@@ -132,7 +132,7 @@ async function tgSendMessage(
   });
 }
 
-async function tgTyping(chat_id: number, action: "typing" | "upload_photo" | "upload_document" = "typing") {
+async function tgTyping(chat_id: number, action: "typing" | "upload_photo" | "upload_document" | "record_voice" | "upload_voice" = "typing") {
   return tg("sendChatAction", { chat_id, action });
 }
 
