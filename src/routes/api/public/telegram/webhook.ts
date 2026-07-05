@@ -1108,7 +1108,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.cancel) {
             session.buffer = [];
-            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext"].includes(session.mode);
+            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext", "lockpdf", "lockpdf_password", "unlockpdf", "unlockpdf_password"].includes(session.mode);
+            session.pendingPdf = undefined;
             session.mode = wasPdf ? "pdfmenu" : "idle";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
             return Response.json({ ok: true });
