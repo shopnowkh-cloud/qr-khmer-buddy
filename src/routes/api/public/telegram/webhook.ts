@@ -212,10 +212,10 @@ const EMOJI = {
 
 const mainKeyboard = {
   keyboard: [
-    [{ text: BTN.qr, style: "primary" }, { text: BTN.removebg, style: "primary" }],
-    [{ text: BTN.pdf, style: "primary", icon_custom_emoji_id: EMOJI.pdf }],
-    [{ text: BTN.tts, style: "primary" }, { text: BTN.ocr, style: "primary" }],
-    [{ text: BTN.translate, style: "primary" }, { text: BTN.currency, style: "primary" }],
+    [{ text: BTN.qr }, { text: BTN.removebg }],
+    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }],
+    [{ text: BTN.tts }, { text: BTN.ocr }],
+    [{ text: BTN.translate }, { text: BTN.currency }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -223,25 +223,25 @@ const mainKeyboard = {
 
 const pdfKeyboard = {
   keyboard: [
-    [{ text: BTN.img2pdf, style: "primary" }, { text: BTN.pdf2img, style: "primary" }],
-    [{ text: BTN.mergepdf, style: "primary" }, { text: BTN.compresspdf, style: "primary" }],
-    [{ text: BTN.pdftext, style: "primary", icon_custom_emoji_id: EMOJI.pdf }],
-    [{ text: BTN.back, style: "danger" }],
+    [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
+    [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
+    [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
+    [{ text: BTN.back }],
   ],
   resize_keyboard: true,
   is_persistent: true,
 };
 
 const collectKeyboard = {
-  keyboard: [[{ text: BTN.done, style: "success" }, { text: BTN.cancel, style: "danger" }]],
+  keyboard: [[{ text: BTN.done }, { text: BTN.cancel }]],
   resize_keyboard: true,
   is_persistent: true,
 };
 
 const imgFmtKeyboard = {
   keyboard: [
-    [{ text: BTN.fmtPng, style: "primary" }, { text: BTN.fmtJpg, style: "primary" }, { text: BTN.fmtWebp, style: "primary" }],
-    [{ text: BTN.back, style: "danger" }],
+    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
+    [{ text: BTN.back }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -249,13 +249,14 @@ const imgFmtKeyboard = {
 
 const ttsKeyboard = {
   keyboard: [
-    [{ text: BTN.ttsBasic, style: "primary" }, { text: BTN.ttsDesign, style: "primary" }],
-    [{ text: BTN.ttsClone, style: "primary" }, { text: BTN.ttsUltra, style: "primary" }],
-    [{ text: BTN.back, style: "danger" }],
+    [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
+    [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
+    [{ text: BTN.back }],
   ],
   resize_keyboard: true,
   is_persistent: true,
 };
+
 
 
 // ========== Text ==========
