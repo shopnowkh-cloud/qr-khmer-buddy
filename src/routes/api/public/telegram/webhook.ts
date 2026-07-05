@@ -151,7 +151,7 @@ function pickRandom<T>(arr: T[]): T {
 const BTN = {
   qr: "បង្កើត QR",
   removebg: "🖼️ Remove BG",
-  pdf: "PDF",
+  pdf: "PDF Tools",
   shorturl: "🔗 Short URL",
   tts: "បង្កើតសំឡេង Ai",
   ocr: "Copy អក្សរ",
