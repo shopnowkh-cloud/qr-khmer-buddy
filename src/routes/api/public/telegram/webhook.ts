@@ -36,7 +36,7 @@ async function tgSendPhotoUrl(
     photo: photoUrl,
     caption,
     parse_mode: "HTML",
-    ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+    ...(reply_markup ? {} : {}),
     ...(reply_markup ? { reply_markup } : {}),
   });
 }
@@ -55,12 +55,7 @@ async function tgSendPhotoBytes(
     form.append("caption", caption);
     form.append("parse_mode", "HTML");
   }
-  if (reply_to) {
-    form.append(
-      "reply_parameters",
-      JSON.stringify({ message_id: reply_to, allow_sending_without_reply: true }),
-    );
-  }
+  void reply_to;
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("photo", new Blob([bytes as unknown as BlobPart]), filename);
   const res = await fetch(`${TG_API()}/sendPhoto`, {
@@ -84,12 +79,7 @@ async function tgSendDocumentBytes(
     form.append("caption", caption);
     form.append("parse_mode", "HTML");
   }
-  if (reply_to) {
-    form.append(
-      "reply_parameters",
-      JSON.stringify({ message_id: reply_to, allow_sending_without_reply: true }),
-    );
-  }
+  void reply_to;
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("document", new Blob([bytes as unknown as BlobPart]), filename);
   const res = await fetch(`${TG_API()}/sendDocument`, {
@@ -113,12 +103,7 @@ async function tgSendAudioBytes(
     form.append("caption", caption);
     form.append("parse_mode", "HTML");
   }
-  if (reply_to) {
-    form.append(
-      "reply_parameters",
-      JSON.stringify({ message_id: reply_to, allow_sending_without_reply: true }),
-    );
-  }
+  void reply_to;
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("audio", new Blob([bytes as unknown as BlobPart], { type: "audio/mpeg" }), filename);
   const res = await fetch(`${TG_API()}/sendAudio`, {
@@ -140,7 +125,7 @@ async function tgSendMessage(
     chat_id,
     text,
     parse_mode: "HTML",
-    ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
+    ...(reply_to ? {} : {}),
     ...(reply_markup ? { reply_markup } : {}),
     ...(message_effect_id ? { message_effect_id } : {}),
   });
@@ -1494,7 +1479,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             try {
               const scanned = await scanQrFromTelegramFile(photo.file_id);
               if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, mainKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_parameters: { message_id: msgId, allow_sending_without_reply: true }, reply_markup: mainKeyboard });
+              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: mainKeyboard });
             } catch {
               await tgSendMessage(chatId, T.scanFail, msgId, mainKeyboard);
             }
@@ -1505,7 +1490,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             try {
               const scanned = await scanQrFromTelegramFile(doc.file_id);
               if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, mainKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_parameters: { message_id: msgId, allow_sending_without_reply: true }, reply_markup: mainKeyboard });
+              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: mainKeyboard });
             } catch {
               await tgSendMessage(chatId, T.scanFail, msgId, mainKeyboard);
             }
