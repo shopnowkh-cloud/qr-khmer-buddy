@@ -1332,7 +1332,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "imgconv";
             session.buffer = [];
             session.lastImage = undefined;
-            await tgSendMessage(chatId, T.imgconvMode, msgId);
+            await tgSendMessage(chatId, T.imgconvMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.fontstyle) {
