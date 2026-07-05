@@ -1811,6 +1811,18 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               await tgSendMessage(chatId, "⚠️ សូមផ្ញើសំឡេងគំរូជាមុន (voice message ឬឯកសារ audio)", msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
+            if (session.mode === "fontstyle") {
+              const input = text.trim();
+              if (!input) {
+                await tgSendMessage(chatId, "⚠️ សូមសរសេរអក្សរអង់គ្លេស", msgId, mainKeyboard);
+                return Response.json({ ok: true });
+              }
+              const styles = buildFancyList(input);
+              const lines = styles.map((s) => `<b>${s.label}</b>\n<code>${escapeHtml(s.value)}</code>`);
+              const body = `🅵 <b>Font Styles</b>\n\n${lines.join("\n\n")}\n\n<i>ចុចលើអក្សរដើម្បី Copy</i>`;
+              await tgSendMessage(chatId, body, msgId, mainKeyboard);
+              return Response.json({ ok: true });
+            }
             if (session.mode === "translate") {
               await tgTyping(chatId, "typing");
               const isKhmer = /[\u1780-\u17FF]/.test(text);
