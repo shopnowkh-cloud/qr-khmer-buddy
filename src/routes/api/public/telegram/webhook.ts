@@ -189,9 +189,8 @@ const EMOJI = {
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
-    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }],
     [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
-    [{ text: BTN.tts }],
+    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -201,8 +200,8 @@ const pdfKeyboard = {
   keyboard: [
     [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
-    [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
     [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
+    [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
     [{ text: BTN.back }],
   ],
   resize_keyboard: true,
@@ -233,6 +232,7 @@ const ttsKeyboard = {
   resize_keyboard: true,
   is_persistent: true,
 };
+
 
 const homeKeyboard = {
   keyboard: [[{ text: BTN.home }]],
