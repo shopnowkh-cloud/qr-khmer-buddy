@@ -229,6 +229,12 @@ const ttsKeyboard = {
   is_persistent: true,
 };
 
+const homeKeyboard = {
+  keyboard: [[{ text: BTN.home }]],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 
 
 // ========== Text ==========
@@ -1071,7 +1077,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.qr) {
             session.mode = "qr";
             session.buffer = [];
-            await tgSendMessage(chatId, T.qrMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.qrMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.removebg) {
@@ -1602,7 +1608,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             if (session.mode === "qr") {
               await tgTyping(chatId, "upload_photo");
               const url = buildQrUrl(text);
-              await tgSendPhotoUrl(chatId, url, "", msgId, mainKeyboard);
+              await tgSendPhotoUrl(chatId, url, "", msgId, homeKeyboard);
             }
           }
         } catch (err) {
