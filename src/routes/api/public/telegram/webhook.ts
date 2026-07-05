@@ -962,7 +962,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const tgKey = process.env.TELEGRAM_API_KEY;
+        const tgKey = process.env.TELEGRAM_BOT_TOKEN;
         if (!tgKey || !process.env.LOVABLE_API_KEY) {
           return new Response("Not configured", { status: 500 });
         }
