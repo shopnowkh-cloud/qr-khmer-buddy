@@ -1132,12 +1132,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.translateMode, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
-          if (text === BTN.currency) {
-            session.mode = "currency";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.currencyMode, msgId, mainKeyboard);
-            return Response.json({ ok: true });
-          }
           if (text === BTN.imgconv) {
             session.mode = "imgconv";
             session.buffer = [];
