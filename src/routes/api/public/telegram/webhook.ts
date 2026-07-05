@@ -1160,18 +1160,27 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.pdf2img) {
             session.mode = "pdf2img";
             session.buffer = [];
-            await tgSendMessage(
-              chatId,
-              "🚧 មុខងារ PDF → រូបភាព កំពុងតែអភិវឌ្ឍន៍។ សូមប្រើ PDF Tools ផ្សេងទៀត។",
-              msgId,
-              pdfKeyboard,
-            );
+            await tgSendMessage(chatId, T.pdf2imgMode, msgId, pdfKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdftext) {
             session.mode = "pdftext";
             session.buffer = [];
             await tgSendMessage(chatId, T.pdfTextMode, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.lockpdf) {
+            session.mode = "lockpdf";
+            session.buffer = [];
+            session.pendingPdf = undefined;
+            await tgSendMessage(chatId, T.lockPdfMode, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.unlockpdf) {
+            session.mode = "unlockpdf";
+            session.buffer = [];
+            session.pendingPdf = undefined;
+            await tgSendMessage(chatId, T.unlockPdfMode, msgId, pdfKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.tts) {
