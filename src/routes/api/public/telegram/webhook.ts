@@ -718,7 +718,7 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
 async function lockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
   const { PDFDocument } = await import("@cantoo/pdf-lib");
   const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
-  return await src.save({
+  src.encrypt({
     userPassword: password,
     ownerPassword: password,
     permissions: {
@@ -731,6 +731,7 @@ async function lockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array>
       documentAssembly: false,
     },
   } as never);
+  return await src.save();
 }
 
 async function unlockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
