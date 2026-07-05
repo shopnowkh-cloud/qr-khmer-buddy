@@ -1514,10 +1514,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgTyping(chatId, "typing");
             try {
               const scanned = await scanQrFromTelegramFile(photo.file_id);
-              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, mainKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: mainKeyboard });
+              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
+              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
             } catch {
-              await tgSendMessage(chatId, T.scanFail, msgId, mainKeyboard);
+              await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
             }
             return Response.json({ ok: true });
           }
@@ -1525,10 +1525,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgTyping(chatId, "typing");
             try {
               const scanned = await scanQrFromTelegramFile(doc.file_id);
-              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, mainKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: mainKeyboard });
+              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
+              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
             } catch {
-              await tgSendMessage(chatId, T.scanFail, msgId, mainKeyboard);
+              await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
             }
             return Response.json({ ok: true });
           }
