@@ -1730,30 +1730,25 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // ===== Default QR mode =====
-          // Photo → scan
-
-          if (session.mode === "qr" && photo) {
-            await tgTyping(chatId, "typing");
-            try {
-              const scanned = await scanQrFromTelegramFile(photo.file_id);
-              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
-            } catch {
-              await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
+          // ===== QR scan: accept photo, sticker, or any document =====
+          if (session.mode === "qr") {
+            const sticker = msg.sticker as { file_id: string; is_animated?: boolean; is_video?: boolean } | undefined;
+            const qrFileId =
+              photo?.file_id ||
+              (sticker && !sticker.is_animated && !sticker.is_video ? sticker.file_id : null) ||
+              (doc ? doc.file_id : null);
+            if (qrFileId) {
+              await tgTyping(chatId, "typing");
+              try {
+                const scanned = await scanQrFromTelegramFile(qrFileId);
+                if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
+                else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
+              } catch (e) {
+                console.error("qr scan error", e);
+                await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
+              }
+              return Response.json({ ok: true });
             }
-            return Response.json({ ok: true });
-          }
-          if (session.mode === "qr" && isImageDoc) {
-            await tgTyping(chatId, "typing");
-            try {
-              const scanned = await scanQrFromTelegramFile(doc.file_id);
-              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
-            } catch {
-              await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
-            }
-            return Response.json({ ok: true });
           }
 
           // Text handling by mode
