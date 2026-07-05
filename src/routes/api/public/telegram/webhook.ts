@@ -1524,12 +1524,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             // Default: QR
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
-            const shareMarkup = {
-              inline_keyboard: [
-                [{ text: "📤 ផ្ញើទៅជជែកផ្សេង", switch_inline_query: text }],
-              ],
-            };
-            await tgSendPhotoUrl(chatId, url, "", msgId, shareMarkup);
+            await tgSendPhotoUrl(chatId, url, "", msgId);
           }
         } catch (err) {
           console.error("telegram webhook error", err);
