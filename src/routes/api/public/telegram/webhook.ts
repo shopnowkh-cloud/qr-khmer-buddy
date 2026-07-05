@@ -402,6 +402,7 @@ function escapeHtml(s: string) {
 
 // ========== Session State (in-memory, per worker) ==========
 type Mode =
+  | "idle"
   | "qr"
   | "removebg"
   | "shorturl"
@@ -441,7 +442,7 @@ const sessions = new Map<number, Session>();
 function getSession(chatId: number): Session {
   let s = sessions.get(chatId);
   if (!s) {
-    s = { mode: "qr", buffer: [] };
+    s = { mode: "idle", buffer: [] };
     sessions.set(chatId, s);
   }
   return s;
@@ -1050,7 +1051,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           // ===== Menu / commands handling =====
           if (text === "/start" || text === "/menu") {
-            session.mode = "qr";
+            session.mode = "idle";
             session.buffer = [];
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard, pickRandom(MESSAGE_EFFECTS));
             return Response.json({ ok: true });
@@ -1058,27 +1059,28 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           // Unknown /command → reset to main menu
           if (text.startsWith("/")) {
-            session.mode = "qr";
+            session.mode = "idle";
             session.buffer = [];
             await tgSendMessage(chatId, "⚠️ ពាក្យបញ្ជាមិនត្រឹមត្រូវ។ ត្រឡប់ទៅម៉ឺនុយដើម។", msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
 
           if (text === BTN.help) {
+            session.mode = "idle";
+            session.buffer = [];
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.back) {
-            const wasTts = session.mode.startsWith("tts");
-            session.mode = "qr";
+            session.mode = "idle";
             session.buffer = [];
-            await tgSendMessage(chatId, wasTts ? T.welcome : T.qrMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.cancel) {
             session.buffer = [];
             const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext"].includes(session.mode);
-            session.mode = wasPdf ? "pdfmenu" : "qr";
+            session.mode = wasPdf ? "pdfmenu" : "idle";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
             return Response.json({ ok: true });
           }
@@ -1247,6 +1249,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             await tgSendMessage(chatId, T.qrMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+
+          // Idle mode: user must press a keyboard button first
+          if (session.mode === "idle") {
+            await tgSendMessage(
+              chatId,
+              "⚠️ សូមចុចប៊ូតុងខាងក្រោមដើម្បីជ្រើសរើសមុខងារមុននឹងប្រើ។",
+              msgId,
+              mainKeyboard,
+            );
             return Response.json({ ok: true });
           }
 
