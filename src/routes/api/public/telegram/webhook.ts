@@ -172,7 +172,6 @@ const BTN = {
   translate: "🌐 បកប្រែ",
   imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
-  help: "ℹ️ ជំនួយ",
   img2pdf: "🖼️→📄 រូបភាព→PDF",
   pdf2img: "📄→🖼️ PDF→រូបភាព",
   mergepdf: "➕ បញ្ចូល PDF",
@@ -199,9 +198,9 @@ const EMOJI = {
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
-    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }],
-    [{ text: BTN.tts }, { text: BTN.ocr }],
-    [{ text: BTN.translate }, { text: BTN.currency }],
+    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.imgconv }],
+    [{ text: BTN.ocr }, { text: BTN.translate }],
+    [{ text: BTN.tts }, { text: BTN.shorturl }],
   ],
   resize_keyboard: true,
   is_persistent: true,
