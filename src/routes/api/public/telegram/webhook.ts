@@ -986,32 +986,6 @@ async function renderPdfPageToImage(pageBytes: Uint8Array): Promise<Uint8Array |
 }
 
 
-// ========== Feature: Currency USD⇄KHR ==========
-async function convertCurrency(text: string): Promise<string | null> {
-  const m = text.match(/^\s*([\d,.]+)\s*(usd|khr|\$|៛)\s*$/i);
-  if (!m) return null;
-  const amount = parseFloat(m[1].replace(/,/g, ""));
-  if (!isFinite(amount)) return null;
-  const unit = m[2].toLowerCase();
-  const from = unit === "usd" || unit === "$" ? "USD" : "KHR";
-  try {
-    const res = await fetch(`https://open.er-api.com/v6/latest/${from}`);
-    if (!res.ok) return null;
-    const d = (await res.json()) as { rates?: Record<string, number> };
-    if (from === "USD") {
-      const r = d.rates?.KHR;
-      if (!r) return null;
-      return `💵 <b>${amount} USD</b> ≈ <b>${(amount * r).toLocaleString("en-US", { maximumFractionDigits: 0 })} ៛ KHR</b>\n<i>Rate: 1 USD = ${r.toFixed(2)} KHR</i>`;
-    } else {
-      const r = d.rates?.USD;
-      if (!r) return null;
-      return `💵 <b>${amount.toLocaleString("en-US")} ៛ KHR</b> ≈ <b>$${(amount * r).toFixed(2)} USD</b>\n<i>Rate: 1 KHR = ${r.toFixed(6)} USD</i>`;
-    }
-  } catch {
-    return null;
-  }
-}
-
 
 // ========== Main handler ==========
 export const Route = createFileRoute("/api/public/telegram/webhook")({
