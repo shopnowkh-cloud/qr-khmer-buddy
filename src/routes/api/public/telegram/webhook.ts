@@ -1256,6 +1256,40 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // Password input for lock/unlock PDF
+          if (session.mode === "lockpdf_password" && session.pendingPdf) {
+            const password = text.trim();
+            if (password.length < 4) {
+              await tgSendMessage(chatId, "⚠️ Password ត្រូវមានយ៉ាងតិច 4 តួ", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            await tgTyping(chatId, "upload_document");
+            try {
+              const out = await lockPdf(session.pendingPdf, password);
+              await tgSendDocumentBytes(chatId, out, "locked.pdf", `🔒 ដាក់ Password រួច`, msgId, pdfKeyboard);
+            } catch (e) {
+              console.error("lockpdf error", e);
+              await tgSendMessage(chatId, "❌ ដាក់ Password មិនបានសម្រេច", msgId, pdfKeyboard);
+            }
+            session.pendingPdf = undefined;
+            session.mode = "pdfmenu";
+            return Response.json({ ok: true });
+          }
+          if (session.mode === "unlockpdf_password" && session.pendingPdf) {
+            const password = text.trim();
+            await tgTyping(chatId, "upload_document");
+            try {
+              const out = await unlockPdf(session.pendingPdf, password);
+              await tgSendDocumentBytes(chatId, out, "unlocked.pdf", `🔓 ដក Password ចេញរួច`, msgId, pdfKeyboard);
+              session.pendingPdf = undefined;
+              session.mode = "pdfmenu";
+            } catch (e) {
+              console.error("unlockpdf error", e);
+              await tgSendMessage(chatId, "❌ Password មិនត្រឹមត្រូវ ឬ PDF មិនអាចដកបាន។ សូមព្យាយាមម្តងទៀត។", msgId, pdfKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
           if (text === BTN.done) {
             if (session.mode === "img2pdf") {
               if (!session.buffer.length) {
