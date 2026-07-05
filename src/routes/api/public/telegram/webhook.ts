@@ -184,6 +184,7 @@ const EMOJI = {
   pdf: "5838982342122674517", // 📄
   qr: "5440410042773824003", // 🔗
   ocr: "5388946907114527048", // 🔈
+  home: "5796647601105276281", // 🗂
 };
 
 const mainKeyboard = {
@@ -227,7 +228,7 @@ const ttsKeyboard = {
   keyboard: [
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
-    [{ text: BTN.home }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -235,7 +236,7 @@ const ttsKeyboard = {
 
 
 const homeKeyboard = {
-  keyboard: [[{ text: BTN.home }]],
+  keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
   resize_keyboard: true,
   is_persistent: true,
 };
