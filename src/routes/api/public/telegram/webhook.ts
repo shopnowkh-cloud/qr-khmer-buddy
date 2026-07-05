@@ -163,7 +163,7 @@ function pickRandom<T>(arr: T[]): T {
 
 // ========== Menu / Keyboards ==========
 const BTN = {
-  qr: "📱 QR Code",
+  qr: "បង្កើត QR",
   removebg: "🖼️ Remove BG",
   pdf: "PDF",
   shorturl: "🔗 Short URL",
