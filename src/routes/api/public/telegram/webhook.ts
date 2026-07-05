@@ -1277,7 +1277,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "unlockpdf";
             session.buffer = [];
             session.pendingPdf = undefined;
-            await tgSendMessage(chatId, T.unlockPdfMode, msgId);
+            await tgSendMessage(chatId, T.unlockPdfMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.tts) {
