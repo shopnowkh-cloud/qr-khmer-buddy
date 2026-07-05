@@ -1338,7 +1338,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.fontstyle) {
             session.mode = "fontstyle";
             session.buffer = [];
-            await tgSendMessage(chatId, T.fontstyleMode, msgId);
+            await tgSendMessage(chatId, T.fontstyleMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
 
