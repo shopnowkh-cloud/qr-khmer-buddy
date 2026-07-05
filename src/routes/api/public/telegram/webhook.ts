@@ -1510,7 +1510,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           // ===== Default QR mode =====
           // Photo → scan
 
-          if (photo) {
+          if (session.mode === "qr" && photo) {
             await tgTyping(chatId, "typing");
             try {
               const scanned = await scanQrFromTelegramFile(photo.file_id);
@@ -1521,7 +1521,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             }
             return Response.json({ ok: true });
           }
-          if (isImageDoc) {
+          if (session.mode === "qr" && isImageDoc) {
             await tgTyping(chatId, "typing");
             try {
               const scanned = await scanQrFromTelegramFile(doc.file_id);
