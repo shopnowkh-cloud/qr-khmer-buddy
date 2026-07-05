@@ -1257,7 +1257,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.pdf2img) {
             session.mode = "pdf2img";
             session.buffer = [];
-            await tgSendMessage(chatId, T.pdf2imgMode, msgId);
+            await tgSendMessage(chatId, T.pdf2imgMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdftext) {
