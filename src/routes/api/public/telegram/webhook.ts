@@ -702,6 +702,31 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
   return await src.save({ useObjectStreams: true, addDefaultPage: false });
 }
 
+// Lock/Unlock via @cantoo/pdf-lib fork (supports AES encryption).
+async function lockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
+  const { PDFDocument } = await import("@cantoo/pdf-lib");
+  const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
+  return await src.save({
+    userPassword: password,
+    ownerPassword: password,
+    permissions: {
+      printing: "highResolution",
+      modifying: false,
+      copying: false,
+      annotating: false,
+      fillingForms: true,
+      contentAccessibility: true,
+      documentAssembly: false,
+    },
+  } as never);
+}
+
+async function unlockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
+  const { PDFDocument } = await import("@cantoo/pdf-lib");
+  const src = await PDFDocument.load(bytes, { password } as never);
+  return await src.save();
+}
+
 // ========== Feature: TTS via VoxCPM2 (HuggingFace Space) ==========
 // Calls openbmb/VoxCPM-Demo Gradio API directly. Free public Space — no key.
 // Rate-limited by HF; may take 10-60s and can 503 when Space is sleeping.
