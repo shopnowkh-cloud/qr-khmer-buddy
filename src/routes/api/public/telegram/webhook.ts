@@ -1056,6 +1056,14 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // Unknown /command → reset to main menu
+          if (text.startsWith("/")) {
+            session.mode = "qr";
+            session.buffer = [];
+            await tgSendMessage(chatId, "⚠️ ពាក្យបញ្ជាមិនត្រឹមត្រូវ។ ត្រឡប់ទៅម៉ឺនុយដើម។", msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
+
           if (text === BTN.help) {
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
