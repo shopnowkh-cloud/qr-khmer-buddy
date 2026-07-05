@@ -201,6 +201,7 @@ const pdfKeyboard = {
     [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
     [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
+    [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
     [{ text: BTN.back }],
   ],
   resize_keyboard: true,
