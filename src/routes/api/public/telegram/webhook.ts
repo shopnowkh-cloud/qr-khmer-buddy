@@ -152,7 +152,7 @@ const BTN = {
   removebg: "🖼️ Remove BG",
   pdf: "PDF",
   shorturl: "🔗 Short URL",
-  tts: "🔊 សំឡេង (TTS)",
+  tts: "បង្កើតសំឡេង Ai",
   ocr: "🔍 Copy អក្សរ",
   translate: "🌐 បកប្រែ",
   imgconv: "🎨 ប្តូរ Format",
