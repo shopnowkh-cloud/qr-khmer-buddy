@@ -1051,7 +1051,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           // ===== Menu / commands handling =====
           if (text === "/start" || text === "/menu") {
-            session.mode = "qr";
+            session.mode = "idle";
             session.buffer = [];
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard, pickRandom(MESSAGE_EFFECTS));
             return Response.json({ ok: true });
@@ -1059,27 +1059,28 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           // Unknown /command → reset to main menu
           if (text.startsWith("/")) {
-            session.mode = "qr";
+            session.mode = "idle";
             session.buffer = [];
             await tgSendMessage(chatId, "⚠️ ពាក្យបញ្ជាមិនត្រឹមត្រូវ។ ត្រឡប់ទៅម៉ឺនុយដើម។", msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
 
           if (text === BTN.help) {
+            session.mode = "idle";
+            session.buffer = [];
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.back) {
-            const wasTts = session.mode.startsWith("tts");
-            session.mode = "qr";
+            session.mode = "idle";
             session.buffer = [];
-            await tgSendMessage(chatId, wasTts ? T.welcome : T.qrMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.cancel) {
             session.buffer = [];
             const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext"].includes(session.mode);
-            session.mode = wasPdf ? "pdfmenu" : "qr";
+            session.mode = wasPdf ? "pdfmenu" : "idle";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
             return Response.json({ ok: true });
           }
