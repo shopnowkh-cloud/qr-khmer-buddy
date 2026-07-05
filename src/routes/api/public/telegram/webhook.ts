@@ -229,6 +229,12 @@ const ttsKeyboard = {
   is_persistent: true,
 };
 
+const homeKeyboard = {
+  keyboard: [[{ text: BTN.home }]],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 
 
 // ========== Text ==========
