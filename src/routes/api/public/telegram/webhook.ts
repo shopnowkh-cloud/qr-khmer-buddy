@@ -442,7 +442,7 @@ const sessions = new Map<number, Session>();
 function getSession(chatId: number): Session {
   let s = sessions.get(chatId);
   if (!s) {
-    s = { mode: "qr", buffer: [] };
+    s = { mode: "idle", buffer: [] };
     sessions.set(chatId, s);
   }
   return s;
