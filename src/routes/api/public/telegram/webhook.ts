@@ -353,7 +353,7 @@ async function scanWithZxing(bytes: ArrayBuffer): Promise<string | null> {
     for (const opts of tryOpts) {
       try {
         const results = await readBarcodesFromImageFile(blob, {
-          formats: ["QRCode", "MicroQRCode", "rMQRCode"],
+          formats: ["QRCode", "MicroQRCode"],
           ...opts,
         });
         const r = results?.[0];
