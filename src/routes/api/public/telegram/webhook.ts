@@ -1580,7 +1580,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             // Default: QR
             await tgTyping(chatId, "upload_photo");
             const url = buildQrUrl(text);
-            await tgSendPhotoUrl(chatId, url, "", msgId);
+            await tgSendPhotoUrl(chatId, url, "", msgId, mainKeyboard);
           }
         } catch (err) {
           console.error("telegram webhook error", err);
