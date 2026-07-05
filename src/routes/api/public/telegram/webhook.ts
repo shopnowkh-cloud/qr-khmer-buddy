@@ -309,20 +309,16 @@ const T = {
   wrongType: "⚠️ ប្រភេទឯកសារមិនត្រឹមត្រូវ",
 };
 
-function buildQrUrl(text: string) {
-  const params = new URLSearchParams({
-    data: text,
-    size: "400x400",
-    color: "000000",
-    bgcolor: "ffffff",
-    format: "png",
-    ecc: "H",
-    margin: "2",
-    qzone: "2",
-    "charset-source": "UTF-8",
-    "charset-target": "UTF-8",
+async function generateQrPng(text: string): Promise<Uint8Array> {
+  const QRCode = (await import("qrcode")).default;
+  const buf = await QRCode.toBuffer(text, {
+    type: "png",
+    errorCorrectionLevel: "H",
+    margin: 2,
+    width: 512,
+    color: { dark: "#000000", light: "#FFFFFF" },
   });
-  return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
+  return new Uint8Array(buf);
 }
 
 async function scanWithQrserver(bytes: ArrayBuffer): Promise<string | null> {
@@ -1846,8 +1842,13 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             // Default: QR (only when user selected QR mode)
             if (session.mode === "qr") {
               await tgTyping(chatId, "upload_photo");
-              const url = buildQrUrl(text);
-              await tgSendPhotoUrl(chatId, url, "", msgId, homeKeyboard);
+              try {
+                const png = await generateQrPng(text);
+                await tgSendPhotoBytes(chatId, png, "qr.png", "", msgId, homeKeyboard);
+              } catch (e) {
+                console.error("qr generate error", e);
+                await tgSendMessage(chatId, "❌ បង្កើត QR មិនបានសម្រេច", msgId, homeKeyboard);
+              }
             }
           }
         } catch (err) {
