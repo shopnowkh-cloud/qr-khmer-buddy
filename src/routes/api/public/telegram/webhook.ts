@@ -1540,10 +1540,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_basic") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text);
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🎙 ធម្មតា", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_design_instr") {
@@ -1553,10 +1553,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_design_text") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text, { controlInstruction: session.ttsDesignInstr });
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "🎨 រចនាសំឡេង", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text, session.ttsDesignInstr);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_clone_transcript") {
@@ -1566,24 +1566,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_clone_text") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text, {
-                refBytes: session.ttsRefBytes,
-                refMime: session.ttsRefMime,
-                refTranscript: session.ttsRefTranscript,
-              });
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "👥 ក្លូនសំឡេង", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_ultra_text") {
-              await tgTyping(chatId, "upload_document");
-              const mp3 = await synthesizeSpeech(text, {
-                refBytes: session.ttsRefBytes,
-                refMime: session.ttsRefMime,
-              });
-              if (!mp3) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
-              else await tgSendAudioBytes(chatId, mp3, "speech.mp3", "✨ ក្លូនពេញលេញ", msgId, ttsKeyboard);
+              await tgTyping(chatId, "record_voice");
+              const ogg = await synthesizeSpeechOpus(text);
+              if (!ogg) await tgSendMessage(chatId, "❌ បង្កើតសំឡេងមិនបានសម្រេច", msgId, ttsKeyboard);
+              else await tgSendAudioBytes(chatId, ogg, "voice.ogg", undefined, msgId, ttsKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "tts_menu" || session.mode === "tts_clone_audio" || session.mode === "tts_ultra_audio") {
