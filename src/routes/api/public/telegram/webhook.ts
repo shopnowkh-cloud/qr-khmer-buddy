@@ -1394,6 +1394,64 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // PDF → Image (per page, via Gemini)
+          if (session.mode === "pdf2img") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            await tgTyping(chatId, "upload_photo");
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            try {
+              const { PDFDocument } = await loadPdfLib();
+              const src = await PDFDocument.load(new Uint8Array(f.bytes));
+              const total = src.getPageCount();
+              const MAX = 10;
+              const count = Math.min(total, MAX);
+              await tgSendMessage(
+                chatId,
+                `📄→🖼️ កំពុងបំលែង <b>${count}</b>/${total} ទំព័រ...`,
+                msgId,
+                pdfKeyboard,
+              );
+              let success = 0;
+              for (let i = 0; i < count; i++) {
+                const pageBytes = await extractPageAsPdf(new Uint8Array(f.bytes), i);
+                const img = await renderPdfPageToImage(pageBytes);
+                if (img) {
+                  await tgSendPhotoBytes(
+                    chatId,
+                    img,
+                    `page-${i + 1}.png`,
+                    `📄 ទំព័រ ${i + 1}/${total}`,
+                  );
+                  success++;
+                }
+              }
+              if (success === 0) {
+                await tgSendMessage(chatId, "❌ បំលែងមិនបានសម្រេច", msgId, pdfKeyboard);
+              } else if (total > MAX) {
+                await tgSendMessage(
+                  chatId,
+                  `✅ បញ្ចប់ (${success}/${count} ទំព័រ)។ ⚠️ PDF នេះមាន ${total} ទំព័រ — បំលែងតែ ${MAX} ទំព័រដំបូង។`,
+                  undefined,
+                  pdfKeyboard,
+                );
+              } else {
+                await tgSendMessage(chatId, `✅ បញ្ចប់ (${success}/${count} ទំព័រ)`, undefined, pdfKeyboard);
+              }
+            } catch (e) {
+              console.error("pdf2img error", e);
+              await tgSendMessage(chatId, "❌ បំលែងមិនបានសម្រេច", msgId, pdfKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
+
           // PDF text extraction
           if (session.mode === "pdftext") {
             if (!isPdfDoc) {
