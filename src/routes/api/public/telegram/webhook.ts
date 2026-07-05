@@ -180,7 +180,7 @@ function pickRandom<T>(arr: T[]): T {
 const BTN = {
   qr: "📱 QR Code",
   removebg: "🖼️ Remove BG",
-  pdf: "📄 PDF",
+  pdf: "PDF",
   shorturl: "🔗 Short URL",
   tts: "🔊 សំឡេង (TTS)",
   ocr: "🔍 OCR",
