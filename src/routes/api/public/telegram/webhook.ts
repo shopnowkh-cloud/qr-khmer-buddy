@@ -1306,7 +1306,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.ttsRefBytes = undefined;
             session.ttsRefMime = undefined;
             session.ttsRefTranscript = undefined;
-            await tgSendMessage(chatId, T.ttsCloneAskAudio, msgId);
+            await tgSendMessage(chatId, T.ttsCloneAskAudio, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.ttsUltra) {
