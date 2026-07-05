@@ -163,6 +163,7 @@ const BTN = {
   compresspdf: "📉 បង្រួម PDF",
   pdftext: "📝 អាន text ពី PDF",
   back: "⬅️ ត្រឡប់",
+  home: "ទំព័រដើម",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
   fmtPng: "→ PNG",
@@ -221,7 +222,7 @@ const ttsKeyboard = {
   keyboard: [
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
-    [{ text: BTN.back }],
+    [{ text: BTN.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -1024,7 +1025,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
-          if (text === BTN.back) {
+          if (text === BTN.back || text === BTN.home) {
             session.mode = "idle";
             session.buffer = [];
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
