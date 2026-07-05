@@ -345,17 +345,22 @@ async function scanWithZxing(bytes: ArrayBuffer): Promise<string | null> {
     const { readBarcodesFromImageFile } = await import("@sec-ant/zxing-wasm/reader");
     const blob = new Blob([bytes]);
     const tryOpts = [
-      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "LocalAverage" as const },
-      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "GlobalHistogram" as const },
-      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "FixedThreshold" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, tryRotate: true, binarizer: "LocalAverage" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, tryRotate: true, binarizer: "GlobalHistogram" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, tryRotate: true, binarizer: "FixedThreshold" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: false, tryRotate: true, binarizer: "LocalAverage" as const },
     ];
     for (const opts of tryOpts) {
-      const results = await readBarcodesFromImageFile(blob, {
-        formats: ["QRCode", "MicroQRCode"],
-        ...opts,
-      });
-      const r = results?.[0];
-      if (r?.text) return r.text;
+      try {
+        const results = await readBarcodesFromImageFile(blob, {
+          formats: ["QRCode", "MicroQRCode", "rMQRCode"],
+          ...opts,
+        });
+        const r = results?.[0];
+        if (r?.text) return r.text;
+      } catch (inner) {
+        console.error("zxing inner error", inner);
+      }
     }
   } catch (e) {
     console.error("zxing scan error", e);
@@ -379,7 +384,10 @@ async function scanQrFromTelegramFile(fileId: string): Promise<string | null> {
   if (!f) return null;
   const local = await scanWithZxing(f.bytes);
   if (local) return local;
-  return await scanWithQrserver(f.bytes);
+  const remote = await scanWithQrserver(f.bytes);
+  if (remote) return remote;
+  // Last-resort: re-fetch as PNG via image transform if the file host supports it
+  return null;
 }
 
 function escapeHtml(s: string) {
