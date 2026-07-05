@@ -421,6 +421,7 @@ interface Session {
   ttsRefBytes?: Uint8Array;
   ttsRefMime?: string;
   ttsRefTranscript?: string;
+  pendingPdf?: Uint8Array;
 }
 const sessions = new Map<number, Session>();
 
