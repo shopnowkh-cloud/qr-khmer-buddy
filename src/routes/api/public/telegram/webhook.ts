@@ -268,7 +268,7 @@ const T = {
     "• ផ្ញើរូបភាព → ស្កេន QR",
   removebgMode: "🖼️ <b>Remove Background</b>\n\nផ្ញើរូបភាព ដើម្បីលុប background",
   shorturlMode: "🔗 <b>Short URL</b>\n\nផ្ញើតំណ (URL) ដើម្បីបង្រួម",
-  pdfMenu: "📄 <b>PDF Tools</b>\n\nជ្រើសរើសមុខងារ៖",
+  pdfMenu: '<tg-emoji emoji-id="5838982342122674517">📄</tg-emoji> <b>PDF Tools</b>\n\nជ្រើសរើសមុខងារ៖',
   img2pdfMode: "🖼️→📄 <b>រូបភាព → PDF</b>\n\nផ្ញើរូបភាពមួយ ឬច្រើន រួចចុច <b>✅ បញ្ចប់</b>",
   mergeMode: "➕ <b>បញ្ចូល PDF</b>\n\nផ្ញើ PDF ចាប់ពី 2 ឯកសារឡើងទៅ រួចចុច <b>✅ បញ្ចប់</b>",
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
