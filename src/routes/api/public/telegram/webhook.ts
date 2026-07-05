@@ -386,6 +386,96 @@ function escapeHtml(s: string) {
   return s.replace(/[<>&]/g, (c) => (c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;"));
 }
 
+// ========== Feature: Fancy Font Styles ==========
+// Convert ASCII A-Z, a-z, 0-9 to Unicode "mathematical" / stylistic variants.
+function toFancy(text: string, upperBase: number, lowerBase: number, digitBase: number | null): string {
+  const out: string[] = [];
+  for (const ch of text) {
+    const code = ch.codePointAt(0)!;
+    if (code >= 65 && code <= 90) out.push(String.fromCodePoint(upperBase + (code - 65)));
+    else if (code >= 97 && code <= 122) out.push(String.fromCodePoint(lowerBase + (code - 97)));
+    else if (digitBase !== null && code >= 48 && code <= 57) out.push(String.fromCodePoint(digitBase + (code - 48)));
+    else out.push(ch);
+  }
+  return out.join("");
+}
+
+function toCircled(text: string): string {
+  // ⓐ etc. — no digit 0
+  const A = 0x24B6, a = 0x24D0;
+  return [...text].map((ch) => {
+    const c = ch.codePointAt(0)!;
+    if (c >= 65 && c <= 90) return String.fromCodePoint(A + (c - 65));
+    if (c >= 97 && c <= 122) return String.fromCodePoint(a + (c - 97));
+    if (c >= 49 && c <= 57) return String.fromCodePoint(0x2460 + (c - 49));
+    if (c === 48) return "⓪";
+    return ch;
+  }).join("");
+}
+
+function toSquared(text: string): string {
+  // 🅰 🅱 style (negative squared)
+  return [...text].map((ch) => {
+    const c = ch.codePointAt(0)!;
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1F170 + (c - 65));
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1F170 + (c - 97));
+    return ch;
+  }).join("");
+}
+
+function toFullwidth(text: string): string {
+  return [...text].map((ch) => {
+    const c = ch.codePointAt(0)!;
+    if (c >= 33 && c <= 126) return String.fromCodePoint(0xFF00 + (c - 32));
+    if (c === 32) return "　";
+    return ch;
+  }).join("");
+}
+
+function toSmallCaps(text: string): string {
+  const map: Record<string, string> = {
+    a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ꜰ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",
+    n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"
+  };
+  return [...text.toLowerCase()].map((ch) => map[ch] ?? ch).join("");
+}
+
+function buildFancyList(input: string): { label: string; value: string }[] {
+  // Script fonts have gaps in Unicode (e.g. B, E, F, H, I, L, M, R, e, g, o are separate) — handled by SMP blocks.
+  // Using known base codepoints for contiguous blocks; letters with holes fall back to plain char via toFancy default.
+  const styles: { label: string; value: string }[] = [];
+  // Bold
+  styles.push({ label: "𝗕𝗼𝗹𝗱 Sans", value: toFancy(input, 0x1D5D4, 0x1D5EE, 0x1D7EC) });
+  // Italic Sans
+  styles.push({ label: "𝘐𝘵𝘢𝘭𝘪𝘤 Sans", value: toFancy(input, 0x1D608, 0x1D622, null) });
+  // Bold Italic Sans
+  styles.push({ label: "𝘽𝙤𝙡𝙙 𝙄𝙩𝙖𝙡𝙞𝙘", value: toFancy(input, 0x1D63C, 0x1D656, null) });
+  // Serif Bold
+  styles.push({ label: "𝐒𝐞𝐫𝐢𝐟 𝐁𝐨𝐥𝐝", value: toFancy(input, 0x1D400, 0x1D41A, 0x1D7CE) });
+  // Serif Italic
+  styles.push({ label: "𝑆𝑒𝑟𝑖𝑓 𝐼𝑡𝑎𝑙𝑖𝑐", value: toFancy(input, 0x1D434, 0x1D44E, null) });
+  // Monospace
+  styles.push({ label: "𝙼𝚘𝚗𝚘𝚜𝚙𝚊𝚌𝚎", value: toFancy(input, 0x1D670, 0x1D68A, 0x1D7F6) });
+  // Double-struck
+  styles.push({ label: "𝔻𝕠𝕦𝕓𝕝𝕖", value: toFancy(input, 0x1D538, 0x1D552, 0x1D7D8) });
+  // Fraktur
+  styles.push({ label: "𝔉𝔯𝔞𝔨𝔱𝔲𝔯", value: toFancy(input, 0x1D504, 0x1D51E, null) });
+  // Script (cursive)
+  styles.push({ label: "𝒮𝒸𝓇𝒾𝓅𝓉", value: toFancy(input, 0x1D49C, 0x1D4B6, null) });
+  // Bold Script
+  styles.push({ label: "𝓑𝓸𝓵𝓭 𝓢𝓬𝓻𝓲𝓹𝓽", value: toFancy(input, 0x1D4D0, 0x1D4EA, null) });
+  // Small Caps
+  styles.push({ label: "Sᴍᴀʟʟ Cᴀᴘs", value: toSmallCaps(input) });
+  // Circled
+  styles.push({ label: "Ⓒⓘⓡⓒⓛⓔⓓ", value: toCircled(input) });
+  // Squared
+  styles.push({ label: "🆂🆀🆄🅰🆁🅴🅳", value: toSquared(input) });
+  // Fullwidth
+  styles.push({ label: "Ｆｕｌｌｗｉｄｔｈ", value: toFullwidth(input) });
+  return styles;
+}
+
+
 // ========== Session State (in-memory, per worker) ==========
 type Mode =
   | "idle"
