@@ -252,7 +252,7 @@ const T = {
     "📱 QR Code | 🖼️ Remove BG\n" +
     "📄 PDF | 🎨 Image Format\n" +
     "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
-    "🌐 បកប្រែ | 💱 USD⇄KHR | 🔗 Short URL\n\n" +
+    "🌐 បកប្រែ | 🔗 Short URL\n\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
   qrMode:
     "📱 <b>QR Code Mode</b>\n\n" +
@@ -1500,16 +1500,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
                 await tgSendMessage(chatId, "❌ បកប្រែមិនបានសម្រេច", msgId, mainKeyboard);
               } else {
                 await tgSendMessage(chatId, `🌐 ${escapeHtml(out)}`, msgId, mainKeyboard);
-              }
-              return Response.json({ ok: true });
-            }
-            if (session.mode === "currency") {
-              await tgTyping(chatId, "typing");
-              const out = await convertCurrency(text);
-              if (!out) {
-                await tgSendMessage(chatId, "⚠️ ទម្រង់មិនត្រឹមត្រូវ។ ឧទាហរណ៍៖ <code>10 usd</code>", msgId, mainKeyboard);
-              } else {
-                await tgSendMessage(chatId, out, msgId, mainKeyboard);
               }
               return Response.json({ ok: true });
             }
