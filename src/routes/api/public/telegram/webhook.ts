@@ -1270,7 +1270,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "lockpdf";
             session.buffer = [];
             session.pendingPdf = undefined;
-            await tgSendMessage(chatId, T.lockPdfMode, msgId);
+            await tgSendMessage(chatId, T.lockPdfMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.unlockpdf) {
