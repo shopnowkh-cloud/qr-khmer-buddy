@@ -193,11 +193,12 @@ const BTN = {
 // Bot API 9.4 — custom emoji IDs on buttons (requires bot owner Premium; auto-fallback otherwise)
 const EMOJI = {
   pdf: "5838982342122674517", // 📄
+  qr: "5440410042773824003", // 🔗
 };
 
 const mainKeyboard = {
   keyboard: [
-    [{ text: BTN.qr }, { text: BTN.removebg }],
+    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }],
     [{ text: BTN.tts }, { text: BTN.ocr }],
     [{ text: BTN.translate }, { text: BTN.currency }],
