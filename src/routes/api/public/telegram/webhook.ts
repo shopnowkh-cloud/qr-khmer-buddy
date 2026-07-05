@@ -1251,7 +1251,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.compresspdf) {
             session.mode = "compresspdf";
             session.buffer = [];
-            await tgSendMessage(chatId, T.compressMode, msgId);
+            await tgSendMessage(chatId, T.compressMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdf2img) {
