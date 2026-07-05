@@ -163,6 +163,8 @@ const BTN = {
   mergepdf: "➕ បញ្ចូល PDF",
   compresspdf: "📉 បង្រួម PDF",
   pdftext: "📝 អាន text ពី PDF",
+  lockpdf: "🔒 ដាក់ Password",
+  unlockpdf: "🔓 ដកចេញ Password",
   back: "⬅️ ត្រឡប់",
   home: "ទំព័រដើម",
   done: "✅ បញ្ចប់",
