@@ -302,9 +302,11 @@ function buildQrUrl(text: string) {
     color: "000000",
     bgcolor: "ffffff",
     format: "png",
-    ecc: "M",
+    ecc: "H",
     margin: "2",
     qzone: "2",
+    "charset-source": "UTF-8",
+    "charset-target": "UTF-8",
   });
   return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
 }
