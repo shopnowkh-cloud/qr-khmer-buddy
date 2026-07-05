@@ -163,6 +163,8 @@ const BTN = {
   mergepdf: "➕ បញ្ចូល PDF",
   compresspdf: "📉 បង្រួម PDF",
   pdftext: "📝 អាន text ពី PDF",
+  lockpdf: "🔒 ដាក់ Password",
+  unlockpdf: "🔓 ដកចេញ Password",
   back: "⬅️ ត្រឡប់",
   home: "ទំព័រដើម",
   done: "✅ បញ្ចប់",
@@ -199,6 +201,7 @@ const pdfKeyboard = {
     [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
     [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
+    [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
     [{ text: BTN.back }],
   ],
   resize_keyboard: true,
@@ -260,6 +263,10 @@ const T = {
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
   pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
   pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
+  lockPdfMode: "🔒 <b>ដាក់ Password លើ PDF</b>\n\nផ្ញើឯកសារ PDF មុនសិន",
+  unlockPdfMode: "🔓 <b>ដក Password ចេញពី PDF</b>\n\nផ្ញើឯកសារ PDF ដែលមាន password",
+  askLockPassword: "🔑 សូមផ្ញើពាក្យសម្ងាត់ដែលចង់ប្រើ (យ៉ាងតិច 4 តួ)",
+  askUnlockPassword: "🔑 សូមផ្ញើពាក្យសម្ងាត់នៃ PDF នេះ",
   ttsMode:
     "🔊 <b>VoxCPM2 — Text to Speech</b>\n\n" +
     "ជ្រើសរើសរបៀប៖\n" +
@@ -386,6 +393,10 @@ type Mode =
   | "mergepdf"
   | "compresspdf"
   | "pdftext"
+  | "lockpdf"
+  | "lockpdf_password"
+  | "unlockpdf"
+  | "unlockpdf_password"
   | "tts"
   | "tts_menu"
   | "tts_basic"
@@ -410,6 +421,7 @@ interface Session {
   ttsRefBytes?: Uint8Array;
   ttsRefMime?: string;
   ttsRefTranscript?: string;
+  pendingPdf?: Uint8Array;
 }
 const sessions = new Map<number, Session>();
 
@@ -700,6 +712,32 @@ async function compressPdf(bytes: Uint8Array): Promise<Uint8Array> {
   const { PDFDocument } = await loadPdfLib();
   const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
   return await src.save({ useObjectStreams: true, addDefaultPage: false });
+}
+
+// Lock/Unlock via @cantoo/pdf-lib fork (supports AES encryption).
+async function lockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
+  const { PDFDocument } = await import("@cantoo/pdf-lib");
+  const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
+  src.encrypt({
+    userPassword: password,
+    ownerPassword: password,
+    permissions: {
+      printing: "highResolution",
+      modifying: false,
+      copying: false,
+      annotating: false,
+      fillingForms: true,
+      contentAccessibility: true,
+      documentAssembly: false,
+    },
+  } as never);
+  return await src.save();
+}
+
+async function unlockPdf(bytes: Uint8Array, password: string): Promise<Uint8Array> {
+  const { PDFDocument } = await import("@cantoo/pdf-lib");
+  const src = await PDFDocument.load(bytes, { password } as never);
+  return await src.save();
 }
 
 // ========== Feature: TTS via VoxCPM2 (HuggingFace Space) ==========
@@ -1071,7 +1109,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.cancel) {
             session.buffer = [];
-            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext"].includes(session.mode);
+            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext", "lockpdf", "lockpdf_password", "unlockpdf", "unlockpdf_password"].includes(session.mode);
+            session.pendingPdf = undefined;
             session.mode = wasPdf ? "pdfmenu" : "idle";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
             return Response.json({ ok: true });
@@ -1122,18 +1161,27 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.pdf2img) {
             session.mode = "pdf2img";
             session.buffer = [];
-            await tgSendMessage(
-              chatId,
-              "🚧 មុខងារ PDF → រូបភាព កំពុងតែអភិវឌ្ឍន៍។ សូមប្រើ PDF Tools ផ្សេងទៀត។",
-              msgId,
-              pdfKeyboard,
-            );
+            await tgSendMessage(chatId, T.pdf2imgMode, msgId, pdfKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdftext) {
             session.mode = "pdftext";
             session.buffer = [];
             await tgSendMessage(chatId, T.pdfTextMode, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.lockpdf) {
+            session.mode = "lockpdf";
+            session.buffer = [];
+            session.pendingPdf = undefined;
+            await tgSendMessage(chatId, T.lockPdfMode, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+          if (text === BTN.unlockpdf) {
+            session.mode = "unlockpdf";
+            session.buffer = [];
+            session.pendingPdf = undefined;
+            await tgSendMessage(chatId, T.unlockPdfMode, msgId, pdfKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.tts) {
@@ -1206,6 +1254,40 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             }
             session.mode = "imgconv";
             session.lastImage = undefined;
+            return Response.json({ ok: true });
+          }
+
+          // Password input for lock/unlock PDF
+          if (session.mode === "lockpdf_password" && session.pendingPdf) {
+            const password = text.trim();
+            if (password.length < 4) {
+              await tgSendMessage(chatId, "⚠️ Password ត្រូវមានយ៉ាងតិច 4 តួ", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            await tgTyping(chatId, "upload_document");
+            try {
+              const out = await lockPdf(session.pendingPdf, password);
+              await tgSendDocumentBytes(chatId, out, "locked.pdf", `🔒 ដាក់ Password រួច`, msgId, pdfKeyboard);
+            } catch (e) {
+              console.error("lockpdf error", e);
+              await tgSendMessage(chatId, "❌ ដាក់ Password មិនបានសម្រេច", msgId, pdfKeyboard);
+            }
+            session.pendingPdf = undefined;
+            session.mode = "pdfmenu";
+            return Response.json({ ok: true });
+          }
+          if (session.mode === "unlockpdf_password" && session.pendingPdf) {
+            const password = text.trim();
+            await tgTyping(chatId, "upload_document");
+            try {
+              const out = await unlockPdf(session.pendingPdf, password);
+              await tgSendDocumentBytes(chatId, out, "unlocked.pdf", `🔓 ដក Password ចេញរួច`, msgId, pdfKeyboard);
+              session.pendingPdf = undefined;
+              session.mode = "pdfmenu";
+            } catch (e) {
+              console.error("unlockpdf error", e);
+              await tgSendMessage(chatId, "❌ Password មិនត្រឹមត្រូវ ឬ PDF មិនអាចដកបាន។ សូមព្យាយាមម្តងទៀត។", msgId, pdfKeyboard);
+            }
             return Response.json({ ok: true });
           }
 
@@ -1471,6 +1553,41 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             }
             return Response.json({ ok: true });
           }
+
+          // Lock PDF — receive PDF, then ask password
+          if (session.mode === "lockpdf") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.pendingPdf = new Uint8Array(f.bytes);
+            session.mode = "lockpdf_password";
+            await tgSendMessage(chatId, T.askLockPassword, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+
+          // Unlock PDF — receive PDF, then ask password
+          if (session.mode === "unlockpdf") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.pendingPdf = new Uint8Array(f.bytes);
+            session.mode = "unlockpdf_password";
+            await tgSendMessage(chatId, T.askUnlockPassword, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+
 
           // OCR
           if (session.mode === "ocr" && (photo || isImageDoc)) {
