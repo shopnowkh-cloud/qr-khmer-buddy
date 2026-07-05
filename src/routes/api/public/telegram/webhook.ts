@@ -183,7 +183,7 @@ const EMOJI = {
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
-    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.imgconv }],
+    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }],
     [{ text: BTN.ocr }, { text: BTN.translate }],
     [{ text: BTN.tts }],
   ],
@@ -235,7 +235,7 @@ const T = {
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ Multi-Tool Bot</b>\n\n" +
     "<b>🤖 មុខងារ៖</b>\n" +
     "📱 QR Code | 🖼️ Remove BG\n" +
-    "📄 PDF | 🎨 Image Format\n" +
+    "📄 PDF\n" +
     "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
     "🌐 បកប្រែ\n\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
