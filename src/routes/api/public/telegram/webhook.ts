@@ -1221,7 +1221,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.removebg) {
             session.mode = "removebg";
             session.buffer = [];
-            await tgSendMessage(chatId, T.removebgMode, msgId);
+            await tgSendMessage(chatId, T.removebgMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.shorturl) {
