@@ -236,7 +236,7 @@ const ttsKeyboard = {
 
 
 const homeKeyboard = {
-  keyboard: [[{ text: BTN.home }]],
+  keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
   resize_keyboard: true,
   is_persistent: true,
 };
