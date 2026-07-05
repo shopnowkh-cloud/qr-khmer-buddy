@@ -345,17 +345,22 @@ async function scanWithZxing(bytes: ArrayBuffer): Promise<string | null> {
     const { readBarcodesFromImageFile } = await import("@sec-ant/zxing-wasm/reader");
     const blob = new Blob([bytes]);
     const tryOpts = [
-      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "LocalAverage" as const },
-      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "GlobalHistogram" as const },
-      { tryHarder: true, tryInvert: true, tryDownscale: true, binarizer: "FixedThreshold" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, tryRotate: true, binarizer: "LocalAverage" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, tryRotate: true, binarizer: "GlobalHistogram" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: true, tryRotate: true, binarizer: "FixedThreshold" as const },
+      { tryHarder: true, tryInvert: true, tryDownscale: false, tryRotate: true, binarizer: "LocalAverage" as const },
     ];
     for (const opts of tryOpts) {
-      const results = await readBarcodesFromImageFile(blob, {
-        formats: ["QRCode", "MicroQRCode"],
-        ...opts,
-      });
-      const r = results?.[0];
-      if (r?.text) return r.text;
+      try {
+        const results = await readBarcodesFromImageFile(blob, {
+          formats: ["QRCode", "MicroQRCode"],
+          ...opts,
+        });
+        const r = results?.[0];
+        if (r?.text) return r.text;
+      } catch (inner) {
+        console.error("zxing inner error", inner);
+      }
     }
   } catch (e) {
     console.error("zxing scan error", e);
@@ -379,7 +384,10 @@ async function scanQrFromTelegramFile(fileId: string): Promise<string | null> {
   if (!f) return null;
   const local = await scanWithZxing(f.bytes);
   if (local) return local;
-  return await scanWithQrserver(f.bytes);
+  const remote = await scanWithQrserver(f.bytes);
+  if (remote) return remote;
+  // Last-resort: re-fetch as PNG via image transform if the file host supports it
+  return null;
 }
 
 function escapeHtml(s: string) {
@@ -1730,30 +1738,25 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // ===== Default QR mode =====
-          // Photo → scan
-
-          if (session.mode === "qr" && photo) {
-            await tgTyping(chatId, "typing");
-            try {
-              const scanned = await scanQrFromTelegramFile(photo.file_id);
-              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
-            } catch {
-              await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
+          // ===== QR scan: accept photo, sticker, or any document =====
+          if (session.mode === "qr") {
+            const sticker = msg.sticker as { file_id: string; is_animated?: boolean; is_video?: boolean } | undefined;
+            const qrFileId =
+              photo?.file_id ||
+              (sticker && !sticker.is_animated && !sticker.is_video ? sticker.file_id : null) ||
+              (doc ? doc.file_id : null);
+            if (qrFileId) {
+              await tgTyping(chatId, "typing");
+              try {
+                const scanned = await scanQrFromTelegramFile(qrFileId);
+                if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
+                else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
+              } catch (e) {
+                console.error("qr scan error", e);
+                await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
+              }
+              return Response.json({ ok: true });
             }
-            return Response.json({ ok: true });
-          }
-          if (session.mode === "qr" && isImageDoc) {
-            await tgTyping(chatId, "typing");
-            try {
-              const scanned = await scanQrFromTelegramFile(doc.file_id);
-              if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
-            } catch {
-              await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
-            }
-            return Response.json({ ok: true });
           }
 
           // Text handling by mode
