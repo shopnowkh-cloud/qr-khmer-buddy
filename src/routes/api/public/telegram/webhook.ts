@@ -404,7 +404,7 @@ type Mode =
   | "tts_ultra_text"
   | "ocr"
   | "translate"
-  | "currency"
+  
   | "imgconv"
   | "imgconv_pick";
 
