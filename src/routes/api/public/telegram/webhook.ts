@@ -1215,19 +1215,19 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.qr) {
             session.mode = "qr";
             session.buffer = [];
-            await tgSendMessage(chatId, T.qrMode, msgId, homeKeyboard);
+            await tgSendMessage(chatId, T.qrMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.removebg) {
             session.mode = "removebg";
             session.buffer = [];
-            await tgSendMessage(chatId, T.removebgMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.removebgMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.shorturl) {
             session.mode = "shorturl";
             session.buffer = [];
-            await tgSendMessage(chatId, T.shorturlMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.shorturlMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdf) {
@@ -1251,33 +1251,33 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.compresspdf) {
             session.mode = "compresspdf";
             session.buffer = [];
-            await tgSendMessage(chatId, T.compressMode, msgId, pdfKeyboard);
+            await tgSendMessage(chatId, T.compressMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdf2img) {
             session.mode = "pdf2img";
             session.buffer = [];
-            await tgSendMessage(chatId, T.pdf2imgMode, msgId, pdfKeyboard);
+            await tgSendMessage(chatId, T.pdf2imgMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.pdftext) {
             session.mode = "pdftext";
             session.buffer = [];
-            await tgSendMessage(chatId, T.pdfTextMode, msgId, pdfKeyboard);
+            await tgSendMessage(chatId, T.pdfTextMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.lockpdf) {
             session.mode = "lockpdf";
             session.buffer = [];
             session.pendingPdf = undefined;
-            await tgSendMessage(chatId, T.lockPdfMode, msgId, pdfKeyboard);
+            await tgSendMessage(chatId, T.lockPdfMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.unlockpdf) {
             session.mode = "unlockpdf";
             session.buffer = [];
             session.pendingPdf = undefined;
-            await tgSendMessage(chatId, T.unlockPdfMode, msgId, pdfKeyboard);
+            await tgSendMessage(chatId, T.unlockPdfMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.tts) {
@@ -1292,13 +1292,13 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.ttsBasic) {
             session.mode = "tts_basic";
-            await tgSendMessage(chatId, T.ttsBasicMode, msgId, ttsKeyboard);
+            await tgSendMessage(chatId, T.ttsBasicMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.ttsDesign) {
             session.mode = "tts_design_instr";
             session.ttsDesignInstr = undefined;
-            await tgSendMessage(chatId, T.ttsDesignAskInstr, msgId, ttsKeyboard);
+            await tgSendMessage(chatId, T.ttsDesignAskInstr, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.ttsClone) {
@@ -1306,41 +1306,42 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.ttsRefBytes = undefined;
             session.ttsRefMime = undefined;
             session.ttsRefTranscript = undefined;
-            await tgSendMessage(chatId, T.ttsCloneAskAudio, msgId, ttsKeyboard);
+            await tgSendMessage(chatId, T.ttsCloneAskAudio, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.ttsUltra) {
             session.mode = "tts_ultra_audio";
             session.ttsRefBytes = undefined;
             session.ttsRefMime = undefined;
-            await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId, ttsKeyboard);
+            await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.ocr) {
             session.mode = "ocr";
             session.buffer = [];
-            await tgSendMessage(chatId, T.ocrMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.ocrMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.translate) {
             session.mode = "translate";
             session.buffer = [];
-            await tgSendMessage(chatId, T.translateMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.translateMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.imgconv) {
             session.mode = "imgconv";
             session.buffer = [];
             session.lastImage = undefined;
-            await tgSendMessage(chatId, T.imgconvMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.imgconvMode, msgId);
             return Response.json({ ok: true });
           }
           if (text === BTN.fontstyle) {
             session.mode = "fontstyle";
             session.buffer = [];
-            await tgSendMessage(chatId, T.fontstyleMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.fontstyleMode, msgId);
             return Response.json({ ok: true });
           }
+
           if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
             const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
             await tgTyping(chatId, "upload_photo");
