@@ -176,6 +176,7 @@ const BTN = {
   ttsDesign: "🎨 រចនាសំឡេង",
   ttsClone: "👥 ក្លូនសំឡេង",
   ttsUltra: "✨ ក្លូនពេញលេញ",
+  fontstyle: "🅵 Font Style",
 };
 
 // Bot API 9.4 — custom emoji IDs on buttons (requires bot owner Premium; auto-fallback otherwise)
