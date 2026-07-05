@@ -402,6 +402,7 @@ function escapeHtml(s: string) {
 
 // ========== Session State (in-memory, per worker) ==========
 type Mode =
+  | "idle"
   | "qr"
   | "removebg"
   | "shorturl"
