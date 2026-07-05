@@ -1842,8 +1842,13 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             // Default: QR (only when user selected QR mode)
             if (session.mode === "qr") {
               await tgTyping(chatId, "upload_photo");
-              const url = buildQrUrl(text);
-              await tgSendPhotoUrl(chatId, url, "", msgId, homeKeyboard);
+              try {
+                const png = await generateQrPng(text);
+                await tgSendPhotoBytes(chatId, png, "qr.png", "", msgId, homeKeyboard);
+              } catch (e) {
+                console.error("qr generate error", e);
+                await tgSendMessage(chatId, "❌ បង្កើត QR មិនបានសម្រេច", msgId, homeKeyboard);
+              }
             }
           }
         } catch (err) {
