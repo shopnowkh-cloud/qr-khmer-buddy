@@ -1025,7 +1025,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
-          if (text === BTN.back) {
+          if (text === BTN.back || text === BTN.home) {
             session.mode = "idle";
             session.buffer = [];
             await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard);
