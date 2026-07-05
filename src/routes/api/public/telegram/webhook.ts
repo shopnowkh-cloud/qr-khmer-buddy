@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createHash, timingSafeEqual } from "crypto";
 
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
+const TG_API = () => `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
+const TG_FILE = () => `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
 function deriveWebhookSecret(key: string) {
   return createHash("sha256").update(`telegram-webhook:${key}`).digest("base64url");
@@ -15,13 +16,9 @@ function safeEqual(a: string, b: string) {
 }
 
 async function tg(method: string, body: unknown) {
-  const res = await fetch(`${GATEWAY_URL}/${method}`, {
+  const res = await fetch(`${TG_API()}/${method}`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   return res.json();
