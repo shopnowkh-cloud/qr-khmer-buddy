@@ -92,12 +92,8 @@ async function tgSendDocumentBytes(
   }
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("document", new Blob([bytes as unknown as BlobPart]), filename);
-  const res = await fetch(`${GATEWAY_URL}/sendDocument`, {
+  const res = await fetch(`${TG_API()}/sendDocument`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
     body: form,
   });
   return res.json();
@@ -125,12 +121,8 @@ async function tgSendAudioBytes(
   }
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("audio", new Blob([bytes as unknown as BlobPart], { type: "audio/mpeg" }), filename);
-  const res = await fetch(`${GATEWAY_URL}/sendAudio`, {
+  const res = await fetch(`${TG_API()}/sendAudio`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
     body: form,
   });
   return res.json();
@@ -371,12 +363,7 @@ async function downloadTgFile(fileId: string): Promise<{ bytes: ArrayBuffer; pat
     result?: { file_path: string };
   };
   if (!fileInfo.ok || !fileInfo.result?.file_path) return null;
-  const dl = await fetch(`${GATEWAY_URL}/file/${fileInfo.result.file_path}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
-  });
+  const dl = await fetch(`${TG_FILE()}/${fileInfo.result.file_path}`);
   if (!dl.ok) return null;
   return { bytes: await dl.arrayBuffer(), path: fileInfo.result.file_path };
 }
