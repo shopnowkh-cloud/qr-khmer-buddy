@@ -1608,7 +1608,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             if (session.mode === "qr") {
               await tgTyping(chatId, "upload_photo");
               const url = buildQrUrl(text);
-              await tgSendPhotoUrl(chatId, url, "", msgId, mainKeyboard);
+              await tgSendPhotoUrl(chatId, url, "", msgId, homeKeyboard);
             }
           }
         } catch (err) {
