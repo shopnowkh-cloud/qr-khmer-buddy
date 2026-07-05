@@ -1325,7 +1325,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.translate) {
             session.mode = "translate";
             session.buffer = [];
-            await tgSendMessage(chatId, T.translateMode, msgId);
+            await tgSendMessage(chatId, T.translateMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.imgconv) {
