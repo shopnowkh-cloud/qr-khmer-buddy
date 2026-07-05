@@ -1577,10 +1577,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               return Response.json({ ok: true });
             }
 
-            // Default: QR
-            await tgTyping(chatId, "upload_photo");
-            const url = buildQrUrl(text);
-            await tgSendPhotoUrl(chatId, url, "", msgId, mainKeyboard);
+            // Default: QR (only when user selected QR mode)
+            if (session.mode === "qr") {
+              await tgTyping(chatId, "upload_photo");
+              const url = buildQrUrl(text);
+              await tgSendPhotoUrl(chatId, url, "", msgId, mainKeyboard);
+            }
           }
         } catch (err) {
           console.error("telegram webhook error", err);
