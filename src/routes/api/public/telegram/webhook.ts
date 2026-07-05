@@ -416,7 +416,8 @@ type Mode =
   | "translate"
   
   | "imgconv"
-  | "imgconv_pick";
+  | "imgconv_pick"
+  | "fontstyle";
 
 interface Session {
   mode: Mode;
