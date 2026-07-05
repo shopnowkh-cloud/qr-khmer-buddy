@@ -228,7 +228,7 @@ const ttsKeyboard = {
   keyboard: [
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
-    [{ text: BTN.home }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
