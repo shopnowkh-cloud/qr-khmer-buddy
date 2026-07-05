@@ -1553,6 +1553,41 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // Lock PDF — receive PDF, then ask password
+          if (session.mode === "lockpdf") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.pendingPdf = new Uint8Array(f.bytes);
+            session.mode = "lockpdf_password";
+            await tgSendMessage(chatId, T.askLockPassword, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+
+          // Unlock PDF — receive PDF, then ask password
+          if (session.mode === "unlockpdf") {
+            if (!isPdfDoc) {
+              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            const f = await downloadTgFile(doc.file_id);
+            if (!f) {
+              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
+              return Response.json({ ok: true });
+            }
+            session.pendingPdf = new Uint8Array(f.bytes);
+            session.mode = "unlockpdf_password";
+            await tgSendMessage(chatId, T.askUnlockPassword, msgId, pdfKeyboard);
+            return Response.json({ ok: true });
+          }
+
+
           // OCR
           if (session.mode === "ocr" && (photo || isImageDoc)) {
             const fileId = photo ? photo.file_id : doc.file_id;
