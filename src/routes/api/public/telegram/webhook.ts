@@ -1479,7 +1479,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             try {
               const scanned = await scanQrFromTelegramFile(photo.file_id);
               if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, mainKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_parameters: { message_id: msgId, allow_sending_without_reply: true }, reply_markup: mainKeyboard });
+              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: mainKeyboard });
             } catch {
               await tgSendMessage(chatId, T.scanFail, msgId, mainKeyboard);
             }
@@ -1490,7 +1490,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             try {
               const scanned = await scanQrFromTelegramFile(doc.file_id);
               if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, mainKeyboard);
-              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_parameters: { message_id: msgId, allow_sending_without_reply: true }, reply_markup: mainKeyboard });
+              else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: mainKeyboard });
             } catch {
               await tgSendMessage(chatId, T.scanFail, msgId, mainKeyboard);
             }
