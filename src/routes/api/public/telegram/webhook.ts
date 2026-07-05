@@ -1313,7 +1313,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "tts_ultra_audio";
             session.ttsRefBytes = undefined;
             session.ttsRefMime = undefined;
-            await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId);
+            await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.ocr) {
