@@ -163,6 +163,7 @@ const BTN = {
   compresspdf: "📉 បង្រួម PDF",
   pdftext: "📝 អាន text ពី PDF",
   back: "⬅️ ត្រឡប់",
+  home: "ទំព័រដើម",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
   fmtPng: "→ PNG",
@@ -221,7 +222,7 @@ const ttsKeyboard = {
   keyboard: [
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
-    [{ text: BTN.back }],
+    [{ text: BTN.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
