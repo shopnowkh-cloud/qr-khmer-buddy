@@ -1263,7 +1263,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.pdftext) {
             session.mode = "pdftext";
             session.buffer = [];
-            await tgSendMessage(chatId, T.pdfTextMode, msgId);
+            await tgSendMessage(chatId, T.pdfTextMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.lockpdf) {
