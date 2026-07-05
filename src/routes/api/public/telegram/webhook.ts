@@ -1292,7 +1292,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.ttsBasic) {
             session.mode = "tts_basic";
-            await tgSendMessage(chatId, T.ttsBasicMode, msgId);
+            await tgSendMessage(chatId, T.ttsBasicMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.ttsDesign) {
