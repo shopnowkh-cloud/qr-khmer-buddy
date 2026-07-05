@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createHash, timingSafeEqual } from "crypto";
 
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
+const TG_API = () => `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
+const TG_FILE = () => `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
 function deriveWebhookSecret(key: string) {
   return createHash("sha256").update(`telegram-webhook:${key}`).digest("base64url");
@@ -15,13 +16,9 @@ function safeEqual(a: string, b: string) {
 }
 
 async function tg(method: string, body: unknown) {
-  const res = await fetch(`${GATEWAY_URL}/${method}`, {
+  const res = await fetch(`${TG_API()}/${method}`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   return res.json();
@@ -66,12 +63,8 @@ async function tgSendPhotoBytes(
   }
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("photo", new Blob([bytes as unknown as BlobPart]), filename);
-  const res = await fetch(`${GATEWAY_URL}/sendPhoto`, {
+  const res = await fetch(`${TG_API()}/sendPhoto`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
     body: form,
   });
   return res.json();
@@ -99,12 +92,8 @@ async function tgSendDocumentBytes(
   }
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("document", new Blob([bytes as unknown as BlobPart]), filename);
-  const res = await fetch(`${GATEWAY_URL}/sendDocument`, {
+  const res = await fetch(`${TG_API()}/sendDocument`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
     body: form,
   });
   return res.json();
@@ -132,12 +121,8 @@ async function tgSendAudioBytes(
   }
   if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
   form.append("audio", new Blob([bytes as unknown as BlobPart], { type: "audio/mpeg" }), filename);
-  const res = await fetch(`${GATEWAY_URL}/sendAudio`, {
+  const res = await fetch(`${TG_API()}/sendAudio`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
     body: form,
   });
   return res.json();
@@ -378,12 +363,7 @@ async function downloadTgFile(fileId: string): Promise<{ bytes: ArrayBuffer; pat
     result?: { file_path: string };
   };
   if (!fileInfo.ok || !fileInfo.result?.file_path) return null;
-  const dl = await fetch(`${GATEWAY_URL}/file/${fileInfo.result.file_path}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": process.env.TELEGRAM_API_KEY!,
-    },
-  });
+  const dl = await fetch(`${TG_FILE()}/${fileInfo.result.file_path}`);
   if (!dl.ok) return null;
   return { bytes: await dl.arrayBuffer(), path: fileInfo.result.file_path };
 }
@@ -982,7 +962,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const tgKey = process.env.TELEGRAM_API_KEY;
+        const tgKey = process.env.TELEGRAM_BOT_TOKEN;
         if (!tgKey || !process.env.LOVABLE_API_KEY) {
           return new Response("Not configured", { status: 500 });
         }
