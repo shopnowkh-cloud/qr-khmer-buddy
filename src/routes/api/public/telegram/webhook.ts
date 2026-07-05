@@ -153,7 +153,7 @@ const BTN = {
   pdf: "PDF",
   shorturl: "🔗 Short URL",
   tts: "🔊 សំឡេង (TTS)",
-  ocr: "🔍 OCR",
+  ocr: "🔍 Copy អក្សរ",
   translate: "🌐 បកប្រែ",
   imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
