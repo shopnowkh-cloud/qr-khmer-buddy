@@ -1319,7 +1319,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.ocr) {
             session.mode = "ocr";
             session.buffer = [];
-            await tgSendMessage(chatId, T.ocrMode, msgId);
+            await tgSendMessage(chatId, T.ocrMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.translate) {
