@@ -930,6 +930,62 @@ async function convertImageFormat(bytes: ArrayBuffer, mime: string, target: "png
   }
 }
 
+// ========== Feature: PDF → Image (via Gemini) ==========
+// Splits a PDF into single-page PDFs, then asks Gemini image model to render each page as PNG.
+async function extractPageAsPdf(bytes: Uint8Array, pageIndex: number): Promise<Uint8Array> {
+  const { PDFDocument } = await loadPdfLib();
+  const src = await PDFDocument.load(bytes);
+  const out = await PDFDocument.create();
+  const [copied] = await out.copyPages(src, [pageIndex]);
+  out.addPage(copied);
+  return await out.save();
+}
+
+async function renderPdfPageToImage(pageBytes: Uint8Array): Promise<Uint8Array | null> {
+  try {
+    const b64 = Buffer.from(pageBytes).toString("base64");
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Render this single-page PDF as a high-quality PNG image. Preserve all text, layout, colors, images, and graphics exactly as they appear on the page, at the original page aspect ratio. Do NOT add, remove, or modify any content.",
+              },
+              { type: "file", file: { filename: "page.pdf", file_data: `data:application/pdf;base64,${b64}` } },
+            ],
+          },
+        ],
+        modalities: ["image", "text"],
+      }),
+    });
+    if (!res.ok) {
+      console.error("pdf2img error", res.status, await res.text());
+      return null;
+    }
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { images?: Array<{ image_url?: { url?: string } }> } }>;
+    };
+    const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!url) return null;
+    const comma = url.indexOf(",");
+    const base = comma >= 0 ? url.slice(comma + 1) : url;
+    return new Uint8Array(Buffer.from(base, "base64"));
+  } catch (e) {
+    console.error("pdf2img exception", e);
+    return null;
+  }
+}
+
+
 // ========== Feature: Currency USD⇄KHR ==========
 async function convertCurrency(text: string): Promise<string | null> {
   const m = text.match(/^\s*([\d,.]+)\s*(usd|khr|\$|៛)\s*$/i);
