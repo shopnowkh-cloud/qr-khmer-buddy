@@ -263,6 +263,10 @@ const T = {
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
   pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
   pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
+  lockPdfMode: "🔒 <b>ដាក់ Password លើ PDF</b>\n\nផ្ញើឯកសារ PDF មុនសិន",
+  unlockPdfMode: "🔓 <b>ដក Password ចេញពី PDF</b>\n\nផ្ញើឯកសារ PDF ដែលមាន password",
+  askLockPassword: "🔑 សូមផ្ញើពាក្យសម្ងាត់ដែលចង់ប្រើ (យ៉ាងតិច 4 តួ)",
+  askUnlockPassword: "🔑 សូមផ្ញើពាក្យសម្ងាត់នៃ PDF នេះ",
   ttsMode:
     "🔊 <b>VoxCPM2 — Text to Speech</b>\n\n" +
     "ជ្រើសរើសរបៀប៖\n" +
