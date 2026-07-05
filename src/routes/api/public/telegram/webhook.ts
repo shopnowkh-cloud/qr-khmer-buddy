@@ -1252,6 +1252,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
+          // Idle mode: user must press a keyboard button first
+          if (session.mode === "idle") {
+            await tgSendMessage(
+              chatId,
+              "⚠️ សូមចុចប៊ូតុងខាងក្រោមដើម្បីជ្រើសរើសមុខងារមុននឹងប្រើ។",
+              msgId,
+              mainKeyboard,
+            );
+            return Response.json({ ok: true });
+          }
+
           // ===== File/photo handling by mode =====
           const photo = msg.photo && Array.isArray(msg.photo) && msg.photo.length
             ? msg.photo[msg.photo.length - 1]
