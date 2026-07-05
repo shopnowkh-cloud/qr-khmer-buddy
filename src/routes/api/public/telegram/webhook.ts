@@ -1335,6 +1335,12 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.imgconvMode, msgId, mainKeyboard);
             return Response.json({ ok: true });
           }
+          if (text === BTN.fontstyle) {
+            session.mode = "fontstyle";
+            session.buffer = [];
+            await tgSendMessage(chatId, T.fontstyleMode, msgId, mainKeyboard);
+            return Response.json({ ok: true });
+          }
           if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
             const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
             await tgTyping(chatId, "upload_photo");
