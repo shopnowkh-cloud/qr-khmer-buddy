@@ -185,7 +185,7 @@ const mainKeyboard = {
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.imgconv }],
     [{ text: BTN.ocr }, { text: BTN.translate }],
-    [{ text: BTN.tts }, { text: BTN.shorturl }],
+    [{ text: BTN.tts }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -237,7 +237,7 @@ const T = {
     "📱 QR Code | 🖼️ Remove BG\n" +
     "📄 PDF | 🎨 Image Format\n" +
     "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
-    "🌐 បកប្រែ | 🔗 Short URL\n\n" +
+    "🌐 បកប្រែ\n\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
   qrMode:
     "📱 <b>QR Code Mode</b>\n\n" +
