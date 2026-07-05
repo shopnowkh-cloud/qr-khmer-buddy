@@ -1819,9 +1819,9 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
                 return Response.json({ ok: true });
               }
               const styles = buildFancyList(input);
-              const lines = styles.map((s) => `<b>${s.label}</b>\n<code>${escapeHtml(s.value)}</code>`);
-              const body = `🅵 <b>Font Styles</b>\n\n${lines.join("\n\n")}\n\n<i>ចុចលើអក្សរដើម្បី Copy</i>`;
-              await tgSendMessage(chatId, body, msgId, mainKeyboard);
+              const rows = styles.map((s) => [{ text: s.value, copy_text: { text: s.value } }]);
+              const body = `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`;
+              await tgSendMessage(chatId, body, msgId, { inline_keyboard: rows });
               return Response.json({ ok: true });
             }
             if (session.mode === "translate") {
