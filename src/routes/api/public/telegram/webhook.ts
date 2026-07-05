@@ -154,7 +154,7 @@ const BTN = {
   pdf: "PDF",
   shorturl: "🔗 Short URL",
   tts: "បង្កើតសំឡេង Ai",
-  ocr: "🔈 Copy អក្សរ",
+  ocr: "Copy អក្សរ",
   translate: "🌐 បកប្រែ",
   imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
