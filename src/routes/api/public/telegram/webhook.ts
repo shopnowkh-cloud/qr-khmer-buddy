@@ -154,7 +154,7 @@ const BTN = {
   pdf: "PDF",
   shorturl: "🔗 Short URL",
   tts: "បង្កើតសំឡេង Ai",
-  ocr: "🔍 Copy អក្សរ",
+  ocr: "🔈 Copy អក្សរ",
   translate: "🌐 បកប្រែ",
   imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
@@ -180,13 +180,14 @@ const BTN = {
 const EMOJI = {
   pdf: "5838982342122674517", // 📄
   qr: "5440410042773824003", // 🔗
+  ocr: "5388946907114527048", // 🔈
 };
 
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }],
-    [{ text: BTN.ocr }],
+    [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }],
     [{ text: BTN.tts }],
   ],
   resize_keyboard: true,
