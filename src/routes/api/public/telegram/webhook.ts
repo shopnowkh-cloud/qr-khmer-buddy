@@ -1298,7 +1298,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.ttsDesign) {
             session.mode = "tts_design_instr";
             session.ttsDesignInstr = undefined;
-            await tgSendMessage(chatId, T.ttsDesignAskInstr, msgId);
+            await tgSendMessage(chatId, T.ttsDesignAskInstr, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.ttsClone) {
