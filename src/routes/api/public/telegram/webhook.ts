@@ -198,7 +198,6 @@ const EMOJI = {
 
 const mainKeyboard = {
   keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
     [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
@@ -248,10 +247,19 @@ const ttsKeyboard = {
 };
 
 
-// "homeKeyboard" was previously just the home button alone. Now it exposes the
-// full main menu so every feature (and the home button) stays visible even
-// while the user is inside another mode.
-const homeKeyboard = mainKeyboard;
+// Sub-mode keyboard: shows the home button on top, then all main features
+// so the user can jump back home or switch mode anytime — but the actual
+// main/idle keyboard (mainKeyboard) has NO home button.
+const homeKeyboard = {
+  keyboard: [
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
+    [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
+    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
+  ],
+  resize_keyboard: true,
+  is_persistent: true,
+};
 
 
 
