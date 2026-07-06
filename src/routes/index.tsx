@@ -39,9 +39,10 @@ function Index() {
       <section className="pt-6 sm:pt-10">
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span>
             Web • Telegram Bot • គ្មានចាំបាច់ login
           </div>
+
           <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
             Multi-Tools <span className="text-primary">សម្រាប់មនុស្សគ្រប់គ្នា</span>{" "}
             <span className="flame-wrap" aria-hidden="true">
