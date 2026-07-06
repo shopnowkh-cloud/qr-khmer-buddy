@@ -58,8 +58,9 @@ function Index() {
               to="/qr"
               className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
             >
-              ចាប់ផ្តើម →
+              ចាប់ផ្តើម <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span> →
             </Link>
+
             <Link
               to="/fonts"
               className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent"
