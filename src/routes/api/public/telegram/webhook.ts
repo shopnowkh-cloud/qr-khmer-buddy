@@ -24,6 +24,15 @@ async function tg(method: string, body: unknown) {
   return res.json();
 }
 
+// Returns the reply_markup to attach. If caller passed one, use it as-is.
+// Otherwise default to the persistent mainKeyboard so the "ទំព័រដើម" button never disappears.
+// Inline keyboards are passed through untouched (they cannot coexist with a reply keyboard).
+function ensureKb(reply_markup?: unknown): unknown {
+  if (reply_markup) return reply_markup;
+  // mainKeyboard is defined later in the module; runtime lookup is safe.
+  return mainKeyboard;
+}
+
 async function tgSendPhotoUrl(
   chat_id: number,
   photoUrl: string,
