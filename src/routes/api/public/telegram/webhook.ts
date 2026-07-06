@@ -1815,13 +1815,14 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             if (session.mode === "fontstyle") {
               const input = text.trim();
               if (!input) {
-                await tgSendMessage(chatId, "⚠️ សូមសរសេរអក្សរអង់គ្លេស", msgId, mainKeyboard);
+                await tgSendMessage(chatId, "⚠️ សូមសរសេរអក្សរអង់គ្លេស", msgId, homeKeyboard);
                 return Response.json({ ok: true });
               }
               const styles = buildFancyList(input);
               const rows = styles.map((s) => [{ text: s.value, copy_text: { text: s.value } }]);
               const body = `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`;
               await tgSendMessage(chatId, body, msgId, { inline_keyboard: rows });
+              await tgSendMessage(chatId, "⬇️ ជ្រើសរើសមុខងារបន្ថែម", undefined, homeKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "translate") {
