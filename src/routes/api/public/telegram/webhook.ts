@@ -955,33 +955,8 @@ async function voxcpmGenerateOnce(textInput: string, opts: VoxOpts, uploadedPath
   throw new Error("No audio URL from VoxCPM");
 }
 
-async function synthesizeSpeechOpus(text: string, instructions?: string): Promise<Uint8Array | null> {
-  try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-4o-mini-tts",
-        input: text.slice(0, 4000),
-        voice: "alloy",
-        response_format: "opus",
-        ...(instructions ? { instructions: instructions.slice(0, 500) } : {}),
-      }),
-      signal: AbortSignal.timeout(60000),
-    });
-    if (!res.ok) {
-      console.error("gateway tts failed", res.status, await res.text().catch(() => ""));
-      return null;
-    }
-    return new Uint8Array(await res.arrayBuffer());
-  } catch (e) {
-    console.error("gateway tts error", e);
-    return null;
-  }
-}
+
+
 
 async function synthesizeSpeech(text: string, opts: VoxOpts = {}): Promise<Uint8Array | null> {
   const input = text.slice(0, 1000);
