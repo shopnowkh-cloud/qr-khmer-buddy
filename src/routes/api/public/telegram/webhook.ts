@@ -1037,7 +1037,10 @@ async function geminiText(prompt: string, opts?: { image?: { b64: string; mime: 
       }),
     });
     if (!res.ok) {
-      console.error("gemini error", res.status, await res.text());
+      const errText = await res.text();
+      console.error("gemini error", res.status, errText);
+      if (res.status === 402) return "__NO_CREDITS__";
+      if (res.status === 429) return "__RATE_LIMIT__";
       return null;
     }
     const data = (await res.json()) as {
