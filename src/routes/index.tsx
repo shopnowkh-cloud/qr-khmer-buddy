@@ -77,9 +77,8 @@ function Index() {
             <Link
               key={i}
               to={f.to}
-              className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 transition hover:border-primary/40 hover:bg-card/80"
+              className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 hover:border-primary/40"
             >
-              <div className={`pointer-events-none absolute inset-0 -z-0 bg-gradient-to-br ${f.accent} opacity-0 transition group-hover:opacity-100`} />
               <div className="relative">
                 <div className="grid h-11 w-11 place-items-center rounded-xl bg-background/60 text-2xl">
                   {f.icon}
@@ -88,9 +87,10 @@ function Index() {
                   {f.title} <span className="flame-wrap" aria-hidden="true"><span className="flame text-sm">🔥</span></span>
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
-                <span className="mt-4 inline-flex text-xs font-medium text-primary opacity-0 transition group-hover:opacity-100">
+                <span className="mt-4 inline-flex text-xs font-medium text-primary">
                   បើកឥឡូវ →
                 </span>
+
 
               </div>
             </Link>
