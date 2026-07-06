@@ -145,16 +145,7 @@ async function tgTyping(chat_id: number, action: "typing" | "upload_photo" | "up
   return tg("sendChatAction", { chat_id, action });
 }
 
-const MESSAGE_EFFECTS = [
-  "5104841245755180586", // 🔥
-  "5107584321108051014", // 👍
-  "5159385139981059251", // ❤️
-  "5046509860389126442", // 🎉
-];
-
-function pickRandom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+const FIRE_MESSAGE_EFFECT = "5104841245755180586"; // 🔥 only
 
 // ========== Menu / Keyboards ==========
 const BTN = {
@@ -1240,7 +1231,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === "/start" || text === "/menu") {
             session.mode = "idle";
             session.buffer = [];
-            await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard, pickRandom(MESSAGE_EFFECTS));
+            await tgSendMessage(chatId, T.welcome, msgId, mainKeyboard, FIRE_MESSAGE_EFFECT);
             return Response.json({ ok: true });
           }
 
