@@ -166,7 +166,7 @@ const BTN = {
   lockpdf: "🔒 ដាក់ Password",
   unlockpdf: "🔓 ដកចេញ Password",
   back: "⬅️ ត្រឡប់",
-  home: "ទំព័រដើម",
+  home: "ត្រឡប់ទំព័រដើម",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
   fmtPng: "→ PNG",
