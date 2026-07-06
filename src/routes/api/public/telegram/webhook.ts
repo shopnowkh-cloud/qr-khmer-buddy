@@ -322,15 +322,41 @@ const T = {
 };
 
 async function generateQrPng(text: string): Promise<Uint8Array> {
-  const QRCode = (await import("qrcode")).default;
-  const buf = await QRCode.toBuffer(text, {
-    type: "png",
-    errorCorrectionLevel: "H",
-    margin: 2,
-    width: 512,
-    color: { dark: "#000000", light: "#FFFFFF" },
-  });
-  return new Uint8Array(buf);
+  // Worker-compatible: qrcode-generator (pure JS matrix) + UPNG (pure JS PNG encoder).
+  // Avoids the "qrcode" npm package which needs Node's Buffer/stream/pngjs.
+  const qrGen = (await import("qrcode-generator")).default;
+  const UPNG = (await import("upng-js")).default;
+
+  const qr = qrGen(0, "H");
+  qr.addData(text, "Byte");
+  qr.make();
+  const modules: number = qr.getModuleCount();
+
+  const scale = 12;
+  const margin = 4;
+  const size = (modules + margin * 2) * scale;
+  const rgba = new Uint8Array(size * size * 4);
+  // Fill white
+  for (let i = 0; i < rgba.length; i += 4) {
+    rgba[i] = 255; rgba[i + 1] = 255; rgba[i + 2] = 255; rgba[i + 3] = 255;
+  }
+  // Paint dark modules
+  for (let r = 0; r < modules; r++) {
+    for (let c = 0; c < modules; c++) {
+      if (!qr.isDark(r, c)) continue;
+      const x0 = (c + margin) * scale;
+      const y0 = (r + margin) * scale;
+      for (let dy = 0; dy < scale; dy++) {
+        const row = (y0 + dy) * size;
+        for (let dx = 0; dx < scale; dx++) {
+          const idx = (row + x0 + dx) * 4;
+          rgba[idx] = 0; rgba[idx + 1] = 0; rgba[idx + 2] = 0; rgba[idx + 3] = 255;
+        }
+      }
+    }
+  }
+  const png: ArrayBuffer = UPNG.encode([rgba.buffer], size, size, 0);
+  return new Uint8Array(png);
 }
 
 async function scanWithQrserver(bytes: ArrayBuffer): Promise<string | null> {
