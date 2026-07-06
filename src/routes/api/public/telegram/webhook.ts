@@ -504,14 +504,11 @@ function buildFancyList(input: string): { label: string; value: string }[] {
 type Mode =
   | "idle"
   | "qr"
-  | "removebg"
   | "shorturl"
   | "pdfmenu"
   | "img2pdf"
-  | "pdf2img"
   | "mergepdf"
   | "compresspdf"
-  | "pdftext"
   | "lockpdf"
   | "lockpdf_password"
   | "unlockpdf"
@@ -526,23 +523,18 @@ type Mode =
   | "tts_clone_text"
   | "tts_ultra_audio"
   | "tts_ultra_text"
-  | "ocr"
-  | "translate"
-  
-  | "imgconv"
-  | "imgconv_pick"
   | "fontstyle";
 
 interface Session {
   mode: Mode;
   buffer: Uint8Array[];
-  lastImage?: { bytes: Uint8Array; mime: string };
   ttsDesignInstr?: string;
   ttsRefBytes?: Uint8Array;
   ttsRefMime?: string;
   ttsRefTranscript?: string;
   pendingPdf?: Uint8Array;
 }
+
 const sessions = new Map<number, Session>();
 
 function getSession(chatId: number): Session {
