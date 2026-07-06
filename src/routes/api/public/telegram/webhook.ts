@@ -1492,9 +1492,9 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               chat_id: chatId,
               text: "⚠️ សូមចុចប៊ូតុងខាងក្រោមដើម្បីជ្រើសរើសមុខងារមុននឹងប្រើ។",
               parse_mode: "HTML",
-              reply_markup: { remove_keyboard: true },
+              reply_markup: mainKeyboard,
             });
-            await tgSendMessage(chatId, "⬇️ ជ្រើសរើសមុខងារ", undefined, mainKeyboard);
+
             return Response.json({ ok: true });
           }
 
