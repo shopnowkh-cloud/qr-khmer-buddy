@@ -1912,6 +1912,9 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               try {
                 const png = await generateQrPng(text);
                 await tgSendPhotoBytes(chatId, png, "qr.png", "", msgId, homeOnlyKeyboard);
+                // Follow-up text so the reply keyboard is the newest reply_markup —
+                // some Telegram clients don't refresh the keyboard after a photo alone.
+                await tgSendMessage(chatId, "🏘 ត្រឡប់ទំព័រដើម", undefined, homeOnlyKeyboard);
               } catch (e) {
                 console.error("qr generate error", e);
                 await tgSendMessage(chatId, "❌ បង្កើត QR មិនបានសម្រេច", msgId, homeOnlyKeyboard);
