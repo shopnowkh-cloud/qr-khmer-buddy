@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as RemoveBgRouteImport } from './routes/remove-bg'
 import { Route as QrRouteImport } from './routes/qr'
 import { Route as FontsRouteImport } from './routes/fonts'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/publi
 const ToolsRoute = ToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RemoveBgRoute = RemoveBgRouteImport.update({
+  id: '/remove-bg',
+  path: '/remove-bg',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QrRoute = QrRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/fonts': typeof FontsRoute
   '/qr': typeof QrRoute
+  '/remove-bg': typeof RemoveBgRoute
   '/tools': typeof ToolsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fonts': typeof FontsRoute
   '/qr': typeof QrRoute
+  '/remove-bg': typeof RemoveBgRoute
   '/tools': typeof ToolsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
@@ -61,19 +69,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/fonts': typeof FontsRoute
   '/qr': typeof QrRoute
+  '/remove-bg': typeof RemoveBgRoute
   '/tools': typeof ToolsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/fonts' | '/qr' | '/tools' | '/api/public/telegram/webhook'
+  fullPaths:
+    | '/'
+    | '/fonts'
+    | '/qr'
+    | '/remove-bg'
+    | '/tools'
+    | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fonts' | '/qr' | '/tools' | '/api/public/telegram/webhook'
+  to:
+    | '/'
+    | '/fonts'
+    | '/qr'
+    | '/remove-bg'
+    | '/tools'
+    | '/api/public/telegram/webhook'
   id:
     | '__root__'
     | '/'
     | '/fonts'
     | '/qr'
+    | '/remove-bg'
     | '/tools'
     | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
@@ -82,6 +104,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FontsRoute: typeof FontsRoute
   QrRoute: typeof QrRoute
+  RemoveBgRoute: typeof RemoveBgRoute
   ToolsRoute: typeof ToolsRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
@@ -93,6 +116,13 @@ declare module '@tanstack/react-router' {
       path: '/tools'
       fullPath: '/tools'
       preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/remove-bg': {
+      id: '/remove-bg'
+      path: '/remove-bg'
+      fullPath: '/remove-bg'
+      preLoaderRoute: typeof RemoveBgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/qr': {
@@ -130,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FontsRoute: FontsRoute,
   QrRoute: QrRoute,
+  RemoveBgRoute: RemoveBgRoute,
   ToolsRoute: ToolsRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }

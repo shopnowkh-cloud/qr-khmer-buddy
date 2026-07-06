@@ -120,7 +120,7 @@ export const removeBgFromBase64 = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const bytes = b64ToBytes(data.base64);
-    const ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+    const ab = bytes.slice().buffer as ArrayBuffer;
 
     // Path 1: graphic on white → lossless local key
     const decoded = await decodeToRgba(ab, data.mime);
