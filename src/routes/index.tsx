@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Feature = {
-  to: "/qr" | "/fonts" | "/tools";
+  to: "/qr" | "/fonts" | "/tools" | "/remove-bg";
   icon: string;
   title: string;
   desc: string;
@@ -27,7 +27,7 @@ type Feature = {
 const FEATURES: Feature[] = [
   { to: "/qr", icon: "📱", title: "QR Code", desc: "បង្កើត និងស្កេន QR", accent: "from-blue-500/20 to-blue-500/5" },
   { to: "/fonts", icon: "🅵", title: "Font Styles", desc: "អក្សរ Unicode 14 style", accent: "from-fuchsia-500/20 to-fuchsia-500/5" },
-  { to: "/tools", icon: "🖼️", title: "Remove BG", desc: "លុប background រូបភាព", accent: "from-emerald-500/20 to-emerald-500/5" },
+  { to: "/remove-bg", icon: "🖼️", title: "Remove BG", desc: "លុប background រូបភាព", accent: "from-emerald-500/20 to-emerald-500/5" },
   { to: "/tools", icon: "📄", title: "PDF Tools", desc: "រូបភាព↔PDF, merge, compress", accent: "from-amber-500/20 to-amber-500/5" },
   { to: "/tools", icon: "🔊", title: "TTS សំឡេង", desc: "អក្សរ → សំឡេង AI", accent: "from-pink-500/20 to-pink-500/5" },
   { to: "/tools", icon: "🔍", title: "OCR", desc: "ស្រង់អក្សរពីរូបភាព", accent: "from-cyan-500/20 to-cyan-500/5" },
