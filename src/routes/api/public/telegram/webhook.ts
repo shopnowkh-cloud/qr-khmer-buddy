@@ -65,7 +65,7 @@ async function tgSendPhotoBytes(
     form.append("parse_mode", "HTML");
   }
   void reply_to;
-  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("reply_markup", JSON.stringify(ensureKb(reply_markup)));
   form.append("photo", new Blob([bytes as unknown as BlobPart]), filename);
   const res = await fetch(`${TG_API()}/sendPhoto`, {
     method: "POST",
