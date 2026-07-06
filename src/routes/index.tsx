@@ -84,11 +84,14 @@ function Index() {
                 <div className="grid h-11 w-11 place-items-center rounded-xl bg-background/60 text-2xl">
                   {f.icon}
                 </div>
-                <h3 className="mt-4 font-display text-lg font-semibold">{f.title}</h3>
+                <h3 className="mt-4 font-display text-lg font-semibold">
+                  {f.title} <span className="flame-wrap" aria-hidden="true"><span className="flame text-sm">🔥</span></span>
+                </h3>
                 <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
                 <span className="mt-4 inline-flex text-xs font-medium text-primary opacity-0 transition group-hover:opacity-100">
                   បើកឥឡូវ →
                 </span>
+
               </div>
             </Link>
           ))}
