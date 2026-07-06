@@ -241,23 +241,20 @@ const T = {
   welcome:
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ Multi-Tool Bot</b>\n\n" +
     "<b>🤖 មុខងារ៖</b>\n" +
-    "📱 QR Code | 🖼️ Remove BG\n" +
-    "📄 PDF\n" +
-    "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
+    "📱 QR Code | 🅵 Font Style\n" +
+    "📄 PDF Tools | 🔊 TTS សំឡេង\n" +
+    "🔗 Short URL\n" +
     "\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
   qrMode:
     "📱 <b>QR Code Mode</b>\n\n" +
     "• សរសេរអក្សរ ឬតំណ → បង្កើត QR\n" +
     "• ផ្ញើរូបភាព → ស្កេន QR",
-  removebgMode: "🖼️ <b>Remove Background</b>\n\nផ្ញើរូបភាព ដើម្បីលុប background",
   shorturlMode: "🔗 <b>Short URL</b>\n\nផ្ញើតំណ (URL) ដើម្បីបង្រួម",
   pdfMenu: '<tg-emoji emoji-id="5838982342122674517">📄</tg-emoji> <b>PDF Tools</b>\n\nជ្រើសរើសមុខងារ៖',
   img2pdfMode: "🖼️→📄 <b>រូបភាព → PDF</b>\n\nផ្ញើរូបភាពមួយ ឬច្រើន រួចចុច <b>✅ បញ្ចប់</b>",
   mergeMode: "➕ <b>បញ្ចូល PDF</b>\n\nផ្ញើ PDF ចាប់ពី 2 ឯកសារឡើងទៅ រួចចុច <b>✅ បញ្ចប់</b>",
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
-  pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
-  pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
   lockPdfMode: "🔒 <b>ដាក់ Password លើ PDF</b>\n\nផ្ញើឯកសារ PDF មុនសិន",
   unlockPdfMode: "🔓 <b>ដក Password ចេញពី PDF</b>\n\nផ្ញើឯកសារ PDF ដែលមាន password",
   askLockPassword: "🔑 សូមផ្ញើពាក្យសម្ងាត់ដែលចង់ប្រើ (យ៉ាងតិច 4 តួ)",
@@ -288,9 +285,7 @@ const T = {
     "✨ <b>ក្លូនពេញលេញ — ជំហាន 1/2</b>\n\n" +
     "ផ្ញើ voice message ឬឯកសារសំឡេង (5–15 វិនាទី) ជាគំរូ",
   ttsUltraAskText: "✨ <b>ជំហាន 2/2</b>\n\nសរសេរអក្សរដែលអ្នកចង់ឲ្យសំឡេងនិយាយ",
-  ocrMode: "🔍 <b>OCR</b>\n\nផ្ញើរូបភាព → អានអក្សរចេញពីរូប",
-  translateMode: "🌐 <b>បកប្រែ</b>\n\nសរសេរអក្សរ → បកប្រែស្វ័យប្រវត្តិ ខ្មែរ ⇄ អង់គ្លេស",
-  imgconvMode: "🎨 <b>ប្តូរ Format រូបភាព</b>\n\nផ្ញើរូបភាព រួចជ្រើសរើស format",
+
   fontstyleMode:
     "🅵 <b>Font Style</b>\n\n" +
     "សរសេរអក្សរអង់គ្លេស (A–Z, 0–9) → បង្កើតជា Style ផ្សេងៗ\n" +
