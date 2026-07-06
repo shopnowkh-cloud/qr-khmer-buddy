@@ -1439,36 +1439,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
 
-          // Remove BG
-          if (session.mode === "removebg" && (photo || isImageDoc)) {
-            const fileId = photo ? photo.file_id : doc.file_id;
-            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
-            await tgTyping(chatId, "upload_photo");
-            const f = await downloadTgFile(fileId);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            // Primary: AI + smart local removal
-            let out = await removeBackground(f.bytes, mime);
-            let caption = "✅ លុប background រួច";
-            // Fallback 1: force local white-to-transparent (works for any image on light bg)
-            if (!out) {
-              out = await forceWhiteToTransparent(f.bytes, mime);
-              if (out) caption = "⚠️ AI បរាជ័យ — បានប្រើវិធីលុបផ្ទៃសលោកាល";
-            }
-            // Fallback 2: return original re-encoded as PNG with alpha channel preserved
-            if (!out) {
-              out = await reencodeAsPng(f.bytes, mime);
-              if (out) caption = "⚠️ លុប background មិនបានសម្រេច — បានរក្សាទុករូបដើមជា PNG";
-            }
-            if (!out) {
-              await tgSendMessage(chatId, "❌ លុប background មិនបានសម្រេច", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            await tgSendDocumentBytes(chatId, out, "no-bg.png", caption, msgId, mainKeyboard);
-            return Response.json({ ok: true });
-          }
+
+
 
           // Image → PDF (collect)
           if (session.mode === "img2pdf" && (photo || isImageDoc)) {
