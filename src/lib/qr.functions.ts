@@ -67,8 +67,6 @@ export const scanQrFromBase64 = createServerFn({ method: "POST" })
         {
           formats: ["QRCode", "MicroQRCode"],
           tryHarder: true,
-          tryInvert: true,
-          tryDownscale: true,
         },
       );
       if (results && results.length && results[0].text) {
