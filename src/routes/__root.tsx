@@ -77,17 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Khmer Multi-Tools Bot — QR, TTS, PDF & More" },
-      { name: "description", content: "Telegram bot ភាសាខ្មែរ៖ QR Code, បម្លែងសំឡេង (TTS), PDF Tools, OCR, បកប្រែ, ប្តូររូបិយប័ណ្ណ ដោយឥតគិតថ្លៃ។" },
-      { name: "author", content: "Shopnowkh" },
-      { property: "og:site_name", content: "Khmer Multi-Tools Bot" },
-      { property: "og:title", content: "Khmer Multi-Tools Bot — QR, TTS, PDF & More" },
-      { property: "og:description", content: "Telegram bot ភាសាខ្មែរ៖ QR, TTS (VoxCPM2), PDF, OCR, បកប្រែ និងច្រើនទៀត។" },
+      { title: "Lim Sovannrady — Developer Portfolio" },
+      { name: "description", content: "អ្នកអភិវឌ្ឍន៍កម្មវិធីកម្រិតខ្ពស់ — បង្កើតបទពិសោធន៍ឌីជីថលដ៏អស្ចារ្យ ដោយកូដស្អាត និងបច្ចេកវិទ្យាទំនើប។" },
+      { name: "author", content: "Lim Sovannrady" },
+      { property: "og:site_name", content: "Lim Sovannrady" },
+      { property: "og:title", content: "Lim Sovannrady — Developer Portfolio" },
+      { property: "og:description", content: "អ្នកអភិវឌ្ឍន៍កម្មវិធីកម្រិតខ្ពស់ ដែលបង្កើតបទពិសោធន៍ឌីជីថលដ៏អស្ចារ្យ។" },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://qr-khmer-buddy.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Khmer Multi-Tools Bot" },
-      { name: "twitter:description", content: "Telegram bot ភាសាខ្មែរ៖ QR, TTS, PDF, OCR, បកប្រែ។" },
+      { name: "twitter:title", content: "Lim Sovannrady — Developer Portfolio" },
+      { name: "twitter:description", content: "អ្នកអភិវឌ្ឍន៍កម្មវិធីកម្រិតខ្ពស់ — កូដស្អាត បច្ចេកវិទ្យាទំនើប។" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -95,7 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@200;300;400;500;600;700;800&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        children: `(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;var r=document.documentElement;if(d){r.classList.add('dark');}else{r.classList.remove('dark');}}catch(e){}})();`,
       },
     ],
   }),
@@ -125,46 +129,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background text-foreground">
-        <Navbar />
-        <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 sm:pt-10">
-          <Outlet />
-        </main>
+        <Outlet />
       </div>
     </QueryClientProvider>
-  );
-}
-
-function Navbar() {
-  const links = [
-    { to: "/", label: "ទំព័រដើម" },
-    { to: "/qr", label: "QR" },
-    { to: "/remove-bg", label: "Remove BG" },
-    { to: "/fonts", label: "Fonts" },
-    { to: "/tools", label: "Tools" },
-  ] as const;
-  return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">◈</span>
-          <span className="font-display text-base font-semibold tracking-tight">Multi-Tools</span>
-          <span className="flame-wrap ml-1" aria-hidden="true"><span className="flame text-sm">🔥</span></span>
-        </Link>
-
-        <nav className="flex items-center gap-1">
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
-              activeProps={{ className: "rounded-md px-3 py-1.5 text-sm text-foreground bg-accent" }}
-              activeOptions={{ exact: l.to === "/" }}
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
   );
 }
