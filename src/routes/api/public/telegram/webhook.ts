@@ -1820,9 +1820,9 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               }
               const styles = buildFancyList(input);
               const rows = styles.map((s) => [{ text: s.value, copy_text: { text: s.value } }]);
-              const body = `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`;
-              await tgSendMessage(chatId, body, msgId, { inline_keyboard: rows });
-              await tgSendMessage(chatId, "⬇️ ជ្រើសរើសមុខងារបន្ថែម", undefined, homeKeyboard);
+              // Re-assert the persistent "ទំព័រដើម" reply keyboard first, then the inline copy buttons.
+              await tgSendMessage(chatId, `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`, msgId, homeKeyboard);
+              await tgSendMessage(chatId, "⬇️", undefined, { inline_keyboard: rows });
               return Response.json({ ok: true });
             }
             if (session.mode === "translate") {
