@@ -113,7 +113,7 @@ async function tgSendAudioBytes(
     form.append("parse_mode", "HTML");
   }
   void reply_to;
-  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("reply_markup", JSON.stringify(ensureKb(reply_markup)));
   void filename;
   form.append("voice", new Blob([bytes as unknown as BlobPart], { type: "audio/ogg" }), "voice.ogg");
   const res = await fetch(`${TG_API()}/sendVoice`, {
