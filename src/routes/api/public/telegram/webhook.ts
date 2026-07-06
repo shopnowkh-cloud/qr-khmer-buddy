@@ -135,8 +135,8 @@ async function tgSendMessage(
     chat_id,
     text,
     parse_mode: "HTML",
-    ...(reply_to ? {} : {}),
-    ...(reply_markup ? { reply_markup } : {}),
+    reply_markup: ensureKb(reply_markup),
+    ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
     ...(message_effect_id ? { message_effect_id } : {}),
   });
 }
