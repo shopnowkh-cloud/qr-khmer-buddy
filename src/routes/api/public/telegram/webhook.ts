@@ -261,6 +261,14 @@ const homeKeyboard = {
   is_persistent: true,
 };
 
+// Slim keyboard — ONLY the home button. Used inside QR mode so the user
+// isn't distracted by other features while generating/scanning.
+const homeOnlyKeyboard = {
+  keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 
 
 // ========== Text ==========
@@ -1277,7 +1285,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           if (text === BTN.qr) {
             session.mode = "qr";
             session.buffer = [];
-            await tgSendMessage(chatId, T.qrMode, msgId, homeKeyboard);
+            await tgSendMessage(chatId, T.qrMode, msgId, homeOnlyKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.removebg) {
@@ -1481,7 +1489,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               session.mode = "pdfmenu";
               return Response.json({ ok: true });
             }
-            await tgSendMessage(chatId, T.qrMode, msgId, mainKeyboard);
+            await tgSendMessage(chatId, T.qrMode, msgId, homeOnlyKeyboard);
             return Response.json({ ok: true });
           }
 
@@ -1803,11 +1811,11 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               await tgTyping(chatId, "typing");
               try {
                 const scanned = await scanQrFromTelegramFile(qrFileId);
-                if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeKeyboard);
-                else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeKeyboard });
+                if (!scanned) await tgSendMessage(chatId, T.scanError, msgId, homeOnlyKeyboard);
+                else await tg("sendMessage", { chat_id: chatId, text: scanned, reply_markup: homeOnlyKeyboard });
               } catch (e) {
                 console.error("qr scan error", e);
-                await tgSendMessage(chatId, T.scanFail, msgId, homeKeyboard);
+                await tgSendMessage(chatId, T.scanFail, msgId, homeOnlyKeyboard);
               }
               return Response.json({ ok: true });
             }
@@ -1903,10 +1911,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               await tgTyping(chatId, "upload_photo");
               try {
                 const png = await generateQrPng(text);
-                await tgSendPhotoBytes(chatId, png, "qr.png", "", msgId, homeKeyboard);
+                await tgSendPhotoBytes(chatId, png, "qr.png", "", msgId, homeOnlyKeyboard);
               } catch (e) {
                 console.error("qr generate error", e);
-                await tgSendMessage(chatId, "❌ បង្កើត QR មិនបានសម្រេច", msgId, homeKeyboard);
+                await tgSendMessage(chatId, "❌ បង្កើត QR មិនបានសម្រេច", msgId, homeOnlyKeyboard);
               }
             }
           }
