@@ -129,46 +129,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background text-foreground">
-        <Navbar />
-        <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 sm:pt-10">
-          <Outlet />
-        </main>
+        <Outlet />
       </div>
     </QueryClientProvider>
-  );
-}
-
-function Navbar() {
-  const links = [
-    { to: "/", label: "ទំព័រដើម" },
-    { to: "/qr", label: "QR" },
-    { to: "/remove-bg", label: "Remove BG" },
-    { to: "/fonts", label: "Fonts" },
-    { to: "/tools", label: "Tools" },
-  ] as const;
-  return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">◈</span>
-          <span className="font-display text-base font-semibold tracking-tight">Multi-Tools</span>
-          <span className="flame-wrap ml-1" aria-hidden="true"><span className="flame text-sm">🔥</span></span>
-        </Link>
-
-        <nav className="flex items-center gap-1">
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
-              activeProps={{ className: "rounded-md px-3 py-1.5 text-sm text-foreground bg-accent" }}
-              activeOptions={{ exact: l.to === "/" }}
-            >
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
   );
 }
