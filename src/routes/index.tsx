@@ -43,8 +43,12 @@ function Index() {
             Web • Telegram Bot • គ្មានចាំបាច់ login
           </div>
           <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
-            Multi-Tools <span className="text-primary">សម្រាប់មនុស្សគ្រប់គ្នា</span>
+            Multi-Tools <span className="text-primary">សម្រាប់មនុស្សគ្រប់គ្នា</span>{" "}
+            <span className="flame-wrap" aria-hidden="true">
+              <span className="flame">🔥</span>
+            </span>
           </h1>
+
           <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
             QR, Font Styles, PDF, សំឡេង AI, OCR — គ្រប់មុខងារនៅកន្លែងតែមួយ ដំណើរការភ្លាមៗលើ browser។
           </p>
