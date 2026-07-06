@@ -179,7 +179,7 @@ const EMOJI = {
 };
 
 // Bot API 9.4 — reply keyboard button styling. "primary" gives a highlighted (accent color) button.
-const homeBtn = { text: BTN.home, icon_custom_emoji_id: EMOJI.home, style: "primary" };
+const homeBtn = { text: BTN.home, icon_custom_emoji_id: EMOJI.home, style: "success" };
 
 const mainKeyboard = {
   keyboard: [
