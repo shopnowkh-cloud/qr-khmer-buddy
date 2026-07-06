@@ -175,15 +175,14 @@ const BTN = {
 const EMOJI = {
   pdf: "5838982342122674517", // 📄
   qr: "5440410042773824003", // 🔗
-  ocr: "5388946907114527048", // 🔈
   home: "5836852493610390525", // 🏘
 };
 
 const mainKeyboard = {
   keyboard: [
-    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
-    [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
+    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.fontstyle }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
+    [{ text: BTN.shorturl }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -191,11 +190,10 @@ const mainKeyboard = {
 
 const pdfKeyboard = {
   keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
-    [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
-    [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
+    [{ text: BTN.img2pdf }, { text: BTN.mergepdf }],
+    [{ text: BTN.compresspdf }],
     [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
-    [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -210,14 +208,6 @@ const collectKeyboard = {
   is_persistent: true,
 };
 
-const imgFmtKeyboard = {
-  keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
-    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
-  ],
-  resize_keyboard: true,
-  is_persistent: true,
-};
 
 const ttsKeyboard = {
   keyboard: [
