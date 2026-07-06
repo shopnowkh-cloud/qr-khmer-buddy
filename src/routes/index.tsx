@@ -56,17 +56,18 @@ function Index() {
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               to="/qr"
-              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
             >
               ចាប់ផ្តើម <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span> →
             </Link>
 
             <Link
               to="/fonts"
-              className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent"
+              className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground hover:bg-accent"
             >
               សាកសង្ស Font Styles
             </Link>
+
           </div>
         </div>
       </section>
