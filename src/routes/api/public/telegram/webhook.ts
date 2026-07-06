@@ -1231,12 +1231,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.qrMode, msgId, homeOnlyKeyboard);
             return Response.json({ ok: true });
           }
-          if (text === BTN.removebg) {
-            session.mode = "removebg";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.removebgMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
           if (text === BTN.shorturl) {
             session.mode = "shorturl";
             session.buffer = [];
@@ -1265,18 +1259,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "compresspdf";
             session.buffer = [];
             await tgSendMessage(chatId, T.compressMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.pdf2img) {
-            session.mode = "pdf2img";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.pdf2imgMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.pdftext) {
-            session.mode = "pdftext";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.pdfTextMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.lockpdf) {
@@ -1329,25 +1311,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
-          if (text === BTN.ocr) {
-            session.mode = "ocr";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.ocrMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.translate) {
-            session.mode = "translate";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.translateMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.imgconv) {
-            session.mode = "imgconv";
-            session.buffer = [];
-            session.lastImage = undefined;
-            await tgSendMessage(chatId, T.imgconvMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
           if (text === BTN.fontstyle) {
             session.mode = "fontstyle";
             session.buffer = [];
@@ -1355,23 +1318,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
-            const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
-            await tgTyping(chatId, "upload_photo");
-            const li = session.lastImage;
-            const ab = new ArrayBuffer(li.bytes.byteLength);
-            new Uint8Array(ab).set(li.bytes);
-            const out = await convertImageFormat(ab, li.mime, target);
-
-            if (!out) {
-              await tgSendMessage(chatId, "❌ ប្តូរ format មិនបានសម្រេច", msgId, mainKeyboard);
-            } else {
-              await tgSendDocumentBytes(chatId, out, `converted.${target}`, `✅ ប្តូរទៅ ${target.toUpperCase()}`, msgId, mainKeyboard);
-            }
-            session.mode = "imgconv";
-            session.lastImage = undefined;
-            return Response.json({ ok: true });
-          }
 
           // Password input for lock/unlock PDF
           if (session.mode === "lockpdf_password" && session.pendingPdf) {
