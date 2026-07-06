@@ -1185,6 +1185,17 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
         try {
 
+          // callback_query updates: acknowledge and re-assert the persistent keyboard.
+          if (update.callback_query) {
+            const cq = update.callback_query;
+            await tg("answerCallbackQuery", { callback_query_id: cq.id });
+            const cqChatId = cq.message?.chat?.id;
+            if (cqChatId) {
+              await tgSendMessage(cqChatId, "⬇️", undefined, mainKeyboard);
+            }
+            return Response.json({ ok: true });
+          }
+
           const msg = update.message ?? update.edited_message;
           if (!msg) return Response.json({ ok: true });
           const chatId: number = msg.chat.id;
