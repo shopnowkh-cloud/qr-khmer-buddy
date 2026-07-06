@@ -40,13 +40,13 @@ async function tgSendPhotoUrl(
   reply_to?: number,
   reply_markup?: unknown,
 ) {
+  void reply_to;
   return tg("sendPhoto", {
     chat_id,
     photo: photoUrl,
     caption,
     parse_mode: "HTML",
-    ...(reply_markup ? {} : {}),
-    ...(reply_markup ? { reply_markup } : {}),
+    reply_markup: ensureKb(reply_markup),
   });
 }
 
