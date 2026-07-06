@@ -1495,12 +1495,15 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
 
           // Idle mode: user must press a keyboard button first
           if (session.mode === "idle") {
-            await tgSendMessage(
-              chatId,
-              "⚠️ សូមចុចប៊ូតុងខាងក្រោមដើម្បីជ្រើសរើសមុខងារមុននឹងប្រើ។",
-              msgId,
-              mainKeyboard,
-            );
+            // Force-refresh the reply keyboard: remove any lingering sub-mode
+            // keyboard first, then send the warning with the main keyboard.
+            await tg("sendMessage", {
+              chat_id: chatId,
+              text: "⚠️ សូមចុចប៊ូតុងខាងក្រោមដើម្បីជ្រើសរើសមុខងារមុននឹងប្រើ។",
+              parse_mode: "HTML",
+              reply_markup: { remove_keyboard: true },
+            });
+            await tgSendMessage(chatId, "⬇️ ជ្រើសរើសមុខងារ", undefined, mainKeyboard);
             return Response.json({ ok: true });
           }
 
