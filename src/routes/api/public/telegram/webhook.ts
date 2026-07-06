@@ -150,28 +150,19 @@ const FIRE_MESSAGE_EFFECT = "5104841245755180586"; // 🔥 only
 // ========== Menu / Keyboards ==========
 const BTN = {
   qr: "បង្កើត QR",
-  removebg: "🖼️ Remove BG",
   pdf: "PDF Tools",
   shorturl: "🔗 Short URL",
   tts: "បង្កើតសំឡេង Ai",
-  ocr: "Copy អក្សរ",
-  translate: "🌐 បកប្រែ",
-  imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
   img2pdf: "🖼️→📄 រូបភាព→PDF",
-  pdf2img: "📄→🖼️ PDF→រូបភាព",
   mergepdf: "➕ បញ្ចូល PDF",
   compresspdf: "📉 បង្រួម PDF",
-  pdftext: "📝 អាន text ពី PDF",
   lockpdf: "🔒 ដាក់ Password",
   unlockpdf: "🔓 ដកចេញ Password",
   back: "⬅️ ត្រឡប់",
   home: "ទំព័រដើម",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
-  fmtPng: "→ PNG",
-  fmtJpg: "→ JPG",
-  fmtWebp: "→ WEBP",
   ttsBasic: "🎙 ធម្មតា",
   ttsDesign: "🎨 រចនាសំឡេង",
   ttsClone: "👥 ក្លូនសំឡេង",
@@ -179,19 +170,19 @@ const BTN = {
   fontstyle: "🅵 Font Style",
 };
 
+
 // Bot API 9.4 — custom emoji IDs on buttons (requires bot owner Premium; auto-fallback otherwise)
 const EMOJI = {
   pdf: "5838982342122674517", // 📄
   qr: "5440410042773824003", // 🔗
-  ocr: "5388946907114527048", // 🔈
   home: "5836852493610390525", // 🏘
 };
 
 const mainKeyboard = {
   keyboard: [
-    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
-    [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
+    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.fontstyle }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
+    [{ text: BTN.shorturl }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -199,11 +190,10 @@ const mainKeyboard = {
 
 const pdfKeyboard = {
   keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
-    [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
-    [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
+    [{ text: BTN.img2pdf }, { text: BTN.mergepdf }],
+    [{ text: BTN.compresspdf }],
     [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
-    [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -218,14 +208,6 @@ const collectKeyboard = {
   is_persistent: true,
 };
 
-const imgFmtKeyboard = {
-  keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
-    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
-  ],
-  resize_keyboard: true,
-  is_persistent: true,
-};
 
 const ttsKeyboard = {
   keyboard: [
@@ -259,23 +241,20 @@ const T = {
   welcome:
     "👋 <b>សួស្តី! សូមស្វាគមន៍មកកាន់ Multi-Tool Bot</b>\n\n" +
     "<b>🤖 មុខងារ៖</b>\n" +
-    "📱 QR Code | 🖼️ Remove BG\n" +
-    "📄 PDF\n" +
-    "🔊 TTS សំឡេង | 🔍 OCR អានអក្សរ\n" +
+    "📱 QR Code | 🅵 Font Style\n" +
+    "📄 PDF Tools | 🔊 TTS សំឡេង\n" +
+    "🔗 Short URL\n" +
     "\n" +
     "<i>💡 ជ្រើសរើសមុខងារពី keyboard ខាងក្រោម!</i>",
   qrMode:
     "📱 <b>QR Code Mode</b>\n\n" +
     "• សរសេរអក្សរ ឬតំណ → បង្កើត QR\n" +
     "• ផ្ញើរូបភាព → ស្កេន QR",
-  removebgMode: "🖼️ <b>Remove Background</b>\n\nផ្ញើរូបភាព ដើម្បីលុប background",
   shorturlMode: "🔗 <b>Short URL</b>\n\nផ្ញើតំណ (URL) ដើម្បីបង្រួម",
   pdfMenu: '<tg-emoji emoji-id="5838982342122674517">📄</tg-emoji> <b>PDF Tools</b>\n\nជ្រើសរើសមុខងារ៖',
   img2pdfMode: "🖼️→📄 <b>រូបភាព → PDF</b>\n\nផ្ញើរូបភាពមួយ ឬច្រើន រួចចុច <b>✅ បញ្ចប់</b>",
   mergeMode: "➕ <b>បញ្ចូល PDF</b>\n\nផ្ញើ PDF ចាប់ពី 2 ឯកសារឡើងទៅ រួចចុច <b>✅ បញ្ចប់</b>",
   compressMode: "📉 <b>បង្រួម PDF</b>\n\nផ្ញើឯកសារ PDF មួយ",
-  pdf2imgMode: "📄→🖼️ <b>PDF → រូបភាព</b>\n\nផ្ញើឯកសារ PDF",
-  pdfTextMode: "📝 <b>អានអក្សរពី PDF</b>\n\nផ្ញើឯកសារ PDF",
   lockPdfMode: "🔒 <b>ដាក់ Password លើ PDF</b>\n\nផ្ញើឯកសារ PDF មុនសិន",
   unlockPdfMode: "🔓 <b>ដក Password ចេញពី PDF</b>\n\nផ្ញើឯកសារ PDF ដែលមាន password",
   askLockPassword: "🔑 សូមផ្ញើពាក្យសម្ងាត់ដែលចង់ប្រើ (យ៉ាងតិច 4 តួ)",
@@ -306,9 +285,7 @@ const T = {
     "✨ <b>ក្លូនពេញលេញ — ជំហាន 1/2</b>\n\n" +
     "ផ្ញើ voice message ឬឯកសារសំឡេង (5–15 វិនាទី) ជាគំរូ",
   ttsUltraAskText: "✨ <b>ជំហាន 2/2</b>\n\nសរសេរអក្សរដែលអ្នកចង់ឲ្យសំឡេងនិយាយ",
-  ocrMode: "🔍 <b>OCR</b>\n\nផ្ញើរូបភាព → អានអក្សរចេញពីរូប",
-  translateMode: "🌐 <b>បកប្រែ</b>\n\nសរសេរអក្សរ → បកប្រែស្វ័យប្រវត្តិ ខ្មែរ ⇄ អង់គ្លេស",
-  imgconvMode: "🎨 <b>ប្តូរ Format រូបភាព</b>\n\nផ្ញើរូបភាព រួចជ្រើសរើស format",
+
   fontstyleMode:
     "🅵 <b>Font Style</b>\n\n" +
     "សរសេរអក្សរអង់គ្លេស (A–Z, 0–9) → បង្កើតជា Style ផ្សេងៗ\n" +
@@ -522,14 +499,11 @@ function buildFancyList(input: string): { label: string; value: string }[] {
 type Mode =
   | "idle"
   | "qr"
-  | "removebg"
   | "shorturl"
   | "pdfmenu"
   | "img2pdf"
-  | "pdf2img"
   | "mergepdf"
   | "compresspdf"
-  | "pdftext"
   | "lockpdf"
   | "lockpdf_password"
   | "unlockpdf"
@@ -544,23 +518,18 @@ type Mode =
   | "tts_clone_text"
   | "tts_ultra_audio"
   | "tts_ultra_text"
-  | "ocr"
-  | "translate"
-  
-  | "imgconv"
-  | "imgconv_pick"
   | "fontstyle";
 
 interface Session {
   mode: Mode;
   buffer: Uint8Array[];
-  lastImage?: { bytes: Uint8Array; mime: string };
   ttsDesignInstr?: string;
   ttsRefBytes?: Uint8Array;
   ttsRefMime?: string;
   ttsRefTranscript?: string;
   pendingPdf?: Uint8Array;
 }
+
 const sessions = new Map<number, Session>();
 
 function getSession(chatId: number): Session {
@@ -586,221 +555,8 @@ async function shortenUrl(url: string): Promise<string | null> {
   }
 }
 
-// ========== Feature: Remove BG ==========
-// Two paths:
-// 1. Graphic images (QR codes, logos, documents on white): decode locally and
-//    key out the white background pixel-exactly — no AI, so the QR stays scannable.
-// 2. Photos: ask Gemini to place the subject on a pure magenta (#FF00FF) matte,
-//    then chroma-key that matte out to real alpha.
-const KEY_R = 255, KEY_G = 0, KEY_B = 255;
-
-async function decodeToRgba(
-  bytes: ArrayBuffer,
-  mime: string
-): Promise<{ rgba: Uint8Array; w: number; h: number } | null> {
-  try {
-    const buf = Buffer.from(bytes);
-    if (mime.includes("png") || (buf[0] === 0x89 && buf[1] === 0x50)) {
-      const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
-      const img = UPNG.decode(buf);
-      return { rgba: new Uint8Array(UPNG.toRGBA8(img)[0]), w: img.width, h: img.height };
-    }
-    const jpeg = (await import("jpeg-js")) as unknown as {
-      decode: (b: Buffer, o: { useTArray: true }) => { data: Uint8Array; width: number; height: number };
-    };
-    const d = jpeg.decode(buf, { useTArray: true });
-    return { rgba: new Uint8Array(d.data), w: d.width, h: d.height };
-  } catch (e) {
-    console.error("decodeToRgba error", e);
-    return null;
-  }
-}
-
-// Heuristic: QR / logo / document = mostly near-white + near-black/low-saturation,
-// with a large white area touching the borders.
-function isGraphicOnWhite(rgba: Uint8Array): boolean {
-  let white = 0, dark = 0, colorful = 0, n = 0;
-  for (let i = 0; i < rgba.length; i += 16) {
-    const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    if (min > 215) white++;
-    else if (max < 90) dark++;
-    else if (max - min > 60) colorful++;
-    n++;
-  }
-  return n > 0 && white / n > 0.25 && (white + dark) / n > 0.7 && colorful / n < 0.1;
-}
-
-// Make near-white pixels transparent (with feather); keeps dark QR modules intact.
-async function whiteToTransparent(
-  rgba: Uint8Array,
-  w: number,
-  h: number
-): Promise<Uint8Array | null> {
-  try {
-    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
-    const out = new Uint8Array(rgba); // copy
-    const INNER = 232; // min channel >= this => fully transparent
-    const OUTER = 200; // min channel <= this => fully opaque
-    for (let i = 0; i < out.length; i += 4) {
-      const min = Math.min(out[i], out[i + 1], out[i + 2]);
-      if (min >= INNER) {
-        out[i + 3] = 0;
-      } else if (min > OUTER) {
-        const t = (INNER - min) / (INNER - OUTER); // 0..1 toward opaque
-        out[i + 3] = Math.round(255 * t);
-      }
-    }
-    return new Uint8Array(UPNG.encode([out.buffer], w, h, 0));
-  } catch (e) {
-    console.error("whiteToTransparent error", e);
-    return null;
-  }
-}
-
-async function removeBackground(bytes: ArrayBuffer, mime: string): Promise<Uint8Array | null> {
-  try {
-    // Path 1: local, lossless removal for QR codes / graphics on white
-    const decoded = await decodeToRgba(bytes, mime);
-    if (decoded && isGraphicOnWhite(decoded.rgba)) {
-      const local = await whiteToTransparent(decoded.rgba, decoded.w, decoded.h);
-      if (local) return local;
-    }
-
-    // Path 2: AI matte for photos
-    const b64 = Buffer.from(bytes).toString("base64");
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3.1-flash-image",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Return the SAME image at the SAME resolution as a PNG with a fully TRANSPARENT background: keep the main subject exactly as-is (identical colors, details, and anti-aliased edges), and replace every non-subject pixel with a single flat pure magenta rgb(255,0,255) — #FF00FF. No gradient, texture, checkerboard, shadow, or watermark. Every non-subject pixel must be exactly rgb(255,0,255) OR fully transparent alpha=0.",
-              },
-              { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
-            ],
-          },
-        ],
-        modalities: ["image", "text"],
-      }),
-    });
-    if (!res.ok) {
-      console.error("removebg gateway error", res.status, await res.text());
-      return null;
-    }
-    const data = (await res.json()) as {
-      choices?: Array<{ message?: { images?: Array<{ image_url?: { url?: string } }> } }>;
-    };
-    const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!url) return null;
-    const comma = url.indexOf(",");
-    const base = comma >= 0 ? url.slice(comma + 1) : url;
-    const raw = Buffer.from(base, "base64");
-    // Try: if model already returned real transparency, keep it; else chroma-key magenta.
-    const passthrough = await keepIfAlreadyTransparent(raw);
-    if (passthrough) return passthrough;
-    return await chromaKeyToTransparent(raw);
-  } catch (e) {
-    console.error("removebg error", e);
-    return null;
-  }
-}
-
-// If the model already produced a PNG with real transparency (>2% alpha=0), keep it.
-async function keepIfAlreadyTransparent(pngBytes: Buffer): Promise<Uint8Array | null> {
-  try {
-    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
-    const img = UPNG.decode(pngBytes);
-    const rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
-    let transparent = 0;
-    const total = rgba.length / 4;
-    for (let i = 3; i < rgba.length; i += 4) if (rgba[i] < 10) transparent++;
-    if (total > 0 && transparent / total >= 0.02) {
-      return new Uint8Array(UPNG.encode([rgba.buffer], img.width, img.height, 0));
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 
-async function chromaKeyToTransparent(pngBytes: Buffer): Promise<Uint8Array | null> {
-  try {
-    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
-
-    const img = UPNG.decode(pngBytes);
-    const rgba = new Uint8Array(UPNG.toRGBA8(img)[0]);
-    const w = img.width, h = img.height;
-
-    // Chroma-key: distance from magenta in RGB space.
-    // inner threshold -> fully transparent, outer -> feather edge to opaque.
-    const INNER = 60;   // <= this distance = background
-    const OUTER = 110;  // >= this distance = subject
-    let cleared = 0;
-    for (let i = 0; i < rgba.length; i += 4) {
-      const r = rgba[i], g = rgba[i + 1], b = rgba[i + 2];
-      const dr = r - KEY_R, dg = g - KEY_G, db = b - KEY_B;
-      const dist = Math.sqrt(dr * dr + dg * dg + db * db);
-      if (dist <= INNER) {
-        rgba[i + 3] = 0;
-        cleared++;
-      } else if (dist < OUTER) {
-        const t = (dist - INNER) / (OUTER - INNER); // 0..1
-        rgba[i + 3] = Math.round(255 * t);
-        // De-spill: subtract magenta cast on semi-transparent edges
-        const spill = 1 - t;
-        rgba[i]     = Math.max(0, Math.min(255, r - Math.round(spill * 40)));
-        rgba[i + 2] = Math.max(0, Math.min(255, b - Math.round(spill * 40)));
-      }
-    }
-    // Verify the matte actually existed: if <2% of pixels became transparent,
-    // the AI returned the image WITHOUT a magenta background — treat as failure
-    // so the caller's fallbacks run instead of returning the image with bg intact.
-    const total = rgba.length / 4;
-    if (total === 0 || cleared / total < 0.02) {
-      console.error("chroma-key: no magenta matte detected", cleared, "/", total);
-      return null;
-    }
-    const out = UPNG.encode([rgba.buffer], w, h, 0);
-    return new Uint8Array(out);
-  } catch (e) {
-    console.error("chroma-key error", e);
-    return null;
-  }
-}
-
-// Fallback 1: aggressively key out any light background, regardless of heuristic.
-async function forceWhiteToTransparent(
-  bytes: ArrayBuffer,
-  mime: string,
-): Promise<Uint8Array | null> {
-  const decoded = await decodeToRgba(bytes, mime);
-  if (!decoded) return null;
-  return await whiteToTransparent(decoded.rgba, decoded.w, decoded.h);
-}
-
-// Fallback 2: re-encode original as PNG (keeps alpha if source had it; otherwise
-// user still gets a lossless PNG copy of their image instead of an error).
-async function reencodeAsPng(bytes: ArrayBuffer, mime: string): Promise<Uint8Array | null> {
-  try {
-    const decoded = await decodeToRgba(bytes, mime);
-    if (!decoded) return null;
-    const UPNG = ((await import("upng-js")) as unknown as { default: any }).default;
-    return new Uint8Array(UPNG.encode([decoded.rgba.buffer], decoded.w, decoded.h, 0));
-  } catch (e) {
-    console.error("reencodeAsPng error", e);
-    return null;
-  }
-}
 
 
 
@@ -991,175 +747,8 @@ async function synthesizeSpeech(text: string, opts: VoxOpts = {}): Promise<Uint8
   return null;
 }
 
-// ========== Feature: Gemini chat helper ==========
-async function geminiText(prompt: string, opts?: { image?: { b64: string; mime: string } }): Promise<string | null> {
-  try {
-    const content: unknown[] = [{ type: "text", text: prompt }];
-    if (opts?.image) {
-      content.push({
-        type: "image_url",
-        image_url: { url: `data:${opts.image.mime};base64,${opts.image.b64}` },
-      });
-    }
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content }],
-      }),
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("gemini error", res.status, errText);
-      if (res.status === 402) return "__NO_CREDITS__";
-      if (res.status === 429) return "__RATE_LIMIT__";
-      return null;
-    }
-    const data = (await res.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
-    return data?.choices?.[0]?.message?.content?.trim() ?? null;
-  } catch (e) {
-    console.error("gemini exception", e);
-    return null;
-  }
-}
 
-// ========== Feature: PDF text extraction ==========
-async function extractPdfText(bytes: Uint8Array): Promise<string | null> {
-  try {
-    const b64 = Buffer.from(bytes).toString("base64");
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: "Extract all text from this PDF. Preserve original language (Khmer or English) and paragraph structure. Return only the extracted text, no commentary." },
-              { type: "file", file: { filename: "doc.pdf", file_data: `data:application/pdf;base64,${b64}` } },
-            ],
-          },
-        ],
-      }),
-    });
-    if (!res.ok) {
-      console.error("pdftext error", res.status, await res.text());
-      return null;
-    }
-    const data = (await res.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
-    return data?.choices?.[0]?.message?.content?.trim() ?? null;
-  } catch (e) {
-    console.error("pdftext exception", e);
-    return null;
-  }
-}
 
-// ========== Feature: Image format conversion via Gemini image edit ==========
-async function convertImageFormat(bytes: ArrayBuffer, mime: string, target: "png" | "jpg" | "webp"): Promise<Uint8Array | null> {
-  try {
-    const b64 = Buffer.from(bytes).toString("base64");
-    const targetMime = target === "jpg" ? "JPEG" : target.toUpperCase();
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: `Return the exact same image, unchanged, encoded as ${targetMime}.` },
-              { type: "image_url", image_url: { url: `data:${mime};base64,${b64}` } },
-            ],
-          },
-        ],
-        modalities: ["image", "text"],
-      }),
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as {
-      choices?: Array<{ message?: { images?: Array<{ image_url?: { url?: string } }> } }>;
-    };
-    const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!url) return null;
-    const comma = url.indexOf(",");
-    const base = comma >= 0 ? url.slice(comma + 1) : url;
-    return new Uint8Array(Buffer.from(base, "base64"));
-  } catch (e) {
-    console.error("imgconv error", e);
-    return null;
-  }
-}
-
-// ========== Feature: PDF → Image (via Gemini) ==========
-// Splits a PDF into single-page PDFs, then asks Gemini image model to render each page as PNG.
-async function extractPageAsPdf(bytes: Uint8Array, pageIndex: number): Promise<Uint8Array> {
-  const { PDFDocument } = await loadPdfLib();
-  const src = await PDFDocument.load(bytes);
-  const out = await PDFDocument.create();
-  const [copied] = await out.copyPages(src, [pageIndex]);
-  out.addPage(copied);
-  return await out.save();
-}
-
-async function renderPdfPageToImage(pageBytes: Uint8Array): Promise<Uint8Array | null> {
-  try {
-    const b64 = Buffer.from(pageBytes).toString("base64");
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Render this single-page PDF as a high-quality PNG image. Preserve all text, layout, colors, images, and graphics exactly as they appear on the page, at the original page aspect ratio. Do NOT add, remove, or modify any content.",
-              },
-              { type: "file", file: { filename: "page.pdf", file_data: `data:application/pdf;base64,${b64}` } },
-            ],
-          },
-        ],
-        modalities: ["image", "text"],
-      }),
-    });
-    if (!res.ok) {
-      console.error("pdf2img error", res.status, await res.text());
-      return null;
-    }
-    const data = (await res.json()) as {
-      choices?: Array<{ message?: { images?: Array<{ image_url?: { url?: string } }> } }>;
-    };
-    const url = data?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    if (!url) return null;
-    const comma = url.indexOf(",");
-    const base = comma >= 0 ? url.slice(comma + 1) : url;
-    return new Uint8Array(Buffer.from(base, "base64"));
-  } catch (e) {
-    console.error("pdf2img exception", e);
-    return null;
-  }
-}
 
 
 
@@ -1236,7 +825,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
           if (text === BTN.cancel) {
             session.buffer = [];
-            const wasPdf = ["img2pdf", "pdf2img", "mergepdf", "compresspdf", "pdftext", "lockpdf", "lockpdf_password", "unlockpdf", "unlockpdf_password"].includes(session.mode);
+            const wasPdf = ["img2pdf", "mergepdf", "compresspdf", "lockpdf", "lockpdf_password", "unlockpdf", "unlockpdf_password"].includes(session.mode);
             session.pendingPdf = undefined;
             session.mode = wasPdf ? "pdfmenu" : "idle";
             await tgSendMessage(chatId, T.cancelled, msgId, wasPdf ? pdfKeyboard : mainKeyboard);
@@ -1247,12 +836,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "qr";
             session.buffer = [];
             await tgSendMessage(chatId, T.qrMode, msgId, homeOnlyKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.removebg) {
-            session.mode = "removebg";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.removebgMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.shorturl) {
@@ -1283,18 +866,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             session.mode = "compresspdf";
             session.buffer = [];
             await tgSendMessage(chatId, T.compressMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.pdf2img) {
-            session.mode = "pdf2img";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.pdf2imgMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.pdftext) {
-            session.mode = "pdftext";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.pdfTextMode, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
           if (text === BTN.lockpdf) {
@@ -1347,25 +918,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             await tgSendMessage(chatId, T.ttsUltraAskAudio, msgId, homeKeyboard);
             return Response.json({ ok: true });
           }
-          if (text === BTN.ocr) {
-            session.mode = "ocr";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.ocrMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.translate) {
-            session.mode = "translate";
-            session.buffer = [];
-            await tgSendMessage(chatId, T.translateMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
-          if (text === BTN.imgconv) {
-            session.mode = "imgconv";
-            session.buffer = [];
-            session.lastImage = undefined;
-            await tgSendMessage(chatId, T.imgconvMode, msgId, homeKeyboard);
-            return Response.json({ ok: true });
-          }
           if (text === BTN.fontstyle) {
             session.mode = "fontstyle";
             session.buffer = [];
@@ -1373,23 +925,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          if ([BTN.fmtPng, BTN.fmtJpg, BTN.fmtWebp].includes(text) && session.mode === "imgconv_pick" && session.lastImage) {
-            const target = text === BTN.fmtPng ? "png" : text === BTN.fmtJpg ? "jpg" : "webp";
-            await tgTyping(chatId, "upload_photo");
-            const li = session.lastImage;
-            const ab = new ArrayBuffer(li.bytes.byteLength);
-            new Uint8Array(ab).set(li.bytes);
-            const out = await convertImageFormat(ab, li.mime, target);
-
-            if (!out) {
-              await tgSendMessage(chatId, "❌ ប្តូរ format មិនបានសម្រេច", msgId, mainKeyboard);
-            } else {
-              await tgSendDocumentBytes(chatId, out, `converted.${target}`, `✅ ប្តូរទៅ ${target.toUpperCase()}`, msgId, mainKeyboard);
-            }
-            session.mode = "imgconv";
-            session.lastImage = undefined;
-            return Response.json({ ok: true });
-          }
 
           // Password input for lock/unlock PDF
           if (session.mode === "lockpdf_password" && session.pendingPdf) {
@@ -1511,36 +1046,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
 
-          // Remove BG
-          if (session.mode === "removebg" && (photo || isImageDoc)) {
-            const fileId = photo ? photo.file_id : doc.file_id;
-            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
-            await tgTyping(chatId, "upload_photo");
-            const f = await downloadTgFile(fileId);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            // Primary: AI + smart local removal
-            let out = await removeBackground(f.bytes, mime);
-            let caption = "✅ លុប background រួច";
-            // Fallback 1: force local white-to-transparent (works for any image on light bg)
-            if (!out) {
-              out = await forceWhiteToTransparent(f.bytes, mime);
-              if (out) caption = "⚠️ AI បរាជ័យ — បានប្រើវិធីលុបផ្ទៃសលោកាល";
-            }
-            // Fallback 2: return original re-encoded as PNG with alpha channel preserved
-            if (!out) {
-              out = await reencodeAsPng(f.bytes, mime);
-              if (out) caption = "⚠️ លុប background មិនបានសម្រេច — បានរក្សាទុករូបដើមជា PNG";
-            }
-            if (!out) {
-              await tgSendMessage(chatId, "❌ លុប background មិនបានសម្រេច", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            await tgSendDocumentBytes(chatId, out, "no-bg.png", caption, msgId, mainKeyboard);
-            return Response.json({ ok: true });
-          }
+
+
 
           // Image → PDF (collect)
           if (session.mode === "img2pdf" && (photo || isImageDoc)) {
@@ -1609,88 +1116,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // PDF → Image (per page, via Gemini)
-          if (session.mode === "pdf2img") {
-            if (!isPdfDoc) {
-              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            await tgTyping(chatId, "upload_photo");
-            const f = await downloadTgFile(doc.file_id);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            try {
-              const { PDFDocument } = await loadPdfLib();
-              const src = await PDFDocument.load(new Uint8Array(f.bytes));
-              const total = src.getPageCount();
-              const MAX = 10;
-              const count = Math.min(total, MAX);
-              await tgSendMessage(
-                chatId,
-                `📄→🖼️ កំពុងបំលែង <b>${count}</b>/${total} ទំព័រ...`,
-                msgId,
-                pdfKeyboard,
-              );
-              let success = 0;
-              for (let i = 0; i < count; i++) {
-                const pageBytes = await extractPageAsPdf(new Uint8Array(f.bytes), i);
-                const img = await renderPdfPageToImage(pageBytes);
-                if (img) {
-                  await tgSendPhotoBytes(
-                    chatId,
-                    img,
-                    `page-${i + 1}.png`,
-                    `📄 ទំព័រ ${i + 1}/${total}`,
-                  );
-                  success++;
-                }
-              }
-              if (success === 0) {
-                await tgSendMessage(chatId, "❌ បំលែងមិនបានសម្រេច", msgId, pdfKeyboard);
-              } else if (total > MAX) {
-                await tgSendMessage(
-                  chatId,
-                  `✅ បញ្ចប់ (${success}/${count} ទំព័រ)។ ⚠️ PDF នេះមាន ${total} ទំព័រ — បំលែងតែ ${MAX} ទំព័រដំបូង។`,
-                  undefined,
-                  pdfKeyboard,
-                );
-              } else {
-                await tgSendMessage(chatId, `✅ បញ្ចប់ (${success}/${count} ទំព័រ)`, undefined, pdfKeyboard);
-              }
-            } catch (e) {
-              console.error("pdf2img error", e);
-              await tgSendMessage(chatId, "❌ បំលែងមិនបានសម្រេច", msgId, pdfKeyboard);
-            }
-            return Response.json({ ok: true });
-          }
-
-
-          // PDF text extraction
-          if (session.mode === "pdftext") {
-            if (!isPdfDoc) {
-              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            await tgTyping(chatId, "typing");
-            const f = await downloadTgFile(doc.file_id);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            const extracted = await extractPdfText(new Uint8Array(f.bytes));
-            if (!extracted) {
-              await tgSendMessage(chatId, "❌ អានអក្សរមិនបានសម្រេច", msgId, pdfKeyboard);
-            } else if (extracted.length < 3500) {
-              await tgSendMessage(chatId, `📝\n<code>${escapeHtml(extracted)}</code>`, msgId, pdfKeyboard);
-            } else {
-              const bytes = new TextEncoder().encode(extracted);
-              await tgSendDocumentBytes(chatId, bytes, "extracted.txt", "📝 អានអក្សរពី PDF", msgId, pdfKeyboard);
-            }
-            return Response.json({ ok: true });
-          }
-
           // Lock PDF — receive PDF, then ask password
           if (session.mode === "lockpdf") {
             if (!isPdfDoc) {
@@ -1726,47 +1151,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
 
-          // OCR
-          if (session.mode === "ocr" && (photo || isImageDoc)) {
-            const fileId = photo ? photo.file_id : doc.file_id;
-            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
-            await tgTyping(chatId, "typing");
-            const f = await downloadTgFile(fileId);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            const b64 = Buffer.from(f.bytes).toString("base64");
-            const out = await geminiText(
-              "Extract ALL text visible in this image. Preserve original language (Khmer or English) and line breaks. Return only the raw text, no commentary.",
-              { image: { b64, mime } },
-            );
-            if (!out) {
-              await tgSendMessage(chatId, "❌ OCR មិនបានសម្រេច", msgId, mainKeyboard);
-            } else if (out === "__NO_CREDITS__") {
-              await tgSendMessage(chatId, "⚠️ AI credits អស់ហើយ។ សូមបញ្ចូល credits បន្ថែមនៅ Lovable workspace billing។", msgId, mainKeyboard);
-            } else if (out === "__RATE_LIMIT__") {
-              await tgSendMessage(chatId, "⏱ ច្រើនពេក! សូមព្យាយាមម្តងទៀតក្នុងពេលបន្តិច។", msgId, mainKeyboard);
-            } else {
-              await tgSendMessage(chatId, `🔍\n<code>${escapeHtml(out.slice(0, 3800))}</code>`, msgId, mainKeyboard);
-            }
-            return Response.json({ ok: true });
-          }
-
-          // Image format conversion: receive image → ask target
-          if (session.mode === "imgconv" && (photo || isImageDoc)) {
-            const fileId = photo ? photo.file_id : doc.file_id;
-            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
-            const f = await downloadTgFile(fileId);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            session.lastImage = { bytes: new Uint8Array(f.bytes), mime };
-            session.mode = "imgconv_pick";
-            await tgSendMessage(chatId, "🎨 ជ្រើសរើស format គោលដៅ៖", msgId, imgFmtKeyboard);
-            return Response.json({ ok: true });
-          }
 
           // ===== QR scan: accept photo, sticker, or any document =====
           if (session.mode === "qr") {
@@ -1864,20 +1248,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               await tgSendMessage(chatId, `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`, msgId, { inline_keyboard: rows });
               return Response.json({ ok: true });
             }
-            if (session.mode === "translate") {
-              await tgTyping(chatId, "typing");
-              const isKhmer = /[\u1780-\u17FF]/.test(text);
-              const prompt = isKhmer
-                ? `Translate this Khmer text to natural English. Return ONLY the translation, no notes:\n\n${text}`
-                : `Translate this text to natural Khmer. Return ONLY the Khmer translation, no notes:\n\n${text}`;
-              const out = await geminiText(prompt);
-              if (!out) {
-                await tgSendMessage(chatId, "❌ បកប្រែមិនបានសម្រេច", msgId, mainKeyboard);
-              } else {
-                await tgSendMessage(chatId, `🌐 ${escapeHtml(out)}`, msgId, mainKeyboard);
-              }
-              return Response.json({ ok: true });
-            }
+
+
 
             // Default: QR (only when user selected QR mode)
             if (session.mode === "qr") {
