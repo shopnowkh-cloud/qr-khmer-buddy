@@ -198,7 +198,6 @@ const EMOJI = {
 
 const mainKeyboard = {
   keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
     [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
