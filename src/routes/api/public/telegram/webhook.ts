@@ -1641,20 +1641,8 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               await tgSendMessage(chatId, `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`, msgId, { inline_keyboard: rows });
               return Response.json({ ok: true });
             }
-            if (session.mode === "translate") {
-              await tgTyping(chatId, "typing");
-              const isKhmer = /[\u1780-\u17FF]/.test(text);
-              const prompt = isKhmer
-                ? `Translate this Khmer text to natural English. Return ONLY the translation, no notes:\n\n${text}`
-                : `Translate this text to natural Khmer. Return ONLY the Khmer translation, no notes:\n\n${text}`;
-              const out = await geminiText(prompt);
-              if (!out) {
-                await tgSendMessage(chatId, "❌ បកប្រែមិនបានសម្រេច", msgId, mainKeyboard);
-              } else {
-                await tgSendMessage(chatId, `🌐 ${escapeHtml(out)}`, msgId, mainKeyboard);
-              }
-              return Response.json({ ok: true });
-            }
+
+
 
             // Default: QR (only when user selected QR mode)
             if (session.mode === "qr") {
