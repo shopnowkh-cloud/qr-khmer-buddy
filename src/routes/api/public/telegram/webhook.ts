@@ -1767,6 +1767,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             );
             if (!out) {
               await tgSendMessage(chatId, "❌ OCR មិនបានសម្រេច", msgId, mainKeyboard);
+            } else if (out === "__NO_CREDITS__") {
+              await tgSendMessage(chatId, "⚠️ AI credits អស់ហើយ។ សូមបញ្ចូល credits បន្ថែមនៅ Lovable workspace billing។", msgId, mainKeyboard);
+            } else if (out === "__RATE_LIMIT__") {
+              await tgSendMessage(chatId, "⏱ ច្រើនពេក! សូមព្យាយាមម្តងទៀតក្នុងពេលបន្តិច។", msgId, mainKeyboard);
             } else {
               await tgSendMessage(chatId, `🔍\n<code>${escapeHtml(out.slice(0, 3800))}</code>`, msgId, mainKeyboard);
             }
