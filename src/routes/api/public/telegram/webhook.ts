@@ -198,6 +198,7 @@ const EMOJI = {
 
 const mainKeyboard = {
   keyboard: [
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
     [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
     [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
@@ -208,11 +209,11 @@ const mainKeyboard = {
 
 const pdfKeyboard = {
   keyboard: [
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
     [{ text: BTN.img2pdf }, { text: BTN.pdf2img }],
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
     [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
     [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -220,8 +221,8 @@ const pdfKeyboard = {
 
 const collectKeyboard = {
   keyboard: [
-    [{ text: BTN.done }, { text: BTN.cancel }],
     [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+    [{ text: BTN.done }, { text: BTN.cancel }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -229,8 +230,8 @@ const collectKeyboard = {
 
 const imgFmtKeyboard = {
   keyboard: [
-    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
     [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+    [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -238,20 +239,19 @@ const imgFmtKeyboard = {
 
 const ttsKeyboard = {
   keyboard: [
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
 };
 
 
-const homeKeyboard = {
-  keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
-  resize_keyboard: true,
-  is_persistent: true,
-};
+// "homeKeyboard" was previously just the home button alone. Now it exposes the
+// full main menu so every feature (and the home button) stays visible even
+// while the user is inside another mode.
+const homeKeyboard = mainKeyboard;
 
 
 
