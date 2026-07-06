@@ -9,9 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ToolsRouteImport } from './routes/tools'
+import { Route as QrRouteImport } from './routes/qr'
+import { Route as FontsRouteImport } from './routes/fonts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api/public/telegram/webhook'
 
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QrRoute = QrRouteImport.update({
+  id: '/qr',
+  path: '/qr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FontsRoute = FontsRouteImport.update({
+  id: '/fonts',
+  path: '/fonts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -26,32 +44,71 @@ const ApiPublicTelegramWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fonts': typeof FontsRoute
+  '/qr': typeof QrRoute
+  '/tools': typeof ToolsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fonts': typeof FontsRoute
+  '/qr': typeof QrRoute
+  '/tools': typeof ToolsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fonts': typeof FontsRoute
+  '/qr': typeof QrRoute
+  '/tools': typeof ToolsRoute
   '/api/public/telegram/webhook': typeof ApiPublicTelegramWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/telegram/webhook'
+  fullPaths: '/' | '/fonts' | '/qr' | '/tools' | '/api/public/telegram/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/telegram/webhook'
-  id: '__root__' | '/' | '/api/public/telegram/webhook'
+  to: '/' | '/fonts' | '/qr' | '/tools' | '/api/public/telegram/webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/fonts'
+    | '/qr'
+    | '/tools'
+    | '/api/public/telegram/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FontsRoute: typeof FontsRoute
+  QrRoute: typeof QrRoute
+  ToolsRoute: typeof ToolsRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/qr': {
+      id: '/qr'
+      path: '/qr'
+      fullPath: '/qr'
+      preLoaderRoute: typeof QrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fonts': {
+      id: '/fonts'
+      path: '/fonts'
+      fullPath: '/fonts'
+      preLoaderRoute: typeof FontsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -71,6 +128,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FontsRoute: FontsRoute,
+  QrRoute: QrRoute,
+  ToolsRoute: ToolsRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
 }
 export const routeTree = rootRouteImport

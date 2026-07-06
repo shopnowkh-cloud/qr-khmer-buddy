@@ -1,110 +1,97 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Khmer Multi-Tools Bot — QR, TTS, PDF & More" },
+      { title: "Multi-Tools — QR, Font Styles, PDF, TTS, OCR" },
       {
         name: "description",
         content:
-          "Telegram bot ភាសាខ្មែរ៖ បង្កើត QR Code, បម្លែងអក្សរទៅសំឡេង (VoxCPM2 TTS), PDF Tools, OCR, បកប្រែ, ប្តូររូបិយប័ណ្ណ ដោយឥតគិតថ្លៃ។",
+          "កម្មវិធីអនឡាញឥតគិតថ្លៃ៖ បង្កើត/ស្កេន QR Code, បម្លែងអក្សរជា Font Style ស្អាតៗ, PDF Tools, TTS, OCR និងច្រើនទៀត។",
       },
-      { property: "og:title", content: "Khmer Multi-Tools Bot" },
-      {
-        property: "og:description",
-        content: "Telegram bot ភាសាខ្មែរ គ្រប់មុខងារ – QR, TTS, PDF, OCR, បកប្រែ។",
-      },
-      { property: "og:url", content: "https://qr-khmer-buddy.lovable.app/" },
-    ],
-    links: [{ rel: "canonical", href: "https://qr-khmer-buddy.lovable.app/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          name: "Khmer Multi-Tools Bot",
-          applicationCategory: "UtilitiesApplication",
-          operatingSystem: "Telegram",
-          description:
-            "Telegram bot ភាសាខ្មែរ គ្រប់មុខងារ – QR, TTS (VoxCPM2), PDF, OCR, បកប្រែ, ប្តូររូបិយប័ណ្ណ។",
-          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-        }),
-      },
+      { property: "og:title", content: "Multi-Tools — QR, Font Styles, PDF, TTS, OCR" },
+      { property: "og:description", content: "គ្រប់មុខងារនៅកន្លែងតែមួយ — ដំណើរការលើ browser។" },
     ],
   }),
   component: Index,
 });
 
-const FEATURES = [
-  { icon: "📱", title: "QR Code", desc: "បង្កើត និងស្កេន QR Code រហ័ស" },
-  { icon: "🔊", title: "TTS ខ្មែរ", desc: "បម្លែងអក្សរទៅសំឡេង ដោយ VoxCPM2" },
-  { icon: "📄", title: "PDF Tools", desc: "រួម, បំបែក, បំលែងឯកសារ PDF" },
-  { icon: "🖼️", title: "Remove BG", desc: "លុបផ្ទៃខាងក្រោយរូបភាព" },
-  { icon: "🔤", title: "OCR", desc: "ស្រង់អក្សរចេញពីរូបភាព" },
-  { icon: "🌐", title: "បកប្រែ", desc: "បកប្រែភាសាច្រើនប្រភេទ" },
-  { icon: "💱", title: "USD ⇄ KHR", desc: "ប្តូររូបិយប័ណ្ណភ្លាមៗ" },
-  { icon: "✨", title: "Voice Clone", desc: "ក្លូនសំឡេងពីឯកសារ audio" },
+type Feature = {
+  to: "/qr" | "/fonts" | "/tools";
+  icon: string;
+  title: string;
+  desc: string;
+  accent: string;
+};
+
+const FEATURES: Feature[] = [
+  { to: "/qr", icon: "📱", title: "QR Code", desc: "បង្កើត និងស្កេន QR", accent: "from-blue-500/20 to-blue-500/5" },
+  { to: "/fonts", icon: "🅵", title: "Font Styles", desc: "អក្សរ Unicode 14 style", accent: "from-fuchsia-500/20 to-fuchsia-500/5" },
+  { to: "/tools", icon: "🖼️", title: "Remove BG", desc: "លុប background រូបភាព", accent: "from-emerald-500/20 to-emerald-500/5" },
+  { to: "/tools", icon: "📄", title: "PDF Tools", desc: "រូបភាព↔PDF, merge, compress", accent: "from-amber-500/20 to-amber-500/5" },
+  { to: "/tools", icon: "🔊", title: "TTS សំឡេង", desc: "អក្សរ → សំឡេង AI", accent: "from-pink-500/20 to-pink-500/5" },
+  { to: "/tools", icon: "🔍", title: "OCR", desc: "ស្រង់អក្សរពីរូបភាព", accent: "from-cyan-500/20 to-cyan-500/5" },
 ];
 
 function Index() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-      <section className="mx-auto max-w-4xl px-6 py-16 md:py-24">
-        <div className="text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Powered by VoxCPM2 · Telegram Bot
+    <div>
+      <section className="pt-6 sm:pt-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            Web • Telegram Bot • គ្មានចាំបាច់ login
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-6xl">
-            Khmer Multi-Tools Bot
+          <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
+            Multi-Tools <span className="text-primary">សម្រាប់មនុស្សគ្រប់គ្នា</span>
           </h1>
-          <p className="mt-6 text-lg text-muted-foreground md:text-xl">
-            ជំនួយការ Telegram ភាសាខ្មែរ គ្រប់មុខងារក្នុងកន្លែងតែមួយ — QR, TTS, PDF,
-            OCR, បកប្រែ និងច្រើនទៀត។
+          <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
+            QR, Font Styles, PDF, សំឡេង AI, OCR — គ្រប់មុខងារនៅកន្លែងតែមួយ ដំណើរការភ្លាមៗលើ browser។
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="https://t.me/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-base font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/qr"
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
             >
-              ចាប់ផ្តើមប្រើប្រាស់ Bot
-            </a>
-            <a
-              href="https://github.com/shopnowkh-cloud/Vox-Cpm"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-lg border border-input bg-background px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-accent"
+              ចាប់ផ្តើម →
+            </Link>
+            <Link
+              to="/fonts"
+              className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent"
             >
-              មើល Source Code
-            </a>
+              សាកសង្ស Font Styles
+            </Link>
           </div>
         </div>
-
-        <section className="mt-20">
-          <h2 className="text-center text-2xl font-bold text-foreground md:text-3xl">
-            មុខងារទាំងអស់
-          </h2>
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div className="text-3xl">{f.icon}</div>
-                <h3 className="mt-3 font-semibold text-card-foreground">{f.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <footer className="mt-20 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Khmer Multi-Tools Bot · Built with ❤️ in Cambodia</p>
-        </footer>
       </section>
-    </main>
+
+      <section className="mt-14">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f, i) => (
+            <Link
+              key={i}
+              to={f.to}
+              className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 transition hover:border-primary/40 hover:bg-card/80"
+            >
+              <div className={`pointer-events-none absolute inset-0 -z-0 bg-gradient-to-br ${f.accent} opacity-0 transition group-hover:opacity-100`} />
+              <div className="relative">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-background/60 text-2xl">
+                  {f.icon}
+                </div>
+                <h3 className="mt-4 font-display text-lg font-semibold">{f.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
+                <span className="mt-4 inline-flex text-xs font-medium text-primary opacity-0 transition group-hover:opacity-100">
+                  បើកឥឡូវ →
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <footer className="mt-16 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
+        © {new Date().getFullYear()} Multi-Tools · Made with ❤️ in Cambodia
+      </footer>
+    </div>
   );
 }

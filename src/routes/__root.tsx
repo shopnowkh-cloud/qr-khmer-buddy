@@ -90,9 +90,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: "Telegram bot ភាសាខ្មែរ៖ QR, TTS, PDF, OCR, បកប្រែ។" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
       },
     ],
   }),
@@ -121,8 +124,44 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="min-h-screen bg-background text-foreground">
+        <Navbar />
+        <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 sm:pt-10">
+          <Outlet />
+        </main>
+      </div>
     </QueryClientProvider>
+  );
+}
+
+function Navbar() {
+  const links = [
+    { to: "/", label: "ទំព័រដើម" },
+    { to: "/qr", label: "QR" },
+    { to: "/fonts", label: "Font Styles" },
+    { to: "/tools", label: "Tools" },
+  ] as const;
+  return (
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-2">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">◈</span>
+          <span className="font-display text-base font-semibold tracking-tight">Multi-Tools</span>
+        </Link>
+        <nav className="flex items-center gap-1">
+          {links.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
+              activeProps={{ className: "rounded-md px-3 py-1.5 text-sm text-foreground bg-accent" }}
+              activeOptions={{ exact: l.to === "/" }}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </header>
   );
 }
