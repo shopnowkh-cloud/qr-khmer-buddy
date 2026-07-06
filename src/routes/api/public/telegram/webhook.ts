@@ -150,34 +150,26 @@ const FIRE_MESSAGE_EFFECT = "5104841245755180586"; // 🔥 only
 // ========== Menu / Keyboards ==========
 const BTN = {
   qr: "បង្កើត QR",
-  removebg: "🖼️ Remove BG",
   pdf: "PDF Tools",
   shorturl: "🔗 Short URL",
   tts: "បង្កើតសំឡេង Ai",
-  ocr: "Copy អក្សរ",
-  translate: "🌐 បកប្រែ",
-  imgconv: "🎨 ប្តូរ Format",
   help: "ℹ️ ជំនួយ",
   img2pdf: "🖼️→📄 រូបភាព→PDF",
-  pdf2img: "📄→🖼️ PDF→រូបភាព",
   mergepdf: "➕ បញ្ចូល PDF",
   compresspdf: "📉 បង្រួម PDF",
-  pdftext: "📝 អាន text ពី PDF",
   lockpdf: "🔒 ដាក់ Password",
   unlockpdf: "🔓 ដកចេញ Password",
   back: "⬅️ ត្រឡប់",
   home: "ទំព័រដើម",
   done: "✅ បញ្ចប់",
   cancel: "❌ បោះបង់",
-  fmtPng: "→ PNG",
-  fmtJpg: "→ JPG",
-  fmtWebp: "→ WEBP",
   ttsBasic: "🎙 ធម្មតា",
   ttsDesign: "🎨 រចនាសំឡេង",
   ttsClone: "👥 ក្លូនសំឡេង",
   ttsUltra: "✨ ក្លូនពេញលេញ",
   fontstyle: "🅵 Font Style",
 };
+
 
 // Bot API 9.4 — custom emoji IDs on buttons (requires bot owner Premium; auto-fallback otherwise)
 const EMOJI = {
