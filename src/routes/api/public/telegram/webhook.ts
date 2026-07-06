@@ -1870,10 +1870,7 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               }
               const styles = buildFancyList(input);
               const rows = styles.map((s) => [{ text: s.value, copy_text: { text: s.value } }]);
-              // Send inline copy buttons FIRST, then a follow-up carrying homeKeyboard
-              // so the reply keyboard is the newest reply_markup and stays visible on all clients.
               await tgSendMessage(chatId, `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`, msgId, { inline_keyboard: rows });
-              await tgSendMessage(chatId, "🏘 ត្រឡប់ទំព័រដើម", undefined, homeKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "translate") {
@@ -1897,9 +1894,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               try {
                 const png = await generateQrPng(text);
                 await tgSendPhotoBytes(chatId, png, "qr.png", "", msgId, homeOnlyKeyboard);
-                // Follow-up text so the reply keyboard is the newest reply_markup —
-                // some Telegram clients don't refresh the keyboard after a photo alone.
-                await tgSendMessage(chatId, "🏘 ត្រឡប់ទំព័រដើម", undefined, homeOnlyKeyboard);
               } catch (e) {
                 console.error("qr generate error", e);
                 await tgSendMessage(chatId, "❌ បង្កើត QR មិនបានសម្រេច", msgId, homeOnlyKeyboard);
