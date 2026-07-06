@@ -247,27 +247,18 @@ const ttsKeyboard = {
 };
 
 
-// Sub-mode keyboard: shows the home button on top, then all main features
-// so the user can jump back home or switch mode anytime — but the actual
-// main/idle keyboard (mainKeyboard) has NO home button.
-const homeKeyboard = {
-  keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
-    [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.removebg }],
-    [{ text: BTN.ocr, icon_custom_emoji_id: EMOJI.ocr }, { text: BTN.fontstyle }],
-    [{ text: BTN.pdf, icon_custom_emoji_id: EMOJI.pdf }, { text: BTN.tts }],
-  ],
-  resize_keyboard: true,
-  is_persistent: true,
-};
-
-// Slim keyboard — ONLY the home button. Used inside QR mode so the user
-// isn't distracted by other features while generating/scanning.
+// Sub-mode keyboard: ONLY the home button. This "locks" the user into the
+// active feature — they can't switch to another feature until they press
+// «🏘 ទំព័រដើម» to return to the main menu.
 const homeOnlyKeyboard = {
   keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
   resize_keyboard: true,
   is_persistent: true,
 };
+
+// Alias kept so existing call sites continue to compile; both point at the
+// same "home-only" keyboard now.
+const homeKeyboard = homeOnlyKeyboard;
 
 
 
