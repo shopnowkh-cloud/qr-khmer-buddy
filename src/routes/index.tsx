@@ -99,8 +99,9 @@ function Index() {
       </section>
 
       <footer className="mt-16 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Multi-Tools · Made with ❤️ in Cambodia
+        © {new Date().getFullYear()} Multi-Tools · Made with <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span> in Cambodia
       </footer>
+
     </div>
   );
 }
