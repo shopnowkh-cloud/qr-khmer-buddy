@@ -24,6 +24,15 @@ async function tg(method: string, body: unknown) {
   return res.json();
 }
 
+// Returns the reply_markup to attach. If caller passed one, use it as-is.
+// Otherwise default to the persistent mainKeyboard so the "ទំព័រដើម" button never disappears.
+// Inline keyboards are passed through untouched (they cannot coexist with a reply keyboard).
+function ensureKb(reply_markup?: unknown): unknown {
+  if (reply_markup) return reply_markup;
+  // mainKeyboard is defined later in the module; runtime lookup is safe.
+  return mainKeyboard;
+}
+
 async function tgSendPhotoUrl(
   chat_id: number,
   photoUrl: string,
@@ -31,13 +40,13 @@ async function tgSendPhotoUrl(
   reply_to?: number,
   reply_markup?: unknown,
 ) {
+  void reply_to;
   return tg("sendPhoto", {
     chat_id,
     photo: photoUrl,
     caption,
     parse_mode: "HTML",
-    ...(reply_markup ? {} : {}),
-    ...(reply_markup ? { reply_markup } : {}),
+    reply_markup: ensureKb(reply_markup),
   });
 }
 
@@ -56,7 +65,7 @@ async function tgSendPhotoBytes(
     form.append("parse_mode", "HTML");
   }
   void reply_to;
-  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("reply_markup", JSON.stringify(ensureKb(reply_markup)));
   form.append("photo", new Blob([bytes as unknown as BlobPart]), filename);
   const res = await fetch(`${TG_API()}/sendPhoto`, {
     method: "POST",
@@ -80,7 +89,7 @@ async function tgSendDocumentBytes(
     form.append("parse_mode", "HTML");
   }
   void reply_to;
-  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("reply_markup", JSON.stringify(ensureKb(reply_markup)));
   form.append("document", new Blob([bytes as unknown as BlobPart]), filename);
   const res = await fetch(`${TG_API()}/sendDocument`, {
     method: "POST",
@@ -104,7 +113,7 @@ async function tgSendAudioBytes(
     form.append("parse_mode", "HTML");
   }
   void reply_to;
-  if (reply_markup) form.append("reply_markup", JSON.stringify(reply_markup));
+  form.append("reply_markup", JSON.stringify(ensureKb(reply_markup)));
   void filename;
   form.append("voice", new Blob([bytes as unknown as BlobPart], { type: "audio/ogg" }), "voice.ogg");
   const res = await fetch(`${TG_API()}/sendVoice`, {
@@ -126,8 +135,8 @@ async function tgSendMessage(
     chat_id,
     text,
     parse_mode: "HTML",
-    ...(reply_to ? {} : {}),
-    ...(reply_markup ? { reply_markup } : {}),
+    reply_markup: ensureKb(reply_markup),
+    ...(reply_to ? { reply_parameters: { message_id: reply_to, allow_sending_without_reply: true } } : {}),
     ...(message_effect_id ? { message_effect_id } : {}),
   });
 }
