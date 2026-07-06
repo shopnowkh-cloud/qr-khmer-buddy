@@ -61,7 +61,7 @@ export const scanQrFromBase64 = createServerFn({ method: "POST" })
 
     // Try local zxing first (works in Worker for common images)
     try {
-      const zxing = await import("zxing-wasm/reader");
+      const zxing = await import("@sec-ant/zxing-wasm/reader");
       const results = await zxing.readBarcodesFromImageFile(
         new Blob([bytes as unknown as BlobPart], { type: data.mime }),
         {
