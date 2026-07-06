@@ -203,14 +203,17 @@ const pdfKeyboard = {
     [{ text: BTN.mergepdf }, { text: BTN.compresspdf }],
     [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
     [{ text: BTN.pdftext, icon_custom_emoji_id: EMOJI.pdf }],
-    [{ text: BTN.back }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
 };
 
 const collectKeyboard = {
-  keyboard: [[{ text: BTN.done }, { text: BTN.cancel }]],
+  keyboard: [
+    [{ text: BTN.done }, { text: BTN.cancel }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+  ],
   resize_keyboard: true,
   is_persistent: true,
 };
@@ -218,7 +221,7 @@ const collectKeyboard = {
 const imgFmtKeyboard = {
   keyboard: [
     [{ text: BTN.fmtPng }, { text: BTN.fmtJpg }, { text: BTN.fmtWebp }],
-    [{ text: BTN.back }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
