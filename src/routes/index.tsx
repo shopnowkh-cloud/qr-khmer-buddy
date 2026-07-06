@@ -39,9 +39,10 @@ function Index() {
       <section className="pt-6 sm:pt-10">
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span>
             Web • Telegram Bot • គ្មានចាំបាច់ login
           </div>
+
           <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl">
             Multi-Tools <span className="text-primary">សម្រាប់មនុស្សគ្រប់គ្នា</span>{" "}
             <span className="flame-wrap" aria-hidden="true">
@@ -57,8 +58,9 @@ function Index() {
               to="/qr"
               className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
             >
-              ចាប់ផ្តើម →
+              ចាប់ផ្តើម <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span> →
             </Link>
+
             <Link
               to="/fonts"
               className="rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent"
@@ -82,11 +84,14 @@ function Index() {
                 <div className="grid h-11 w-11 place-items-center rounded-xl bg-background/60 text-2xl">
                   {f.icon}
                 </div>
-                <h3 className="mt-4 font-display text-lg font-semibold">{f.title}</h3>
+                <h3 className="mt-4 font-display text-lg font-semibold">
+                  {f.title} <span className="flame-wrap" aria-hidden="true"><span className="flame text-sm">🔥</span></span>
+                </h3>
                 <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
                 <span className="mt-4 inline-flex text-xs font-medium text-primary opacity-0 transition group-hover:opacity-100">
                   បើកឥឡូវ →
                 </span>
+
               </div>
             </Link>
           ))}
@@ -94,8 +99,9 @@ function Index() {
       </section>
 
       <footer className="mt-16 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Multi-Tools · Made with ❤️ in Cambodia
+        © {new Date().getFullYear()} Multi-Tools · Made with <span className="flame-wrap" aria-hidden="true"><span className="flame">🔥</span></span> in Cambodia
       </footer>
+
     </div>
   );
 }

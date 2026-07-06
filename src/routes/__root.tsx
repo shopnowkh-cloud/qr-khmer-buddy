@@ -148,7 +148,9 @@ function Navbar() {
         <Link to="/" className="flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">◈</span>
           <span className="font-display text-base font-semibold tracking-tight">Multi-Tools</span>
+          <span className="flame-wrap ml-1" aria-hidden="true"><span className="flame text-sm">🔥</span></span>
         </Link>
+
         <nav className="flex items-center gap-1">
           {links.map((l) => (
             <Link
