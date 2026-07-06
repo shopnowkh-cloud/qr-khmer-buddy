@@ -229,13 +229,14 @@ const imgFmtKeyboard = {
 
 const ttsKeyboard = {
   keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
+    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
   ],
   resize_keyboard: true,
   is_persistent: true,
 };
+
 
 
 // Sub-mode keyboard: ONLY the home button. This "locks" the user into the
