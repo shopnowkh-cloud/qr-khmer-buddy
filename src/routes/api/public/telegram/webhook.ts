@@ -178,6 +178,9 @@ const EMOJI = {
   home: "5836852493610390525", // 🏘
 };
 
+// Bot API 9.4 — reply keyboard button styling. "primary" gives a highlighted (accent color) button.
+const homeBtn = { text: BTN.home, icon_custom_emoji_id: EMOJI.home, style: "primary" };
+
 const mainKeyboard = {
   keyboard: [
     [{ text: BTN.qr, icon_custom_emoji_id: EMOJI.qr }, { text: BTN.fontstyle }],
@@ -193,7 +196,7 @@ const pdfKeyboard = {
     [{ text: BTN.img2pdf }, { text: BTN.mergepdf }],
     [{ text: BTN.compresspdf }],
     [{ text: BTN.lockpdf }, { text: BTN.unlockpdf }],
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+    [homeBtn],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -201,7 +204,7 @@ const pdfKeyboard = {
 
 const collectKeyboard = {
   keyboard: [
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+    [homeBtn],
     [{ text: BTN.done }, { text: BTN.cancel }],
   ],
   resize_keyboard: true,
@@ -213,7 +216,7 @@ const ttsKeyboard = {
   keyboard: [
     [{ text: BTN.ttsBasic }, { text: BTN.ttsDesign }],
     [{ text: BTN.ttsClone }, { text: BTN.ttsUltra }],
-    [{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }],
+    [homeBtn],
   ],
   resize_keyboard: true,
   is_persistent: true,
@@ -225,10 +228,11 @@ const ttsKeyboard = {
 // active feature — they can't switch to another feature until they press
 // «🏘 ទំព័រដើម» to return to the main menu.
 const homeOnlyKeyboard = {
-  keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
+  keyboard: [[homeBtn]],
   resize_keyboard: true,
   is_persistent: true,
 };
+
 
 // Alias kept so existing call sites continue to compile; both point at the
 // same "home-only" keyboard now.
