@@ -65,7 +65,7 @@ export const scanQrFromBase64 = createServerFn({ method: "POST" })
       const results = await zxing.readBarcodesFromImageFile(
         new Blob([bytes as unknown as BlobPart], { type: data.mime }),
         {
-          formats: ["QRCode", "MicroQRCode", "rMQRCode"],
+          formats: ["QRCode", "MicroQRCode"],
           tryHarder: true,
           tryRotate: true,
           tryInvert: true,
