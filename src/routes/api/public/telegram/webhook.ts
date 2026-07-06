@@ -1843,9 +1843,10 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
               }
               const styles = buildFancyList(input);
               const rows = styles.map((s) => [{ text: s.value, copy_text: { text: s.value } }]);
-              // Re-assert the persistent "ទំព័រដើម" reply keyboard first, then the inline copy buttons.
-              await tgSendMessage(chatId, `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`, msgId, homeKeyboard);
-              await tgSendMessage(chatId, "⬇️", undefined, { inline_keyboard: rows });
+              // Send inline copy buttons FIRST, then a follow-up carrying homeKeyboard
+              // so the reply keyboard is the newest reply_markup and stays visible on all clients.
+              await tgSendMessage(chatId, `🅵 <b>Font Styles</b>\n<i>ចុចប៊ូតុងខាងក្រោមដើម្បី Copy</i>`, msgId, { inline_keyboard: rows });
+              await tgSendMessage(chatId, "🏘 ត្រឡប់ទំព័រដើម", undefined, homeKeyboard);
               return Response.json({ ok: true });
             }
             if (session.mode === "translate") {
