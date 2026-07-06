@@ -138,7 +138,8 @@ function Navbar() {
   const links = [
     { to: "/", label: "ទំព័រដើម" },
     { to: "/qr", label: "QR" },
-    { to: "/fonts", label: "Font Styles" },
+    { to: "/remove-bg", label: "Remove BG" },
+    { to: "/fonts", label: "Fonts" },
     { to: "/tools", label: "Tools" },
   ] as const;
   return (
