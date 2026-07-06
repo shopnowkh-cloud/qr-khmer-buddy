@@ -261,6 +261,14 @@ const homeKeyboard = {
   is_persistent: true,
 };
 
+// Slim keyboard — ONLY the home button. Used inside QR mode so the user
+// isn't distracted by other features while generating/scanning.
+const homeOnlyKeyboard = {
+  keyboard: [[{ text: BTN.home, icon_custom_emoji_id: EMOJI.home }]],
+  resize_keyboard: true,
+  is_persistent: true,
+};
+
 
 
 // ========== Text ==========
