@@ -1537,88 +1537,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
             return Response.json({ ok: true });
           }
 
-          // PDF → Image (per page, via Gemini)
-          if (session.mode === "pdf2img") {
-            if (!isPdfDoc) {
-              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            await tgTyping(chatId, "upload_photo");
-            const f = await downloadTgFile(doc.file_id);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            try {
-              const { PDFDocument } = await loadPdfLib();
-              const src = await PDFDocument.load(new Uint8Array(f.bytes));
-              const total = src.getPageCount();
-              const MAX = 10;
-              const count = Math.min(total, MAX);
-              await tgSendMessage(
-                chatId,
-                `📄→🖼️ កំពុងបំលែង <b>${count}</b>/${total} ទំព័រ...`,
-                msgId,
-                pdfKeyboard,
-              );
-              let success = 0;
-              for (let i = 0; i < count; i++) {
-                const pageBytes = await extractPageAsPdf(new Uint8Array(f.bytes), i);
-                const img = await renderPdfPageToImage(pageBytes);
-                if (img) {
-                  await tgSendPhotoBytes(
-                    chatId,
-                    img,
-                    `page-${i + 1}.png`,
-                    `📄 ទំព័រ ${i + 1}/${total}`,
-                  );
-                  success++;
-                }
-              }
-              if (success === 0) {
-                await tgSendMessage(chatId, "❌ បំលែងមិនបានសម្រេច", msgId, pdfKeyboard);
-              } else if (total > MAX) {
-                await tgSendMessage(
-                  chatId,
-                  `✅ បញ្ចប់ (${success}/${count} ទំព័រ)។ ⚠️ PDF នេះមាន ${total} ទំព័រ — បំលែងតែ ${MAX} ទំព័រដំបូង។`,
-                  undefined,
-                  pdfKeyboard,
-                );
-              } else {
-                await tgSendMessage(chatId, `✅ បញ្ចប់ (${success}/${count} ទំព័រ)`, undefined, pdfKeyboard);
-              }
-            } catch (e) {
-              console.error("pdf2img error", e);
-              await tgSendMessage(chatId, "❌ បំលែងមិនបានសម្រេច", msgId, pdfKeyboard);
-            }
-            return Response.json({ ok: true });
-          }
-
-
-          // PDF text extraction
-          if (session.mode === "pdftext") {
-            if (!isPdfDoc) {
-              await tgSendMessage(chatId, T.wrongType + " (ត្រូវការ PDF)", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            await tgTyping(chatId, "typing");
-            const f = await downloadTgFile(doc.file_id);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, pdfKeyboard);
-              return Response.json({ ok: true });
-            }
-            const extracted = await extractPdfText(new Uint8Array(f.bytes));
-            if (!extracted) {
-              await tgSendMessage(chatId, "❌ អានអក្សរមិនបានសម្រេច", msgId, pdfKeyboard);
-            } else if (extracted.length < 3500) {
-              await tgSendMessage(chatId, `📝\n<code>${escapeHtml(extracted)}</code>`, msgId, pdfKeyboard);
-            } else {
-              const bytes = new TextEncoder().encode(extracted);
-              await tgSendDocumentBytes(chatId, bytes, "extracted.txt", "📝 អានអក្សរពី PDF", msgId, pdfKeyboard);
-            }
-            return Response.json({ ok: true });
-          }
-
           // Lock PDF — receive PDF, then ask password
           if (session.mode === "lockpdf") {
             if (!isPdfDoc) {
@@ -1654,47 +1572,6 @@ export const Route = createFileRoute("/api/public/telegram/webhook")({
           }
 
 
-          // OCR
-          if (session.mode === "ocr" && (photo || isImageDoc)) {
-            const fileId = photo ? photo.file_id : doc.file_id;
-            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
-            await tgTyping(chatId, "typing");
-            const f = await downloadTgFile(fileId);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            const b64 = Buffer.from(f.bytes).toString("base64");
-            const out = await geminiText(
-              "Extract ALL text visible in this image. Preserve original language (Khmer or English) and line breaks. Return only the raw text, no commentary.",
-              { image: { b64, mime } },
-            );
-            if (!out) {
-              await tgSendMessage(chatId, "❌ OCR មិនបានសម្រេច", msgId, mainKeyboard);
-            } else if (out === "__NO_CREDITS__") {
-              await tgSendMessage(chatId, "⚠️ AI credits អស់ហើយ។ សូមបញ្ចូល credits បន្ថែមនៅ Lovable workspace billing។", msgId, mainKeyboard);
-            } else if (out === "__RATE_LIMIT__") {
-              await tgSendMessage(chatId, "⏱ ច្រើនពេក! សូមព្យាយាមម្តងទៀតក្នុងពេលបន្តិច។", msgId, mainKeyboard);
-            } else {
-              await tgSendMessage(chatId, `🔍\n<code>${escapeHtml(out.slice(0, 3800))}</code>`, msgId, mainKeyboard);
-            }
-            return Response.json({ ok: true });
-          }
-
-          // Image format conversion: receive image → ask target
-          if (session.mode === "imgconv" && (photo || isImageDoc)) {
-            const fileId = photo ? photo.file_id : doc.file_id;
-            const mime = photo ? "image/jpeg" : docMime || "image/jpeg";
-            const f = await downloadTgFile(fileId);
-            if (!f) {
-              await tgSendMessage(chatId, "❌ Download failed", msgId, mainKeyboard);
-              return Response.json({ ok: true });
-            }
-            session.lastImage = { bytes: new Uint8Array(f.bytes), mime };
-            session.mode = "imgconv_pick";
-            await tgSendMessage(chatId, "🎨 ជ្រើសរើស format គោលដៅ៖", msgId, imgFmtKeyboard);
-            return Response.json({ ok: true });
-          }
 
           // ===== QR scan: accept photo, sticker, or any document =====
           if (session.mode === "qr") {
